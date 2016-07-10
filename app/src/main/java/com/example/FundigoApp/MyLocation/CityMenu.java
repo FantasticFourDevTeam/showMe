@@ -7,6 +7,7 @@ import android.util.Log;
 import com.example.FundigoApp.Events.EventInfo;
 import com.example.FundigoApp.GlobalVariables;
 import com.example.FundigoApp.MainActivity;
+import com.example.FundigoApp.R;
 import com.example.FundigoApp.StaticMethod.GPSMethods;
 
 import java.text.DecimalFormat;
@@ -28,7 +29,7 @@ public class CityMenu {
     private List<HashMap<String, String>> totalCityList = new ArrayList<> ();
     private String[] cityNames;
     private boolean GPS_ENABLE = false;
-    private final int MENU_LENGTH = 11;
+    private int MENU_LENGTH = 11;
     Context context;
 
     public CityMenu(List<EventInfo> _listOfEventsDetailes, Context context) {
@@ -94,7 +95,7 @@ public class CityMenu {
             cityNames = new String[totalCityList.size () + 1];
             try {
                 i = 1;
-                cityNames[0] = "All Cities";
+                cityNames[0] = context.getString(R.string.default_cityMenu_value);// "All Cities";
                 for (HashMap obj : totalCityList) {
                     cityNames[i] = obj.get ("cityName").toString ();
                     i++;
@@ -108,7 +109,7 @@ public class CityMenu {
             try {
                 j = 1;
                 cityNames = new String[listOfEventsDetailes.size () + 1];
-                cityNames[0] = "All Cities";
+                cityNames[0] = context.getString(R.string.default_cityMenu_value); //"All Cities";
                 for (EventInfo obj : listOfEventsDetailes) {
                     cityNames[j] = obj.getCity ();
                     j++;
@@ -143,9 +144,12 @@ public class CityMenu {
     }
 
     public String[] cityListAsMeunMaxLength(String[] cityList) {
-        String[] tempCityList = new String[MENU_LENGTH];
-        try {
 
+           if (cityNames.length<MENU_LENGTH) {
+               MENU_LENGTH = cityList.length;// in case the real number of cities  is smaller then 11;
+           }
+          String[] tempCityList = new String[MENU_LENGTH];
+        try {
             for (int i = 0; i < MENU_LENGTH; i++) {
                 tempCityList[i] = cityList[i];
             }

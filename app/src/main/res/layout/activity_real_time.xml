@@ -150,7 +150,7 @@
         />
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_above="@+id/gridview"
+        android:layout_above="@+id/gridviewlayout"
         android:layout_height="wrap_content">
         <TextView
             android:layout_width="match_parent"
@@ -158,11 +158,17 @@
             android:visibility="gone"
             android:layout_marginTop="15dp"
             android:textStyle="bold"
-            android:textSize="10sp"
+            android:textSize="11sp"
             android:gravity="center"
             android:text="filter line"
             android:layout_height="wrap_content" />
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:orientation="vertical"
+        android:id="@+id/gridviewlayout"
+        android:layout_below="@+id/toolbar"
+        android:layout_height="fill_parent">
     <GridView xmlns:android="http://schemas.android.com/apk/res/android"
               android:id="@+id/gridview"
               android:layout_width="match_parent"
@@ -173,13 +179,14 @@
               android:horizontalSpacing="0dp"
               android:stretchMode="columnWidth"
               android:gravity="center"
-              android:layout_below="@+id/toolbar"
+              android:layout_weight="10"
         />
-
     <LinearLayout
         android:layout_width="match_parent"
+        android:layout_weight="1"
         android:layout_alignParentBottom="true"
         android:layout_height="wrap_content">
         <include layout="@layout/push_messages_bar"/>
+    </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

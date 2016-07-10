@@ -21,23 +21,23 @@ public class DeepLinkActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate (savedInstanceState);
-        setContentView (R.layout.activity_deeplink);
+        setContentView(R.layout.activity_deeplink);
         intent = getIntent ();
     }
 
     public void AppPage(View v) {
-        BranchUniversalObject branchUniversalObject = new BranchUniversalObject ()
+        final BranchUniversalObject branchUniversalObject = new BranchUniversalObject ()
                                                               .setCanonicalIdentifier ("item/1234")
                                                               .setTitle (""+R.string.my_content_title)
                                                               .setContentDescription (""+R.string.my_content_description)
                                                               .setContentIndexingMode (BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
                                                               .addContentMetadata ("objectId", getIntent ().getStringExtra ("objectId"));
 
-        LinkProperties linkProperties = new LinkProperties ()
+        final LinkProperties linkProperties = new LinkProperties ()
                                                 .setChannel ("My Application")
                                                 .setFeature ("sharing");
 
-        ShareSheetStyle shareSheetStyle = new ShareSheetStyle (this, "Check this out!", "This stuff is awesome: ")
+        final ShareSheetStyle shareSheetStyle = new ShareSheetStyle (this, "Check this out!", "This stuff is awesome: ")
                                                   .setCopyUrlStyle (getResources ().getDrawable (android.R.drawable.ic_menu_send), "Copy", "Added to clipboard")
                                                   .setMoreOptionStyle (getResources ().getDrawable (android.R.drawable.ic_menu_search), "Show more")
                                                   .addPreferredSharingOption (SharingHelper.SHARE_WITH.FACEBOOK)
@@ -60,8 +60,15 @@ public class DeepLinkActivity extends Activity {
                                                          }
 
                                                          @Override
-                                                         public void onChannelSelected(String channelName) {
-                                                             finish ();
+                                                         public void onChannelSelected(String channelName) {//Open the Applications Picker
+//                                                             if(channelName.equals("WhatsApp")) {
+//                                                                 Intent sendIntent = new Intent();
+//                                                                 sendIntent.setAction(Intent.ACTION_SEND);
+//                                                                 sendIntent.putExtra(Intent.EXTRA_TEXT,branchUniversalObject.getCanonicalUrl().toString());
+//                                                                 sendIntent.setType("text/plain");
+//                                                                 startActivity(sendIntent);
+//                                                                 finish();
+//                                                             }
                                                          }
                                                      });
         branchUniversalObject.generateShortUrl (this, linkProperties, new Branch.BranchLinkCreateListener () {

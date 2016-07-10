@@ -32,6 +32,8 @@ import com.example.FundigoApp.StaticMethod.GeneralStaticMethods;
 import com.example.FundigoApp.StaticMethod.EventDataMethods.GetEventsDataCallback;
 
 import java.text.DecimalFormat;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -229,7 +231,7 @@ public class RealTimeActivity extends AppCompatActivity implements View.OnClickL
         events_data_filtered.addAll (tempFilteredList);
         eventsGridAdapter.notifyDataSetChanged ();
         if (GlobalVariables.MY_LOCATION != null && GPSMethods.isLocationEnabled (this))
-            displayFilterLine (); // to display filter selected by user only if GPS enabled and list is display
+            displayFilterBanner (); // to display filter selected by user only if GPS enabled and list is display
     }
 
     @Override
@@ -246,7 +248,7 @@ public class RealTimeActivity extends AppCompatActivity implements View.OnClickL
         pushViewText.setText (str);//Assaf added: set Push notification text to the Textview by MainActivity
     }
 
-    public String[] getData()
+    private String[] getData()
     // display the filter info selected by the user.
     {
         _sharedPref = getSharedPreferences ("filterInfo", MODE_PRIVATE);
@@ -260,15 +262,26 @@ public class RealTimeActivity extends AppCompatActivity implements View.OnClickL
         return values;
     }
 
-    private void displayFilterLine() {
+    private void displayFilterBanner() {
         try {
             String[] results = getData (); // display the filter line
-            String[] values = getResources ().getStringArray (R.array.eventPriceFilter);
+            String[] values = getResources ().getStringArray(R.array.eventPriceFilter);
+            String[] dateValues = getResources().getStringArray(R.array.eventDateFilter);
+
             if (!results[0].equals ("") || !results[1].equals ("") || !results[2].equals ("") || !results[3].equals ("")) {
                 for (int i = 0; i < results.length; i++) {
                     if (results[i].equals (values[0])) //if the result is "No Filter" , we remove it from presemtig it in the filter view
                     {
                         results[i] = "";
+                    }
+                    if(results[i].equals(dateValues[5])&&GlobalVariables.CURRENT_DATE_FILTER!=null)
+                    {
+                        Format dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+                        results[i] = dateFormatter.format(GlobalVariables.CURRENT_DATE_FILTER);// if Select from calendar then present real Date
+                    }
+                    else if(results[i].equals(dateValues[5])&&GlobalVariables.CURRENT_DATE_FILTER==null)
+                    {
+                        results[i] =""; // if select from calendar filter selected but a date not set in Date picker
                     }
                 }
                 filterTextView.setVisibility (View.VISIBLE);

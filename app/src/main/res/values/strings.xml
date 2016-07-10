@@ -14,7 +14,7 @@
     <string name="profile_me">My Profile Pic</string>
     <string name="profile_other">Other profile pic</string>
     <string name="message_hint">Say anything</string>
-    <string name="send">Send</string>
+    <string name="send">Send Notification</string>
 
     <string-array name="popUp">
         <item>All Cities</item>
@@ -135,59 +135,113 @@
         <item>Music</item>
     </string-array>
 
-    <string-array name="sportFilters">
+    <string-array name="sportFiltersAllLanguages">
+        <item>Basketball</item>
+        <item>Football</item>
+        <item>Tennis</item>
+    </string-array>
+    <string-array name="sportFiltersName">
         <item>Basketball</item>
         <item>Football</item>
         <item>Tennis</item>
     </string-array>
 
-    <string-array name="travelFilters">
+    <string-array name="travelFiltersAllLanguages">
         <item>Tracks</item>
         <item>Light</item>
         <item>Heavy</item>
     </string-array>
 
-    <string-array name="drinkFilters">
+    <string-array name="travelFiltersName">
+        <item>Tracks</item>
+        <item>Light</item>
+        <item>Heavy</item>
+    </string-array>
+
+    <string-array name="drinkFiltersAllLanguages">
         <item>Beer</item>
         <item>Whine</item>
         <item>Vodka</item>
     </string-array>
 
-    <string-array name="businessFilters">
+    <string-array name="drinkFiltersName">
+        <item>Beer</item>
+        <item>Whine</item>
+        <item>Vodka</item>
+    </string-array>
+
+    <string-array name="businessFiltersAllLanguages">
         <item>Cars sale</item>
         <item>Clothes sale</item>
         <item>Apartments sale</item>
     </string-array>
 
-    <string-array name="fashionFilters">
+    <string-array name="businessFiltersName">
+        <item>Cars sale</item>
+        <item>Clothes sale</item>
+        <item>Apartments sale</item>
+    </string-array>
+
+    <string-array name="fashionFiltersAllLanguages">
         <item>Koko Shanell</item>
         <item>GAP</item>
         <item>H_M</item>
     </string-array>
 
-    <string-array name="musicFilters">
+    <string-array name="fashionFiltersName">
+        <item>Koko Shanell</item>
+        <item>GAP</item>
+        <item>H_M</item>
+    </string-array>
+
+    <string-array name="musicFiltersName">
         <item>Trans</item>
         <item>Disco</item>
         <item>Pop</item>
     </string-array>
 
-    <string-array name="governmentFilters">
+    <string-array name="musicFiltersAllLanguages">
+        <item>Trans</item>
+        <item>Disco</item>
+        <item>Pop</item>
+    </string-array>
+
+    <string-array name="governmentFiltersAllLanguages">
+    <item>Security</item>
+    <item>Services</item>
+    <item>Law</item>
+   </string-array>
+
+    <string-array name="governmentFiltersName">
         <item>Security</item>
         <item>Services</item>
         <item>Law</item>
     </string-array>
 
-    <string-array name="homeLifeStyleFilters">
-        <item>AAA</item>
-        <item>BBB</item>
-        <item>CCC</item>
+    <string-array name="homeLifeStyleFiltersAllLanguages">
+        <item>High Style</item>
+        <item>Medium Style</item>
+        <item>Low Style</item>
     </string-array>
 
-    <string-array name="educationFilters">
+    <string-array name="homeLifeStyleFiltersName">
+        <item>High Style</item>
+        <item>Medium Style</item>
+        <item>Low Style</item>
+    </string-array>
+
+    <string-array name="educationFiltersAllLanguages">
         <item>University</item>
         <item>College</item>
         <item>First Grade</item>
     </string-array>
+
+    <string-array name="educationFiltersName">
+        <item>University</item>
+        <item>College</item>
+        <item>First Grade</item>
+    </string-array>
+
 
     <string-array name="atms">
         <item>Yes</item>
@@ -236,17 +290,17 @@
         <item>Select From Calendar</item>
     </string-array>
 
-    <string name="login">LOGIN</string>
+    <string name="login">Login</string>
     <string name="create_event">Create Event</string>
-    <string name="name">Name:</string>
+    <string name="name">Name*:</string>
     <string name="pick_date">Pick a date</string>
     <string name="artist">Artis</string>
-    <string name="description">Description</string>
+    <string name="description">Description*:</string>
     <string name="next">Next</string>
     <string name="user_name">Username:</string>
     <string name="select_picture">Select Picture:</string>
 
-    <string name="image_upload">Image Upload</string>
+    <string name="image_upload">Event Image Upload</string>
     <string name="submit">Submit</string>
     <string name="what_to_share">What would you like to share?</string>
     <string name="app_pafw">App Page</string>
@@ -275,7 +329,7 @@
     <string name="Send_push">Send PUSH</string>
     <string name="sms_verification">Sms Verification</string>
     <string name="phone_number">Phone Number:</string>
-    <string name="price">Price:</string>
+    <string name="price">Price*:</string>
     <string name="new_text">New Text</string>
     <string name="massage">Message</string>
     <string name="event_name">Event Name</string>
@@ -304,17 +358,17 @@
     <string name="all_tickets_value">All Tickets Value:</string>
     <string name="ticket_price_avg">Ticket Price avg: </string>
     <string name="upcoming_tickets_price_avg">Upcoming Tickets Price avg:</string>
-    <string name="quantity">Quantity:</string>
-    <string name="address">Address:</string>
+    <string name="quantity">Quantity*:</string>
+    <string name="address">Full Address*:</string>
     <string name="ibn_gabirol_tel_aviv">Ibn Gabirol st. 23, Tel-Aviv"</string>
     <string name="validate_address">Validate Address</string>
-    <string name="place">Place:</string>
+    <string name="place">Place*:</string>
     <string name="hall_capacity">Hall Capacity:</string>
     <string name="parking">Parking:</string>
     <string name="tags">Tags:</string>
     <string name="toilet">Toilet:</string>
     <string name="atm">ATM</string>
-    <string name="finish">Finish</string>
+    <string name="finish">Save</string>
     <string name="ok">OK</string>
     <string name="all_events_stats">All Events Stats</string>
     <string name="xxxx">xxxx</string>
@@ -329,7 +383,7 @@
     <string name="real_time_chat">Real Time Chat</string>
     <string name="visit_user_facebook">Visit user facebook page</string>
     <string name="go">Go!</string>
-    <string name="cancel">Cancel...</string>
+    <string name="cancel">Cancel</string>
     <string name="user_may_not_registered_or_not_exist">User may not Registered or not Exist</string>
     <string name="user_updated_and_now_it_is">User updated</string>
     <string name="picture_updated">Picture updated</string>
@@ -351,22 +405,22 @@
     <string name="are_you_sure_you_want_to_exit">Are you sure you want to exit?</string>
     <string name="validating">Validating...</string>
     <string name="something_went_wrong_plese_try_again">Something went wrong, plese try again</string>
-    <string name="problem_is">Problem is </string>
+    <string name="problem_is">The address is not valid, the problem is </string>
     <string name="tickets_status">Tickets Status</string>
     <string name="event_is_free">Event Is Free</string>
     <string name="share">Share:</string>
-    <string name="share_app_page">Share App Page</string>
-    <string name="share_web_page">Share Web Page</string>
-    <string name="you_can_get_more_info_about_the_event">You can get more info
-                        about the event!</string>
+    <string name="share_app_page">Share Event through App</string>
+    <string name="share_web_page">Share Event through FaceBook</string>
+    <string name="you_can_get_more_info_about_the_event">Get information by contact the producer</string>
+    <string name="you_can_get_more_info_about_the_event_1">Get contact your clients</string>
     <string name="how_do_you_want_to_do_it">How do you want to do it?</string>
     <string name="Send_message_to_producer">Send message to producer</string>
-    <string name="see_customers_massages">See Customers\' Massages</string>
-    <string name="scan_didnt_finish">Scan didn`t finish</string>
+    <string name="see_customers_massages">See Customers Messages</string>
+    <string name="scan_didnt_finish">Scan did not finish</string>
     <string name="my_content_title">My Content Title</string>
     <string name="save_to_calander">Schedule the event in your calendar</string>
 
-    <string name="my_content_description">My Content Description</string>
+    <string name="my_content_description">Invitation to join an Event</string>
     <string name="tickets_sold">Tickets Sold</string>
     <string name="tickets_left">Tickets Left</string>
     <string name="future_income">Future Income</string>
@@ -423,7 +477,7 @@
 
     <string name="scan_customer_qr">Scan Customer QR Code</string>
     <string name="start_scan">Start Scan QR Code</string>
-    <string name="yes">Yse</string>
+    <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="purchase_date">Purchase Date</string>
     <string name="customer_phone">Customer Phone</string>
@@ -442,6 +496,10 @@
     <string name="select_price">Select Price</string>
     <string name="advanced_filter">Press For Advanced Filtering</string>
     <string name="title_activity_chat_to_customers">ChatToCustomersActivity</string>
+    <string name="filter_results">Press for results</string>
+    <string name="back_main">Back to main filter</string>
+    <string name="default_cityMenu_value">All Cities</string>
+    <string name="facebookconnector">Facebook</string>
 
 
 </resources>

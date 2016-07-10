@@ -34,6 +34,7 @@ import com.example.FundigoApp.Events.EventPageActivity;
 import com.example.FundigoApp.Events.EventsListAdapter;
 import com.example.FundigoApp.Filter.FilterPageActivity;
 import com.example.FundigoApp.MyLocation.CityMenu;
+import com.example.FundigoApp.Producer.Artists.QR_producer;
 import com.example.FundigoApp.Producer.TabPagerAdapter;
 import com.example.FundigoApp.StaticMethod.EventDataMethods;
 import com.example.FundigoApp.StaticMethod.EventDataMethods.GetEventsDataCallback;
@@ -49,6 +50,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -73,16 +76,19 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private static SharedPreferences _sharedPref;
     private static TextView filterTextView;
     PushDisplay display;
-
-
+    private static Boolean EXIT;// a flag to close main activities that in stack when press back
+    private static ImageView qr_scan_icon;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate (savedInstanceState);
+        super.onCreate(savedInstanceState);
+
         if (GlobalVariables.IS_CUSTOMER_GUEST || GlobalVariables.IS_CUSTOMER_REGISTERED_USER) {
             createCustomerMainPage ();
+            EXIT = false;
         } else if (GlobalVariables.IS_PRODUCER) {
             createProducerMainPage ();
         }
+
     }
 
     public void createProducerMainPage() {
@@ -101,12 +107,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         final ViewPager viewPager = (ViewPager) findViewById (R.id.pager);
         final TabPagerAdapter adapter = new TabPagerAdapter
                                                 (getSupportFragmentManager (), tabLayout.getTabCount ());
+        qr_scan_icon = (ImageView)findViewById(R.id.qr_scan_produ);
         viewPager.setAdapter (adapter);
-        viewPager.addOnPageChangeListener (new TabLayout.TabLayoutOnPageChangeListener (tabLayout));
-        tabLayout.setOnTabSelectedListener (new TabLayout.OnTabSelectedListener () {
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem (tab.getPosition ());
+                viewPager.setCurrentItem(tab.getPosition());
             }
 
             @Override
@@ -115,6 +122,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
+            }
+        });
+
+        qr_scan_icon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), QR_producer.class);
+                startActivity(intent);
             }
         });
     }
@@ -185,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     !GlobalVariables.CITY_GPS.isEmpty ()) {
             GlobalVariables.cityMenuInstance = new CityMenu (GlobalVariables.ALL_EVENTS_DATA, this);
             GlobalVariables.namesCity = GlobalVariables.cityMenuInstance.getCityNames ();
-            inflateCityMenu ();
+            inflateCityMenu();
             int indexCityGps = GPSMethods.getCityIndexFromName (GlobalVariables.CITY_GPS);
             if (indexCityGps >= 0) {
                 popup.getMenu ().getItem (GlobalVariables.indexCityGPS).setTitle (GlobalVariables.namesCity[GlobalVariables.indexCityGPS]);
@@ -206,80 +221,78 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     currentCityButton.setText (GlobalVariables.CITY_GPS + "(GPS)");
                 }
             }
-
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume ();
-        if (!GlobalVariables.IS_PRODUCER) {
-            //display = new PushDisplay (); // Assaf :execute the the push notifications display in the Textview
-            //display.execute ();
-            if (GlobalVariables.USER_CHOSEN_CITY_MANUALLY) {
-                ArrayList<EventInfo> tempEventsList =
-                        FilterMethods.filterByCityAndFilterName (
-                                                                        GlobalVariables.namesCity[GlobalVariables.indexCityChosen],
-                                                                        GlobalVariables.CURRENT_FILTER_NAME,
-                                                                        GlobalVariables.CURRENT_SUB_FILTER,
-                                                                        GlobalVariables.CURRENT_DATE_FILTER,
-                                                                        GlobalVariables.CURRENT_PRICE_FILTER,
-                                                                        GlobalVariables.ALL_EVENTS_DATA);
-                filtered_events_data.clear ();
-                filtered_events_data.addAll (tempEventsList);
-                eventsListAdapter.notifyDataSetChanged ();
-                if (GlobalVariables.CITY_GPS != null &&
-                            GlobalVariables.namesCity[GlobalVariables.indexCityChosen].equals (GlobalVariables.CITY_GPS) &&
-                            GPSMethods.getCityIndexFromName (GlobalVariables.CITY_GPS) >= 0) {
-                    currentCityButton.setText (GlobalVariables.namesCity[GlobalVariables.indexCityChosen] + "(GPS)");
-                } else {
-                    currentCityButton.setText (GlobalVariables.namesCity[GlobalVariables.indexCityChosen]);
+        try {
+            if (!GlobalVariables.IS_PRODUCER) {
+
+               if (EXIT) // if exit is true then back button pressed and actiivty will be closed
+                {
+                    this.finish();
                 }
-            } else if (GlobalVariables.CITY_GPS != null &&
-                               !GlobalVariables.CITY_GPS.isEmpty () &&
-                               GPSMethods.getCityIndexFromName (GlobalVariables.CITY_GPS) >= 0) {
-                ArrayList<EventInfo> tempEventsList =
-                        FilterMethods.filterByCityAndFilterName (
-                                                                        GlobalVariables.CITY_GPS,
-                                                                        GlobalVariables.CURRENT_FILTER_NAME,
-                                                                        GlobalVariables.CURRENT_SUB_FILTER,
-                                                                        GlobalVariables.CURRENT_DATE_FILTER,
-                                                                        GlobalVariables.CURRENT_PRICE_FILTER,
-                                                                        GlobalVariables.ALL_EVENTS_DATA);
-                filtered_events_data.clear ();
-                filtered_events_data.addAll (tempEventsList);
-                eventsListAdapter.notifyDataSetChanged ();
-                currentCityButton.setText (GlobalVariables.CITY_GPS + "(GPS)");
-            } else {
-                ArrayList<EventInfo> tempEventsList =
-                        FilterMethods.filterByCityAndFilterName (
-                                                                        GlobalVariables.namesCity[GlobalVariables.indexCityChosen],
-                                                                        GlobalVariables.CURRENT_FILTER_NAME,
-                                                                        GlobalVariables.CURRENT_SUB_FILTER,
-                                                                        GlobalVariables.CURRENT_DATE_FILTER,
-                                                                        GlobalVariables.CURRENT_PRICE_FILTER,
-                                                                        GlobalVariables.ALL_EVENTS_DATA);
-                filtered_events_data.clear ();
-                filtered_events_data.addAll (tempEventsList);
-                eventsListAdapter.notifyDataSetChanged ();
-            }
-            // display the filter line
-            try {
-                String[] results = getData ();
-                String[] values = getResources ().getStringArray (R.array.eventPriceFilter);
-                if (!results[0].equals ("") || !results[1].equals ("") || !results[2].equals ("") || !results[3].equals ("")) {
-                    for (int i = 0; i < results.length; i++) {
-                        if (results[i].equals (values[0])) //if the result is "No Filter" , we remove it from presemtig it in the filter view
-                        {
-                            results[i] = "";
-                        }
+                //display = new PushDisplay (); // Assaf :execute the the push notifications display in the Textview
+                //display.execute ();
+                if (GlobalVariables.USER_CHOSEN_CITY_MANUALLY) {
+                    ArrayList<EventInfo> tempEventsList =
+                            FilterMethods.filterByCityAndFilterName(
+                                    GlobalVariables.namesCity[GlobalVariables.indexCityChosen],
+                                    GlobalVariables.CURRENT_FILTER_NAME,
+                                    GlobalVariables.CURRENT_SUB_FILTER,
+                                    GlobalVariables.CURRENT_DATE_FILTER,
+                                    GlobalVariables.CURRENT_PRICE_FILTER,
+                                    GlobalVariables.ALL_EVENTS_DATA);
+                    filtered_events_data.clear();
+                    filtered_events_data.addAll(tempEventsList);
+                    eventsListAdapter.notifyDataSetChanged();
+                    if (GlobalVariables.CITY_GPS != null &&
+                            GlobalVariables.namesCity[GlobalVariables.indexCityChosen].equals(GlobalVariables.CITY_GPS) &&
+                            GPSMethods.getCityIndexFromName(GlobalVariables.CITY_GPS) >= 0) {
+                        currentCityButton.setText(GlobalVariables.namesCity[GlobalVariables.indexCityChosen] + "(GPS)");
+                    } else {
+                        currentCityButton.setText(GlobalVariables.namesCity[GlobalVariables.indexCityChosen]);
                     }
-                    filterTextView.setVisibility (View.VISIBLE);
-                    filterTextView.setText (results[0] + " " + results[1] + " " + results[2] + " " + results[3]);
+                } else if (GlobalVariables.CITY_GPS != null &&
+                        !GlobalVariables.CITY_GPS.isEmpty() &&
+                        GPSMethods.getCityIndexFromName(GlobalVariables.CITY_GPS) >= 0) {
+                    ArrayList<EventInfo> tempEventsList =
+                            FilterMethods.filterByCityAndFilterName(
+                                    GlobalVariables.CITY_GPS,
+                                    GlobalVariables.CURRENT_FILTER_NAME,
+                                    GlobalVariables.CURRENT_SUB_FILTER,
+                                    GlobalVariables.CURRENT_DATE_FILTER,
+                                    GlobalVariables.CURRENT_PRICE_FILTER,
+                                    GlobalVariables.ALL_EVENTS_DATA);
+                    filtered_events_data.clear();
+                    filtered_events_data.addAll(tempEventsList);
+                    eventsListAdapter.notifyDataSetChanged();
+                    currentCityButton.setText(GlobalVariables.CITY_GPS + "(GPS)");
+                } else {
+                    ArrayList<EventInfo> tempEventsList =
+                            FilterMethods.filterByCityAndFilterName(
+                                    GlobalVariables.namesCity[GlobalVariables.indexCityChosen],
+                                    GlobalVariables.CURRENT_FILTER_NAME,
+                                    GlobalVariables.CURRENT_SUB_FILTER,
+                                    GlobalVariables.CURRENT_DATE_FILTER,
+                                    GlobalVariables.CURRENT_PRICE_FILTER,
+                                    GlobalVariables.ALL_EVENTS_DATA);
+                    filtered_events_data.clear();
+                    filtered_events_data.addAll(tempEventsList);
+                    eventsListAdapter.notifyDataSetChanged();
                 }
-            } catch (Exception ex) {
-                Log.e ("TAG", ex.getMessage ());
+                displayFilterBanner();  // display the filter Banner
+                // display the filter line
             }
+
+            PushDisplay display = new PushDisplay(); // Assaf :execute the the push notifications display in the Textview
+            display.execute();
+        }
+        catch (Exception ex)
+        {
+              ex.printStackTrace();
         }
     }
 
@@ -287,37 +300,37 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         popup = new PopupMenu (MainActivity.this, currentCityButton);//Assaf added
         popup.getMenuInflater ().inflate (R.menu.popup_city, popup.getMenu ());//Assaf added
         loadCityNamesToPopUp ();
-        currentCityButton.setOnClickListener (new View.OnClickListener () {
+        currentCityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //registering popup with OnMenuItemClickListener
-                popup.setOnMenuItemClickListener (new PopupMenu.OnMenuItemClickListener () {
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     public boolean onMenuItemClick(MenuItem item) {
-                        GlobalVariables.indexCityChosen = GlobalVariables.popUpIDToCityIndex.get (item.getItemId ());
-                        GlobalVariables.CURRENT_CITY_NAME = item.getTitle ().toString ();
+                        GlobalVariables.indexCityChosen = GlobalVariables.popUpIDToCityIndex.get(item.getItemId());
+                        GlobalVariables.CURRENT_CITY_NAME = item.getTitle().toString();
                         if (GlobalVariables.CITY_GPS != null &&
-                                    item.getTitle ().equals (GlobalVariables.CITY_GPS) &&
-                                    GPSMethods.getCityIndexFromName (GlobalVariables.CITY_GPS) >= 0) {
-                            currentCityButton.setText (item.getTitle () + "(GPS)");
+                                item.getTitle().equals(GlobalVariables.CITY_GPS) &&
+                                GPSMethods.getCityIndexFromName(GlobalVariables.CITY_GPS) >= 0) {
+                            currentCityButton.setText(item.getTitle() + "(GPS)");
                         } else {
-                            currentCityButton.setText (item.getTitle ());
+                            currentCityButton.setText(item.getTitle());
                         }
                         ArrayList<EventInfo> tempEventsList =
-                                FilterMethods.filterByCityAndFilterName (
-                                                                                GlobalVariables.namesCity[GlobalVariables.indexCityChosen],
-                                                                                GlobalVariables.CURRENT_FILTER_NAME,
-                                                                                GlobalVariables.CURRENT_SUB_FILTER,
-                                                                                GlobalVariables.CURRENT_DATE_FILTER,
-                                                                                GlobalVariables.CURRENT_PRICE_FILTER,
-                                                                                GlobalVariables.ALL_EVENTS_DATA);
-                        filtered_events_data.clear ();
-                        filtered_events_data.addAll (tempEventsList);
-                        eventsListAdapter.notifyDataSetChanged ();
+                                FilterMethods.filterByCityAndFilterName(
+                                        GlobalVariables.namesCity[GlobalVariables.indexCityChosen],
+                                        GlobalVariables.CURRENT_FILTER_NAME,
+                                        GlobalVariables.CURRENT_SUB_FILTER,
+                                        GlobalVariables.CURRENT_DATE_FILTER,
+                                        GlobalVariables.CURRENT_PRICE_FILTER,
+                                        GlobalVariables.ALL_EVENTS_DATA);
+                        filtered_events_data.clear();
+                        filtered_events_data.addAll(tempEventsList);
+                        eventsListAdapter.notifyDataSetChanged();
                         GlobalVariables.USER_CHOSEN_CITY_MANUALLY = true;
                         return true;
                     }
                 });
-                popup.show ();//showing popup menu
+                popup.show();//showing popup menu
             }
         });
     }
@@ -326,12 +339,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         //Hide the Items in Menu XML which are empty since the length of menu is less then 11
         try {
             super.onPrepareOptionsMenu (menu);
-            int maxLength = 11;
-            int numOfItemsToRemove = maxLength - GlobalVariables.namesCity.length;
+            int maxMenuLength = 11;
+            int numOfItemsToRemove = maxMenuLength - GlobalVariables.namesCity.length;
             while (numOfItemsToRemove > 0) {
-                menu.getItem (maxLength - 1).setVisible (false);
+                menu.getItem (maxMenuLength - 1).setVisible (false);
                 numOfItemsToRemove--;
-                maxLength--;
+                maxMenuLength--;
             }
         } catch (Exception e) {
             Log.e (e.toString (), "On Prepare Method Exception");
@@ -400,7 +413,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     public void openFilterPage(View v) {
         Intent filterPageIntent = new Intent (this, FilterPageActivity.class);
-        startActivity (filterPageIntent);
+        startActivity(filterPageIntent);
     }
 
     public void openMenuPage(View v) {
@@ -432,32 +445,33 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     public void onStart() {
-        super.onStart ();
-        Branch branch = Branch.getInstance (getApplicationContext ());
-        branch.initSession (new Branch.BranchReferralInitListener () {
-            @Override
-            public void onInitFinished(JSONObject referringParams, BranchError error) {
-                if (error == null) {
-                    // params are the deep linked params associated with the link that the user clicked before showing up
-                    try {
-                        GlobalVariables.deepLink_params = referringParams.getString ("objectId");
-                        for (int i = 0; i < filtered_events_data.size (); i++) {
-                            if (GlobalVariables.deepLink_params.equals (filtered_events_data.get (i).getParseObjectId ())) {
-                                Intent intent = new Intent (context, EventPageActivity.class);
-                                Bundle b = new Bundle ();
-                                EventDataMethods.onEventItemClick (i, GlobalVariables.ALL_EVENTS_DATA, intent);
-                                intent.putExtras (b);
-                                context.startActivity (intent);
-                                i = filtered_events_data.size ();
+                        super.onStart ();
+
+                        Branch branch = Branch.getInstance (getApplicationContext ());
+                        branch.initSession(new Branch.BranchReferralInitListener() {
+                            @Override
+                            public void onInitFinished(JSONObject referringParams, BranchError error) {
+                                if (error == null) {
+                                    // params are the deep linked params associated with the link that the user clicked before showing up
+                                    try {
+                                        GlobalVariables.deepLink_params = referringParams.getString("objectId");
+                                        for (int i = 0; i < filtered_events_data.size(); i++) {
+                                            if (GlobalVariables.deepLink_params.equals(filtered_events_data.get(i).getParseObjectId())) {
+                                                Intent intent = new Intent(context, EventPageActivity.class);
+                                                Bundle b = new Bundle();
+                                                EventDataMethods.onEventItemClick(i, GlobalVariables.ALL_EVENTS_DATA, intent);
+                                                intent.putExtras(b);
+                                                context.startActivity(intent);
+                                                i = filtered_events_data.size();
+                                            }
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                } else
+                                    Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                             }
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace ();
-                    }
-                } else
-                    Toast.makeText (getApplicationContext (), error.getMessage (), Toast.LENGTH_SHORT).show ();
-            }
-        }, this.getIntent ().getData (), this);
+                        }, this.getIntent().getData (), this);
     }
 
     @Override
@@ -501,7 +515,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         @Override
         protected void onProgressUpdate(String... text) {
             final Handler hand = getHandler ();
-
             Message msg = hand.obtainMessage ();
             Bundle bund = new Bundle ();
 
@@ -516,14 +529,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         try {
             super.onDestroy ();
             _sharedPref = getSharedPreferences ("filterInfo", MODE_PRIVATE);
-            _sharedPref.edit ().clear ().commit ();
-            System.exit (0);     // for kill  background Threads that operate the Endless loop of present the push messages
+            _sharedPref.edit ().clear ().commit();
+             System.exit (0);     // for kill  background Threads that operate the Endless loop of present the push messages
         } catch (Exception ex) {
             Log.e (ex.getMessage (), "onDestroy exception");
         }
     }
 
-    public String[] getData()
+    private String[] getData()
     // display the filter info selected by the user.
     {
         _sharedPref = getSharedPreferences ("filterInfo", MODE_PRIVATE);
@@ -572,6 +585,43 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         super.onPause ();  // Always call the superclass method first
         if(display != null) {
             display.cancel (true);
+        }
+    }
+@Override
+   public void onBackPressed() {//prevent the back Button to the Activities that sent intents to the Main Activity
+        super.onBackPressed();
+        EXIT = true; //a flag close all activities that opened in the stack
+        this.finish();
+}
+
+
+    private void displayFilterBanner()
+    {
+        try {
+            String[] results = getData ();
+            String[] priceValues = getResources ().getStringArray (R.array.eventPriceFilter);
+            String[] dateValues = getResources().getStringArray(R.array.eventDateFilter);
+            if (!results[0].equals ("") || !results[1].equals ("") || !results[2].equals ("") || !results[3].equals ("")) {
+                for (int i = 0; i < results.length; i++) {
+                    if (results[i].equals (priceValues[0])) //if the result is "No Filter" , we remove it from presenting it in the filter view
+                    {
+                        results[i] = "";
+                    }
+                    if(results[i].equals(dateValues[5])&&GlobalVariables.CURRENT_DATE_FILTER!=null)
+                    {
+                        Format dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+                        results[i] = dateFormatter.format(GlobalVariables.CURRENT_DATE_FILTER);// if Select from calendar then present real Date
+                    }
+                    else if(results[i].equals(dateValues[5])&&GlobalVariables.CURRENT_DATE_FILTER==null)
+                    {
+                        results[i] =""; // if select from calendar filter selected but a date not set in Date picker
+                    }
+                }
+                filterTextView.setVisibility (View.VISIBLE);
+                filterTextView.setText (results[0] + " " + results[1] + " " + results[2] + " " + results[3]);
+            }
+        } catch (Exception ex) {
+            Log.e ("TAG", ex.getMessage ());
         }
     }
 }

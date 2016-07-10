@@ -37,6 +37,8 @@ import com.example.FundigoApp.StaticMethod.GPSMethods.GpsICallback;
 import com.example.FundigoApp.StaticMethod.GeneralStaticMethods;
 import com.example.FundigoApp.StaticMethod.EventDataMethods.GetEventsDataCallback;
 
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,7 +104,7 @@ public class SavedEventActivity extends AppCompatActivity implements View.OnClic
 
     @Override
     protected void onResume() {
-        super.onResume ();
+        super.onResume();
         if (GlobalVariables.ALL_EVENTS_DATA.size () != 0) {
             if (GlobalVariables.USER_CHOSEN_CITY_MANUALLY) {
                 ArrayList<EventInfo> tempEventsListFiltered =
@@ -158,22 +160,7 @@ public class SavedEventActivity extends AppCompatActivity implements View.OnClic
                 eventsListAdapter.notifyDataSetChanged ();
             }
         }
-        String[] results = getData (); // display the filter line
-        String[] values = getResources ().getStringArray (R.array.eventPriceFilter);// get values from resource
-        try {
-            if (!results[0].equals ("") || !results[1].equals ("") || !results[2].equals ("") || !results[3].equals ("")) {
-                for (int i = 0; i < results.length; i++) {
-                    if (results[i].equals (values[0])) //if the result is "No Filter" , we remove it from presemtig it in the filter view
-                    {
-                        results[i] = "";
-                    }
-                }
-                filterTextView.setVisibility (View.VISIBLE);
-                filterTextView.setText (results[0] + " " + results[1] + " " + results[2] + " " + results[3]);
-            }
-        } catch (Exception ex) {
-            Log.e ("TAG", ex.getMessage ());
-        }
+        displayFilterBanner();
     }
 
     @Override
@@ -229,8 +216,8 @@ public class SavedEventActivity extends AppCompatActivity implements View.OnClic
                                                                       tempEventsList);
         }
         filteredSavedEventsList.clear ();
-        filteredSavedEventsList.addAll (getSavedEventsFromList (tempEventsList));
-        eventsListAdapter.notifyDataSetChanged ();
+        filteredSavedEventsList.addAll(getSavedEventsFromList(tempEventsList));
+        eventsListAdapter.notifyDataSetChanged();
         if (GlobalVariables.USER_CHOSEN_CITY_MANUALLY) {
             ArrayList<EventInfo> tempEventsListFiltered =
                     FilterMethods.filterByCityAndFilterName (
@@ -270,10 +257,10 @@ public class SavedEventActivity extends AppCompatActivity implements View.OnClic
 
     private void inflateCityMenu() {
         popup = new PopupMenu (SavedEventActivity.this, currentCityButton);//Assaf
-        popup.getMenuInflater ().inflate (R.menu.popup_city, popup.getMenu ());
+        popup.getMenuInflater ().inflate(R.menu.popup_city, popup.getMenu());
 
         if (GlobalVariables.namesCity.length == 0) {
-            loadCityNamesToPopUp ();
+            loadCityNamesToPopUp();
         } else {
             loadCityNamesToPopUp ();
         }
@@ -413,14 +400,14 @@ public class SavedEventActivity extends AppCompatActivity implements View.OnClic
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        GeneralStaticMethods.onActivityResult (requestCode,
-                                                      data,
-                                                      this);
+        GeneralStaticMethods.onActivityResult(requestCode,
+                data,
+                this);
     }
 
     public void createEvent(View view) {
         Intent intent = new Intent (SavedEventActivity.this, CreateEventActivity.class);
-        startActivity (intent);
+        startActivity(intent);
     }
 
     List<EventInfo> getSavedEventsFromList(List<EventInfo> eventInfoList) {
@@ -440,7 +427,7 @@ public class SavedEventActivity extends AppCompatActivity implements View.OnClic
         pushViewText.setText (str);//Assaf added: set Push notification text to the Textview by MainActivity
     }
 
-    public String[] getData()
+    private String[] getData()
     // display the filter info selected by the user.
     {
         _sharedPref = getSharedPreferences ("filterInfo", MODE_PRIVATE);
@@ -452,5 +439,36 @@ public class SavedEventActivity extends AppCompatActivity implements View.OnClic
         String[] values = {_mainfilter, _subfilter, _date, _price};
 
         return values;
+    }
+
+    private void displayFilterBanner() {
+
+        String[] results = getData(); // display the filter line
+        String[] values = getResources().getStringArray(R.array.eventPriceFilter);// get values from resource
+        String[] dateValues = getResources().getStringArray(R.array.eventDateFilter);
+
+        try {
+            if (!results[0].equals("") || !results[1].equals("") || !results[2].equals("") || !results[3].equals("")) {
+                for (int i = 0; i < results.length; i++) {
+                    if (results[i].equals(values[0])) //if the result is "No Filter" , we remove it from present it in the filter view
+                    {
+                        results[i] = "";
+                    }
+                    if(results[i].equals(dateValues[5])&&GlobalVariables.CURRENT_DATE_FILTER!=null)
+                    {
+                        Format dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+                        results[i] = dateFormatter.format(GlobalVariables.CURRENT_DATE_FILTER);// if Select from calendar then presnent real Date
+                    }
+                    else if(results[i].equals(dateValues[5])&&GlobalVariables.CURRENT_DATE_FILTER==null)
+                    {
+                        results[i] =""; // if select from calendar filter selected but a date not set in Date picker
+                    }
+                }
+                filterTextView.setVisibility(View.VISIBLE);
+                filterTextView.setText(results[0] + " " + results[1] + " " + results[2] + " " + results[3]);
+            }
+        } catch (Exception ex) {
+            Log.e("TAG", ex.getMessage());
+        }
     }
 }

@@ -19,14 +19,14 @@
             android:id="@+id/imageView"
             android:layout_width="fill_parent"
             android:layout_height="0dip"
-            android:layout_weight="135"
+            android:layout_weight="155"
             android:scaleType="fitXY"/>
 
         <LinearLayout
             android:id="@+id/tableRow2"
             android:layout_width="fill_parent"
-            android:layout_height="0dip"
-            android:layout_weight="47"
+            android:layout_height="wrap_content"
+            android:layout_weight="20"
             android:baselineAligned="false"
             android:contextClickable="true"
             android:gravity="center_vertical|left"
@@ -62,6 +62,15 @@
                 android:layout_height="wrap_content"
                 android:gravity="left|fill_vertical"
                 android:paddingLeft="4dp"
+                android:text="apartment"
+                android:textColor="#666666"/>
+
+            <TextView
+                android:id="@+id/event_address"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left|fill_vertical"
+                android:paddingLeft="4dp"
                 android:text="Chelnov 29, Tel Aviv"
                 android:textColor="#666666"/>
 
@@ -71,7 +80,7 @@
             android:id="@+id/tableRow"
             android:layout_width="fill_parent"
             android:layout_height="0dip"
-            android:layout_weight="18"
+            android:layout_weight="24"
             android:baselineAligned="true"
             android:contextClickable="true"
             android:divider="#3f3232"
@@ -91,7 +100,7 @@
                 android:paddingLeft="4dp"
                 android:text="#Party #Show"
                 android:textColor="#71B7E6"
-                android:textSize="13dp"
+                android:textSize="10sp"
                 android:textStyle="bold"/>
 
             <ImageView

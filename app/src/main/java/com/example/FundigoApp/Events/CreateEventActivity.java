@@ -143,7 +143,7 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
     private LinearLayout linearLayout;
     private CheckBox checkBoxPrice;
     SharedPreferences sp;
-
+    Boolean ISOpened = false; // prevent timepicker open twice
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -199,8 +199,6 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
                     }
 
                 }
-
-
                 break;
             case R.id.btn_validate_address:
                 validateAddress ();
@@ -263,15 +261,18 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
     DatePickerDialog.OnDateSetListener listener = new DatePickerDialog.OnDateSetListener () {
         @Override
         public void onDateSet(DatePicker view, int y, int m, int d) {
-            timePickerDialog = new TimePickerDialog (CreateEventActivity.this, timeListener, 12, 12, true);
-            timePickerDialog.show ();
             year = y;
             monthOfYear = m;
             dayOfMonth = d;
             date = dayOfMonth + "." + (monthOfYear + 1) + "." + year;
             tv_date_new.setText (date);
-            tv_date_new.setVisibility (View.VISIBLE);
-
+            tv_date_new.setVisibility(View.VISIBLE);
+            //assaf added to prevent open timepicker twice
+            if (!ISOpened) {
+                timePickerDialog = new TimePickerDialog(CreateEventActivity.this, timeListener, 12, 12, true);
+                ISOpened = true;
+                timePickerDialog.show();
+            }
         }
     };
 
@@ -293,8 +294,9 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
             realDate = new Date (cal.getTimeInMillis ());
 
             if (cal.getTimeInMillis () <= System.currentTimeMillis ()) {
-                Toast.makeText (CreateEventActivity.this, "Are you living in the past?", Toast.LENGTH_SHORT).show ();
+                Toast.makeText (CreateEventActivity.this, "please select a valid date", Toast.LENGTH_LONG).show ();
                 timeOk = false;
+                ISOpened = false;
             } else {
                 timeOk = true;
             }
@@ -311,7 +313,7 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == SELECT_PICTURE && resultCode == RESULT_OK && null != data) {
-            Uri selectedImage = data.getData ();
+            Uri selectedImage = data.getData();
             ParcelFileDescriptor parcelFileDescriptor =
                     null;
             try {
@@ -347,11 +349,11 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
         final String[] projection = new String[]{MediaStore.Images.Media.ORIENTATION};
         final Cursor cursor = this.getContentResolver ().query (selectedImage, projection, null, null, null);
         if (cursor != null) {
-            final int orientationColumnIndex = cursor.getColumnIndex (MediaStore.Images.Media.ORIENTATION);
+            final int orientationColumnIndex = cursor.getColumnIndex(MediaStore.Images.Media.ORIENTATION);
             if (cursor.moveToFirst ()) {
                 orientation = cursor.isNull (orientationColumnIndex) ? 0 : cursor.getInt (orientationColumnIndex);
             }
-            cursor.close ();
+            cursor.close();
         }
         return orientation;
     }
@@ -364,16 +366,23 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
             ll_artist.setVisibility (View.GONE);
             ll_description.setVisibility (View.GONE);
             btn_next.setVisibility (View.GONE);
-            create_event2.setVisibility (View.VISIBLE);
+            create_event2.setVisibility(View.VISIBLE);
         } else {
-            Toast.makeText (CreateEventActivity.this, R.string.please_fill_empty_forms, Toast.LENGTH_SHORT).show ();
+            Toast.makeText (CreateEventActivity.this, R.string.please_fill_empty_forms, Toast.LENGTH_SHORT).show();
         }
     }
 
     private void validateAddress() {
         address = et_address.getText ().toString ();
-        iv_val_add.setVisibility (View.INVISIBLE);
-        new ValidateAddress ().execute (GlobalVariables.GEO_API_ADDRESS);
+        if(!address.isEmpty()) {
+            iv_val_add.setVisibility(View.INVISIBLE);
+            //   new ValidateAddress ().execute(GlobalVariables.GEO_API_ADDRESS);
+            new ValidateAddress().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, GlobalVariables.GEO_API_ADDRESS);
+        }
+        else
+        {
+            Toast.makeText(CreateEventActivity.this,"Event Address is empty",Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void showThirdStage() {
@@ -397,14 +406,17 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
         }
     }
 
+
+
     public void saveEvent() {
         final Event event = new Event ();
         event.setName (et_name.getText ().toString ());
         event.setDescription (et_description.getText ().toString ());
 
         if (freeEvent) {
-            event.setPrice ("FREE");
-            event.setNumOfTickets (99999);
+            event.setPrice("FREE");
+            event.setNumOfTickets(Integer.parseInt(et_quantity.getText().toString()));
+           //event.setNumOfTickets (99999);  Assaf removed the hardcoded amount o tickets
         } else if (!seats) {
             event.setNumOfTickets (Integer.parseInt (et_quantity.getText ().toString ()));
             event.setPrice (et_price.getText ().toString ());
@@ -417,8 +429,9 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
             sum.add (sp.getInt (GlobalVariables.GREEN, 0));
             int max = Collections.max (sum);
             int min = Collections.min (sum);
-            event.setPrice ("" + min + "-" + max + "");
-            event.setNumOfTickets (101);
+            event.setPrice("" + min + "-" + max + "");
+            //event.setNumOfTickets (101);// Assaf removed the hardcoded amount of tickets
+            event.setNumOfTickets (Integer.parseInt (et_quantity.getText ().toString ()));
         }
         event.setAddress (valid_address);
         event.setCity (city);
@@ -493,8 +506,8 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
             byte[] image = stream.toByteArray ();
             ParseFile file = new ParseFile ("picturePath", image);
             try {
-                file.save ();
-            } catch (ParseException e) {
+                file.saveInBackground();
+            } catch (Exception e) {
                 e.printStackTrace ();
             }
             event.put ("ImageFile", file);
@@ -506,8 +519,8 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
             byte[] image = stream.toByteArray ();
             ParseFile file = new ParseFile ("picturePath", image);
             try {
-                file.save ();
-            } catch (ParseException e) {
+                file.saveInBackground();
+            } catch (Exception e) {
                 e.printStackTrace ();
             }
             event.put ("ImageFile", file);
@@ -519,12 +532,10 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
             } else {
                 event.setIsStadium (false);
             }
-            event.save ();
+            event.saveInBackground();
             totalIncome = 0;
             if (!freeEvent) {
-                Log.e (TAG, "freeEvent " + freeEvent);
                 eventObjectId = event.getObjectId ();
-                Log.e (TAG, "objectId " + eventObjectId);
                 if (seats) {
                     saveTicketsPrice (eventObjectId);
                     //the producer did not chose colored seats
@@ -554,9 +565,9 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
                 }, 3000);
             }
             GlobalVariables.refreshArtistsList = true;
-            Toast.makeText (this, R.string.event_has_created_successfully, Toast.LENGTH_LONG);//TODO
+            Toast.makeText (this, R.string.event_has_created_successfully, Toast.LENGTH_LONG).show();//TODO
             finish ();
-        } catch (ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace ();
         }
     }
@@ -582,30 +593,30 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
         if (seats) {
             ParseQuery<ParseObject> querySeats = ParseQuery.getQuery ("EventsSeats");
             querySeats.whereEqualTo ("eventObjectId", objectId);
-            querySeats.findInBackground (new FindCallback<ParseObject> () {
+            querySeats.findInBackground(new FindCallback<ParseObject>() {
                 @Override
                 public void done(List<ParseObject> objects, ParseException e) {
 
-                    if (objects.size () != 0) {
-                        ParseObject.deleteAllInBackground (objects);
+                    if (objects.size() != 0) {
+                        ParseObject.deleteAllInBackground(objects);
 
                     }
                 }
             });
             //query and delete again because there is one last ticket left
-            ParseQuery<ParseObject> querySeats1 = ParseQuery.getQuery ("EventsSeats");
+            ParseQuery<ParseObject> querySeats1 = ParseQuery.getQuery("EventsSeats");
             querySeats1.whereEqualTo ("eventObjectId", objectId);
-            querySeats1.getFirstInBackground (new GetCallback<ParseObject> () {
+            querySeats1.getFirstInBackground(new GetCallback<ParseObject>() {
                 public void done(ParseObject object, ParseException e) {
                     if (e == null) {
                         try {
 
-                            object.delete ();
+                            object.delete();
                         } catch (ParseException e1) {
-                            e1.printStackTrace ();
+                            e1.printStackTrace();
                         }
                     } else {
-                        Log.e (TAG, "" + e.toString ());
+                        Log.e(TAG, "" + e.toString());
                     }
                 }
             });
@@ -632,13 +643,13 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
                             CreateEventActivity.this.finish ();
                         }
                     })
-                    .setNegativeButton ("No", new DialogInterface.OnClickListener () {
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel ();
+                            dialog.cancel();
                         }
                     });
             AlertDialog alert = builder.create ();
-            alert.show ();
+            alert.show();
         }
     }
 
@@ -735,8 +746,8 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
             case R.id.checkBoxFree:
                 if (isChecked) {
                     freeEvent = true;
-                    et_quantity.setVisibility (View.GONE);
-                    tv_quantity.setVisibility (View.GONE);
+                    et_quantity.setVisibility (View.VISIBLE);
+                    tv_quantity.setVisibility (View.VISIBLE);
                     tv_price.setVisibility (View.GONE);
                     et_price.setVisibility (View.GONE);
                     btn_price_details.setVisibility (View.GONE);
@@ -747,19 +758,20 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
                     tv_quantity.setVisibility (View.VISIBLE);
                     tv_price.setVisibility (View.VISIBLE);
                     et_price.setVisibility (View.VISIBLE);
-                    if (!checkBoxPrice.isChecked ()) {
-                        btn_price_details.setVisibility (View.VISIBLE);
-                    }
-                    checkBoxPrice.setVisibility (View.GONE);
+               //     if (!checkBoxPrice.isChecked ()) {
+                     btn_price_details.setVisibility (View.GONE);
+                 //   }
+                    checkBoxPrice.setVisibility (View.VISIBLE);
                 }
                 break;
             case R.id.checkBoxPrice:
                 if (isChecked) {
-                    et_quantity.setVisibility (View.GONE);
-                    tv_quantity.setVisibility (View.GONE);
+                    et_quantity.setVisibility (View.VISIBLE);
+                    tv_quantity.setVisibility (View.VISIBLE);
                     tv_price.setVisibility (View.GONE);
                     et_price.setVisibility (View.GONE);
                     btn_price_details.setVisibility (View.VISIBLE);
+                    freeBox.setVisibility(View.GONE);
                     editor.putBoolean (GlobalVariables.SEATS, true);
                     editor.apply ();
                 } else {
@@ -768,6 +780,7 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
                     tv_price.setVisibility (View.VISIBLE);
                     et_price.setVisibility (View.VISIBLE);
                     btn_price_details.setVisibility (View.GONE);
+                    freeBox.setVisibility(View.VISIBLE);
                     editor.putBoolean (GlobalVariables.SEATS, false);
                     editor.apply ();
                 }
@@ -807,23 +820,23 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
                         et_tags.setHint ("Your first tag is #" + filter + " add more");
                         break;
                     case 4:
-                        filter = FILTERS[3];
+                        filter = FILTERS[4];
                         et_tags.setHint ("Your first tag is #" + filter + " add more");
                         break;
                     case 5:
-                        filter = FILTERS[3];
+                        filter = FILTERS[5];
                         et_tags.setHint ("Your first tag is #" + filter + " add more");
                         break;
                     case 6:
-                        filter = FILTERS[3];
+                        filter = FILTERS[6];
                         et_tags.setHint ("Your first tag is #" + filter + " add more");
                         break;
                     case 7:
-                        filter = FILTERS[3];
+                        filter = FILTERS[7];
                         et_tags.setHint ("Your first tag is #" + filter + " add more");
                         break;
                     case 8:
-                        filter = FILTERS[3];
+                        filter = FILTERS[8];
                         et_tags.setHint ("Your first tag is #" + filter + " add more");
                         break;
 
@@ -960,14 +973,14 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
         @Override
         protected void onPreExecute() {
             dialog = new ProgressDialog (CreateEventActivity.this);
-            dialog.setMessage ("" + R.string.validating);
-            dialog.show ();
-        }
+            dialog.setMessage("" + R.string.validating);
+            dialog.show();
+          }
 
         // ----------------------------------------------------
         @Override
         protected String doInBackground(String... params) {
-            dialog.dismiss ();
+            dialog.dismiss();
             String queryString = null;
             try {
                 queryString = "" +
@@ -976,8 +989,6 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace ();
             }
-
-
             return HttpHandler.get (params[0], queryString);
         }
 
@@ -1117,5 +1128,8 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
         editor.putBoolean (GlobalVariables.SEATS, false);
         editor.apply ();
     }
+
+
+
 }
 

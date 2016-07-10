@@ -357,71 +357,86 @@ public class EditEventActivity extends AppCompatActivity implements AdapterView.
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == GlobalVariables.SELECT_PICTURE && resultCode == RESULT_OK && null != data) {
             Bitmap image = FileAndImageMethods.getImageFromDevice (data, this);
-            img.setImageBitmap (image);
+            img.setImageBitmap(image);
             pictureSelected = true;
         }
     }
 
     private void saveTheEvent() {
-        event.put ("Name", et_name.getText ().toString ());
-        event.put ("eventToiletService", numOfToilets + ", Handicapped " + numOfHandicapToilets);
-        event.put ("place", et_place.getText ().toString ());
-        if (et_parking_edit.getText ().toString ().equals ("")) {
-            eventParkingService = "";
-        } else {
-            eventParkingService = "Up To " + et_parking_edit.getText ().toString ();
-        }
-        event.put ("eventParkingService", eventParkingService);
-        if (et_hall_cap_edit.getText ().toString ().equals ("")) {
-            eventCapacityService = "";
-        } else {
-            eventCapacityService = "Up To " + et_hall_cap_edit.getText ().toString ();
-        }
 
-        event.put ("eventCapacityService", eventCapacityService);
-        event.put ("eventATMService", atmStatus);
-        event.put ("artist", et_artist.getText ().toString ());
-        if (!event.getAddress ().equals (et_address.getText ().toString ())) {
-            event.put ("address", valid_address);
-            event.put ("city", city);
-            event.put ("X", lat);
-            event.put ("Y", lng);
+        if (et_address.getText().toString().isEmpty()|| et_description.getText().toString().isEmpty()|| et_name.getText().toString().isEmpty()
+                || et_place.getText().toString().isEmpty())
+        {
+            Toast.makeText(EditEventActivity.this,"please fill the empty information",Toast.LENGTH_SHORT).show();
         }
-
-        if (pictureSelected) {
-            img.buildDrawingCache ();
-            Bitmap bitmap = img.getDrawingCache ();
-            ByteArrayOutputStream stream = new ByteArrayOutputStream ();
-            bitmap.compress (Bitmap.CompressFormat.JPEG, 100, stream);
-            byte[] image = stream.toByteArray ();
-            ParseFile file = new ParseFile ("picturePath", image);
-            try {
-                file.save ();
-            } catch (ParseException e) {
-                e.printStackTrace ();
+        else {
+            event.put("Name", et_name.getText().toString());
+            event.put("eventToiletService", numOfToilets + ", Handicapped " + numOfHandicapToilets);
+            event.put("place", et_place.getText().toString());
+            if (et_parking_edit.getText().toString().equals("")) {
+                eventParkingService = "";
+            } else {
+                eventParkingService = "Up To " + et_parking_edit.getText().toString();
             }
-            event.put ("ImageFile", file);
-        }
+            event.put("eventParkingService", eventParkingService);
+            if (et_hall_cap_edit.getText().toString().equals("")) {
+                eventCapacityService = "";
+            } else {
+                eventCapacityService = "Up To " + et_hall_cap_edit.getText().toString();
+            }
 
-        event.saveInBackground (new SaveCallback () {
-            @Override
-            public void done(ParseException e) {
-                if (e == null) {
-                    Toast.makeText (EditEventActivity.this, "Event saved successfully", Toast.LENGTH_SHORT).show ();
-                    EventDataMethods.updateEventInfoDromParseEvent (eventInfo, event);
-                    finish ();
-                } else {
-                    Toast.makeText (EditEventActivity.this, "Not  saved " + e.toString (), Toast.LENGTH_SHORT).show ();
+            event.put("eventCapacityService", eventCapacityService);
+            event.put("eventATMService", atmStatus);
+            event.put("artist", et_artist.getText().toString());
+            if (!event.getAddress().equals(et_address.getText().toString())) {
+                event.put("address", valid_address);
+                event.put("city", city);
+                event.put("X", lat);
+                event.put("Y", lng);
+            }
+
+            if (pictureSelected) {
+                img.buildDrawingCache();
+                Bitmap bitmap = img.getDrawingCache();
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                byte[] image = stream.toByteArray();
+                ParseFile file = new ParseFile("picturePath", image);
+                try {
+                    file.save();
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
+                event.put("ImageFile", file);
             }
-        });
 
+
+            event.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        Toast.makeText(EditEventActivity.this, "Event saved successfully", Toast.LENGTH_SHORT).show();
+                        EventDataMethods.updateEventInfoDromParseEvent(eventInfo, event);
+                        finish();
+                    } else {
+                        Toast.makeText(EditEventActivity.this, "Not  saved " + e.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
     }
 
     private void validateAddress() {
         address = et_address.getText ().toString ();
-        iv_val_add_edit.setVisibility (View.INVISIBLE);
-        new ValidateAddress ().execute (GlobalVariables.GEO_API_ADDRESS);
+        if (!address.isEmpty()) {
+            iv_val_add_edit.setVisibility(View.INVISIBLE);
+            //new ValidateAddress ().execute (GlobalVariables.GEO_API_ADDRESS);
+            new ValidateAddress().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, GlobalVariables.GEO_API_ADDRESS);
+        }
+        else
+        {
+            Toast.makeText(EditEventActivity.this,"Event Address is empty",Toast.LENGTH_SHORT).show();
+        }
     }
 
     class ValidateAddress extends AsyncTask<String, Void, String> {
@@ -431,8 +446,8 @@ public class EditEventActivity extends AppCompatActivity implements AdapterView.
         @Override
         protected void onPreExecute() {
             dialog = new ProgressDialog (EditEventActivity.this);
-            dialog.setMessage ("Validating...");
-            dialog.show ();
+            dialog.setMessage("" + R.string.validating);
+            dialog.show();
         }
 
         // ----------------------------------------------------
@@ -480,7 +495,7 @@ public class EditEventActivity extends AppCompatActivity implements AdapterView.
                     address_ok = false;
                     iv_val_add_edit.setImageResource (R.drawable.x);
                     iv_val_add_edit.setVisibility (View.VISIBLE);
-                    Toast.makeText (EditEventActivity.this, "Problem is " + result.getStatus (), Toast.LENGTH_SHORT).show ();
+                    Toast.makeText (EditEventActivity.this, R.string.problem_is  + result.getStatus (), Toast.LENGTH_SHORT).show ();
                 }
             }
         }

@@ -114,8 +114,8 @@ public class ChatActivity extends Activity {
                                                       0,
                                                       Math.round (hight));
         params.weight = 90.0f;
-        profileImage.setLayoutParams (params);
-        loader.displayImage (picUrl, profileImage);
+        profileImage.setLayoutParams(params);
+        loader.displayImage(picUrl, profileImage);
     }
 
     private Runnable runnable = new Runnable () {
@@ -136,16 +136,16 @@ public class ChatActivity extends Activity {
             message.setUserId (eventInfo.getProducerId ());
         }
         message.setCustomer (customerPhone);
-        message.setProducer (eventInfo.getProducerId ());
-        message.setEventObjectId (eventInfo.getParseObjectId ());
+        message.setProducer(eventInfo.getProducerId());
+        message.setEventObjectId(eventInfo.getParseObjectId());
         try {
             message.save ();
         } catch (ParseException e) {
             e.printStackTrace ();
         }
-        editTextMessage.setText ("");
-        getAllMessagesFromParseInMainThread (eventInfo.getProducerId (), customerPhone);
-        updateMessageRoomItemInBackGround (message);
+        editTextMessage.setText("");
+        getAllMessagesFromParseInMainThread(eventInfo.getProducerId(), customerPhone);
+        updateMessageRoomItemInBackGround(message);
     }
 
     private void getAllMessagesFromParseInBackground(final String producer, final String customer) {
@@ -164,6 +164,7 @@ public class ChatActivity extends Activity {
                     e.printStackTrace ();
                 }
             }
+
         });
     }
 

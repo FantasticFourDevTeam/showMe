@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -21,6 +20,7 @@ import com.example.FundigoApp.MainActivity;
 import com.example.FundigoApp.R;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -30,7 +30,6 @@ public class FilterPageActivity2 extends AppCompatActivity implements AdapterVie
    // private String travelFilter;
     GridView gridView;
     DatePickerDialog datePickerDialog;
-    private static String mainfilter;
     private static String subFilter;
     private static String[] sportsFilter;
     private static String[] travelFilter;
@@ -41,6 +40,15 @@ public class FilterPageActivity2 extends AppCompatActivity implements AdapterVie
     private static String[] governmentFilter;
     private static String[] home_lifestyleFilter;
     private static String[] musicFilter;
+    private static String[] sportsFilterName;
+    private static String[] travelFilterName;
+    private static String[] drinksFilterName;
+    private static String[] buisnessFilterName;
+    private static String[] fashionFilterName;
+    private static String[] educationFilterName;
+    private static String[] governmentFilterName;
+    private static String[] home_lifestyleFilterName;
+    private static String[] musicFilterName;
     private static Spinner dateSpinner;
     private static Spinner priceSpinner;
     private static ArrayAdapter<CharSequence> dateAdapter;
@@ -49,8 +57,9 @@ public class FilterPageActivity2 extends AppCompatActivity implements AdapterVie
     private static String priceFilterSelected;
     private static SharedPreferences sharedPref;
     private boolean IsCalendarOpened=false;
-//    private static int priceIntegerValueCode;
-//    private static Date dateValue;
+    private String [] subFilterActualFiltersArray;
+    private String subFilterToDisplayInEventsPage;
+    private String filterNameToPresentInEventPage;
 
     private static Integer[] sportImages  = {R.drawable.ic_sport,  R.drawable.ic_sport, R.drawable.ic_sport};
     private static Integer[] travelImages  = {R.drawable.ic_airplane, R.drawable.ic_airplane, R.drawable.ic_airplane   };
@@ -68,15 +77,25 @@ public class FilterPageActivity2 extends AppCompatActivity implements AdapterVie
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter_page2);
 
-        sportsFilter = getResources ().getStringArray (R.array.sportFilters);
-        travelFilter = getResources().getStringArray(R.array.travelFilters);
-        drinksFilter = getResources().getStringArray(R.array.drinkFilters);
-        buisnessFilter = getResources().getStringArray(R.array.businessFilters);
-        fashionFilter = getResources().getStringArray(R.array.fashionFilters);
-        educationFilter = getResources().getStringArray(R.array.educationFilters);
-        governmentFilter = getResources().getStringArray(R.array.governmentFilters);
-        home_lifestyleFilter = getResources().getStringArray(R.array.homeLifeStyleFilters);
-        musicFilter = getResources().getStringArray(R.array.musicFilters);
+        sportsFilter = getResources ().getStringArray (R.array.sportFiltersAllLanguages);
+        travelFilter = getResources().getStringArray(R.array.travelFiltersAllLanguages);
+        drinksFilter = getResources().getStringArray(R.array.drinkFiltersAllLanguages);
+        buisnessFilter = getResources().getStringArray(R.array.businessFiltersAllLanguages);
+        fashionFilter = getResources().getStringArray(R.array.fashionFiltersAllLanguages);
+        educationFilter = getResources().getStringArray(R.array.educationFiltersAllLanguages);
+        governmentFilter = getResources().getStringArray(R.array.governmentFiltersAllLanguages);
+        home_lifestyleFilter = getResources().getStringArray(R.array.homeLifeStyleFiltersAllLanguages);
+        musicFilter = getResources().getStringArray(R.array.musicFiltersAllLanguages);
+
+        sportsFilterName = getResources().getStringArray(R.array.sportFiltersName);
+        travelFilterName = getResources().getStringArray(R.array.travelFiltersName);
+        drinksFilterName = getResources().getStringArray(R.array.drinkFiltersName);
+        buisnessFilterName = getResources().getStringArray(R.array.businessFiltersName);
+        fashionFilterName = getResources().getStringArray(R.array.fashionFiltersName);
+        educationFilterName = getResources().getStringArray(R.array.educationFiltersName);
+        governmentFilterName = getResources().getStringArray(R.array.governmentFiltersName);
+        home_lifestyleFilterName = getResources().getStringArray(R.array.homeLifeStyleFiltersName);
+        musicFilterName = getResources().getStringArray(R.array.musicFiltersName);
 
         dateSpinner = (Spinner) findViewById(R.id.dateFilter);
         dateAdapter = ArrayAdapter.createFromResource(this, R.array.eventDateFilter, android.R.layout.simple_spinner_item);
@@ -90,13 +109,8 @@ public class FilterPageActivity2 extends AppCompatActivity implements AdapterVie
         priceSpinner.setAdapter(priceAdapter);
         priceSpinner.setOnItemSelectedListener(this);
 
-        subFilterPresentbyFilter();
-        gridView.setOnItemClickListener(this);
 
-        GlobalVariables.CURRENT_SUB_FILTER="";// clean the sub filter
-        mainfilter = GlobalVariables.CURRENT_FILTER_NAME;
-        subFilter=null;
-        saveInfo();
+
       }
 
     @Override
@@ -130,6 +144,7 @@ public class FilterPageActivity2 extends AppCompatActivity implements AdapterVie
                     case 5:
                         dateFilterSelected = parent.getItemAtPosition(position).toString();// date from calendar
                         if (IsCalendarOpened==false) {
+                        GlobalVariables.CURRENT_DATE_FILTER=null;// delete previous selections to cover case that selection from calendar was canceled
                         int year = Calendar.getInstance().get(Calendar.YEAR);
                         int day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
                         int month = Calendar.getInstance().get(Calendar.MONTH); // date picker conclude months from 0-11
@@ -183,24 +198,25 @@ public class FilterPageActivity2 extends AppCompatActivity implements AdapterVie
     public void onItemClick(AdapterView<?> av, View view, int i, long l) {
          try {
              if (subFilter == null) {
-                 subFilter = av.getItemAtPosition(i).toString();
+                 subFilterToDisplayInEventsPage = av.getItemAtPosition(i).toString();
+                 subFilter = subFilterActualFiltersArray[i];
                  GlobalVariables.CURRENT_SUB_FILTER = subFilter;
-                 mainfilter = GlobalVariables.CURRENT_FILTER_NAME;
                  view.setBackgroundColor(Color.RED);
                  saveInfo();
              } else {
-                 if (subFilter.equals(av.getItemAtPosition(i).toString())){//&& GlobalVariables.CURRENT_SUB_FILTER=="") {
+                 if (subFilter.equals(subFilterActualFiltersArray[i])){//&& GlobalVariables.CURRENT_SUB_FILTER=="") {
+                     subFilterToDisplayInEventsPage = null;
                      subFilter = null;
                      GlobalVariables.CURRENT_SUB_FILTER = "";
                      view.setBackgroundColor(Color.TRANSPARENT);
                      saveInfo();
                  }
                  //press on new Sub filter after back from Main filter. current_sub_filter = "" althouhg sub is not null only in case of new View
-                 else if (!subFilter.equals(av.getItemAtPosition(i).toString())&& subFilter.equals(null))
+                  else if (!subFilter.equals(subFilterActualFiltersArray[i])&& subFilter.equals(null))
                  {
-                     subFilter = av.getItemAtPosition(i).toString();
+                     subFilter =  subFilterActualFiltersArray[i];
+                     subFilterToDisplayInEventsPage = av.getItemAtPosition(i).toString();
                      GlobalVariables.CURRENT_SUB_FILTER = subFilter;
-                     mainfilter = GlobalVariables.CURRENT_FILTER_NAME;
                      view.setBackgroundColor(Color.RED);
                      saveInfo();
                  }
@@ -215,16 +231,6 @@ public class FilterPageActivity2 extends AppCompatActivity implements AdapterVie
          }
    }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (Integer.parseInt (android.os.Build.VERSION.SDK) > 5
-                && keyCode == KeyEvent.KEYCODE_BACK
-                && event.getRepeatCount () == 0) {
-            onBackPressed ();
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
 
 
     DatePickerDialog.OnDateSetListener listener = new DatePickerDialog.OnDateSetListener() {
@@ -247,31 +253,31 @@ public class FilterPageActivity2 extends AppCompatActivity implements AdapterVie
         switch (filter)
         {
             case "Sports":
-                setGridViewAdapter (sportsFilter,sportImages);
+                setGridViewAdapter (sportsFilterName,sportImages,sportsFilter);
                 break;
             case "Travel":
-                setGridViewAdapter (travelFilter,travelImages);
+                setGridViewAdapter (travelFilterName,travelImages,travelFilter);
                 break;
             case "Drink":
-                setGridViewAdapter (drinksFilter,drinksImages);
+                setGridViewAdapter (drinksFilterName,drinksImages,drinksFilter);
                 break;
             case "Business":
-                setGridViewAdapter (buisnessFilter,buisnessImages);
+                setGridViewAdapter (buisnessFilterName,buisnessImages,buisnessFilter);
                 break;
             case "Fashion":
-                setGridViewAdapter (fashionFilter,fashionImages);
+                setGridViewAdapter (fashionFilterName,fashionImages,fashionFilter);
                 break;
             case "Education":
-                setGridViewAdapter (educationFilter,educationImages);
+                setGridViewAdapter (educationFilterName,educationImages,educationFilter);
                 break;
             case "Government":
-                setGridViewAdapter (governmentFilter,governmentImages);
+                setGridViewAdapter (governmentFilterName,governmentImages,governmentFilter);
                 break;
             case "Home and LifeStyle":
-                setGridViewAdapter (home_lifestyleFilter,home_lifestyleImages);
+                setGridViewAdapter (home_lifestyleFilterName,home_lifestyleImages,home_lifestyleFilter);
                 break;
             case "Music":
-                setGridViewAdapter (musicFilter,musicImages);
+                setGridViewAdapter (musicFilterName,musicImages,musicFilter);
                 break;
         }
         if (dateAdapter.getPosition(date)==5) // prevent open calendar automtically follwoing open in main filter
@@ -281,12 +287,13 @@ public class FilterPageActivity2 extends AppCompatActivity implements AdapterVie
         saveInfo();
     }
 
-    private void setGridViewAdapter (String[] names ,Integer[] images)
+    private void setGridViewAdapter (String[] filterName ,Integer[] images,String filters[])
     {
-        FilterImageAdapter adapter = new FilterImageAdapter (FilterPageActivity2.this, names, images);
+        FilterImageAdapter adapter = new FilterImageAdapter (FilterPageActivity2.this, filterName, images,filters);
         gridView = (GridView) findViewById(R.id.grdFilterCategories);
         gridView.setAdapter(adapter);
 
+        subFilterActualFiltersArray = Arrays.copyOf(filters,filters.length);// Take the Array of filters that currently filtered
         gridView.setOnItemClickListener(this);
     }
     public void saveInfo ()
@@ -294,24 +301,51 @@ public class FilterPageActivity2 extends AppCompatActivity implements AdapterVie
         sharedPref = getSharedPreferences("filterInfo" ,MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
 
-        editor.putString("mainFilter",mainfilter);
+        editor.putString("mainFilter",filterNameToPresentInEventPage);
         editor.putString("date" , dateFilterSelected);
-        editor.putString("price" , priceFilterSelected);
-        editor.putString("subFilter", subFilter);
+        editor.putString("price", priceFilterSelected);
+        editor.putString("subFilter", subFilterToDisplayInEventsPage);
         editor.apply();
     }
-
 
     @Override
     protected void onResume() {
         super.onResume();
+        String filterNameValue = getData();
+        filterNameToPresentInEventPage = filterNameValue;
+        subFilterPresentbyFilter();
+        gridView.setOnItemClickListener(this);
+        GlobalVariables.CURRENT_SUB_FILTER="";// clean the sub filter
+        subFilter=null;
+        subFilterToDisplayInEventsPage=null;
+        saveInfo();
 
     }
 
-    public void backToMain(View view)
+    public void backToMain(View view) // This Page prevented to be back to. Set in Android Manifest file
     {
         Intent intent = new Intent (this,MainActivity.class);
         startActivity(intent);
+      }
+
+    public void backToFilter(View view) // This Page prevented to be back to. Set in Android Manifest file
+    {
+        Intent intent = new Intent (this,FilterPageActivity.class);
+        startActivity(intent);
     }
+
+    @Override
+    public void onBackPressed() {//prevent the back Button to main filter
+       return;
     }
+
+    private String getData()
+    // display the filter info.
+    {
+        sharedPref = getSharedPreferences ("filterInfo", MODE_PRIVATE);
+        String _filterName = sharedPref.getString("mainFilter", "");
+        return _filterName;
+    }
+
+}
 

@@ -1,5 +1,6 @@
 package com.example.FundigoApp.StaticMethod;
 
+import android.app.Application;
 import android.util.Log;
 
 import com.example.FundigoApp.Events.EventInfo;
@@ -11,8 +12,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
-public class FilterMethods {
+
+public class FilterMethods extends Application {
 
     public static void filterEventsByArtist(String artistName, List<EventInfo> eventsListFiltered) {
         eventsListFiltered.clear ();
@@ -42,7 +45,7 @@ public class FilterMethods {
                                                                    GlobalVariables.ALL_EVENTS_DATA);
             eventsListToFilter.clear();
             eventsListToFilter.addAll(tempEventsList);
-            eventsListAdapter.notifyDataSetChanged ();
+            eventsListAdapter.notifyDataSetChanged();
 
         } else if (GlobalVariables.CITY_GPS != null) {
             ArrayList<EventInfo> tempEventsList =
@@ -257,7 +260,14 @@ public class FilterMethods {
                                                                  List<EventInfo> eventsListToFilter) {
         ArrayList<EventInfo> tempEventsList = new ArrayList<>();
         Date _currentDate = new Date();
-        if (cityName.equals("All Cities") && currentFilterName.isEmpty() && subFilterName.isEmpty()
+        String allCitiesFilterString;
+        if (Locale.getDefault().getDisplayLanguage ().equals ("עברית")) {
+            allCitiesFilterString = "כל הערים";
+        } else {
+            allCitiesFilterString = "All Cities";
+        }
+
+        if (cityName.equals(allCitiesFilterString) && currentFilterName.isEmpty() && subFilterName.isEmpty()
                     && dateFilter == null && priceFilter == -1) {
             tempEventsList.addAll (eventsListToFilter);
             return tempEventsList;
@@ -299,7 +309,7 @@ public class FilterMethods {
                 //==============Start point of conditions to filters====================== ///
 
 
-                if (cityName.equals("All Cities") || (cityEvent != null && cityEvent.equals(cityName)))
+                if (cityName.equals(allCitiesFilterString) || (cityEvent != null && cityEvent.equals(cityName)))
                 {
                     if (currentFilterName.isEmpty() & dateFilter == null // All filters empty
                                 & priceFilter == -1 & subFilterName.isEmpty())

@@ -23,7 +23,7 @@
 
     <GridView
           android:layout_width="match_parent"
-          android:layout_height="350dp"
+          android:layout_height="280dp"
           android:id="@+id/grdFilterCategories"
           android:layout_alignParentTop="true"
           android:layout_alignParentStart="true"
@@ -38,7 +38,7 @@
       <TextView
           android:layout_width="match_parent"
           android:text="@string/select_date"
-          android:layout_marginTop="20dp"
+          android:layout_marginTop="10dp"
           android:textSize="15sp"
           android:layout_height="wrap_content" />
       <Spinner
@@ -59,14 +59,21 @@
           android:textSize="13sp"
           android:visibility="visible"
           android:id="@+id/priceFilter" />
-
       <Button
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:text="Back to Events List"
+          android:text="@string/back_main"
+          android:onClick="backToFilter"
+          android:id="@+id/returnToMainFilter" />
+      <Button
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/filter_results"
           android:onClick="backToMain"
           android:id="@+id/returnToMain" />
 
   </LinearLayout>
   </ScrollView>
+
+
 </LinearLayout>

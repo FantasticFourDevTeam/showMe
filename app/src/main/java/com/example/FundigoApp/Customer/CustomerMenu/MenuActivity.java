@@ -142,7 +142,6 @@ public class MenuActivity extends AppCompatActivity {
             @Override
             public void onError(FacebookException exception) {
                 Toast.makeText (context, R.string.error_logging_facebook, Toast.LENGTH_SHORT).show ();
-                Log.e("R.string.error_logging_facebook", exception.getMessage());
                 exception.printStackTrace ();
             }
         });

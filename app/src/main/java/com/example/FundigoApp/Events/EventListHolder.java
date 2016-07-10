@@ -15,6 +15,7 @@ public class EventListHolder {
     TextView tags;
     TextView price;
     TextView place;
+    TextView address;
     ImageView saveEvent;
 
     public EventListHolder(View v) {
@@ -25,5 +26,6 @@ public class EventListHolder {
         price = (TextView) v.findViewById (R.id.event_price);
         place = (TextView) v.findViewById (R.id.event_location);
         saveEvent = (ImageView) v.findViewById (R.id.imageView3);
+        address = (TextView) v.findViewById (R.id.event_address);
     }
 }

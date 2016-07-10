@@ -122,7 +122,6 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
         faceBookUrl = intent.getStringExtra ("fbUrl");//get link from the Intent
         GlobalVariables.deepLinkEventObjID = "";
         GlobalVariables.deepLink_params = "";
-
         ImageView event_image = (ImageView) findViewById (R.id.eventPage_image);
         loader = FileAndImageMethods.getImageLoader (this);
         loader.displayImage (eventInfo.getPicUrl(), event_image);
@@ -247,8 +246,8 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
         switch (v.getId ()) {
             case R.id.imageEvenetPageView2:
                 AlertDialog.Builder builder = new AlertDialog.Builder (this);
-                builder.setMessage ("Share:")
-                        .setCancelable (false)
+              //  builder.setMessage ("Share:")
+                     builder.setCancelable(false)
                         .setPositiveButton (this.getString (R.string.share_app_page), new DialogInterface.OnClickListener () {
                             public void onClick(DialogInterface dialog, int id) {
                                 shareDeepLink ();
@@ -256,11 +255,13 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
                         })
                         .setNegativeButton (this.getString (R.string.share_web_page), new DialogInterface.OnClickListener () {
                             public void onClick(DialogInterface dialog, int id) {
+                                // Assaf: OPEN THE EVENT FACEBBOK PAGE IF EXIST . THE PAGE STORED IN PARSE
+                                //THis option need ot be replaced by share the App link into facebook
                                 Intent webIntent;
                                 if (faceBookUrl != "" && faceBookUrl != null) {
                                     try {
                                         getPackageManager ().getPackageInfo ("com.facebook.katana", 0);
-                                        webIntent = new Intent (Intent.ACTION_VIEW, Uri.parse ("fb://facewebmodal/f?href=" + faceBookUrl));
+                                        webIntent = new Intent (Intent.ACTION_VIEW, Uri.parse("fb://facewebmodal/f?href=" + faceBookUrl));
                                         startActivity (webIntent);
                                     } catch (Exception e) {
                                         Log.e (e.toString (), "Open link to FaceBook App is fail, sending to Browser");
@@ -290,11 +291,12 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
                 break;
             case R.id.imageEvenetPageView5:
                 AlertDialog.Builder builder2 = new AlertDialog.Builder (this);
-                builder2.setTitle (this.getString (R.string.you_can_get_more_info_about_the_event));
-                builder2.setMessage (this.getString (R.string.how_do_you_want_to_do_it));
+
                 if (!GlobalVariables.IS_PRODUCER) {
+                    builder2.setTitle (this.getString (R.string.you_can_get_more_info_about_the_event));
                     builder2.setPositiveButton (this.getString (R.string.Send_message_to_producer), listener);
                 } else {
+                    builder2.setTitle (this.getString (R.string.you_can_get_more_info_about_the_event_1));
                     builder2.setPositiveButton (this.getString (R.string.see_customers_massages), listener);
                 }
                 builder2.setNegativeButton (this.getString (R.string.real_time_chat), listener);
@@ -366,7 +368,7 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
 
     public void checkIfChangeColorToSaveButtton() {
         if (!GlobalVariables.IS_PRODUCER) {
-            int index = intent.getIntExtra ("index", 0);
+            int index = intent.getIntExtra("index", 0);
             if (GlobalVariables.ALL_EVENTS_DATA.get (index).getIsSaved ())
                 saveOrPushBotton.setImageResource (R.mipmap.whsavedd);
             else {
@@ -377,11 +379,11 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
 
     public void handleSaveEventClicked(int index) {
         EventInfo event = GlobalVariables.ALL_EVENTS_DATA.get (index);
-        GeneralStaticMethods.handleSaveEventClicked (event,
-                                                            saveOrPushBotton,
-                                                            this.getApplicationContext (),
-                                                            R.mipmap.whsavedd,
-                                                            R.mipmap.wh);
+        GeneralStaticMethods.handleSaveEventClicked(event,
+                saveOrPushBotton,
+                this.getApplicationContext(),
+                R.mipmap.whsavedd,
+                R.mipmap.wh);
         final int i = index; //Assaf added: call to calander for savifn the Event
         boolean IsNotSaved = event.getIsSaved();
         if (IsNotSaved) {// only if user want to save event (event is unsaved) , calendar open
@@ -507,60 +509,63 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
                 e.printStackTrace ();
             }
         }
-
     }
 
     public void shareDeepLink() {
-        BranchUniversalObject branchUniversalObject = new BranchUniversalObject ()
-                                                              .setCanonicalIdentifier ("item/1234")
-                                                              .setTitle ("My Content Title")
-                                                              .setContentDescription (this.getString (R.string.my_content_description))
-                                                              .setContentIndexingMode (BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
-                                                              .addContentMetadata ("objectId", eventInfo.getParseObjectId ());
 
-        io.branch.referral.util.LinkProperties linkProperties = new LinkProperties ()
-                                                                        .setChannel ("My Application")
-                                                                        .setFeature ("sharing");
+        final BranchUniversalObject branchUniversalObject = new BranchUniversalObject ()
+                                                              .setCanonicalIdentifier ("item/1234")
+                                                              .setTitle(eventInfo.getName() + " is amazing event join it by using Fundigo App")
+                                                              .setContentDescription(this.getString(R.string.my_content_description))
+                                                              .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
+                                                              .setContentImageUrl(eventInfo.getPicUrl())
+                                                              .addContentMetadata("objectId", eventInfo.getParseObjectId());
+
+        final io.branch.referral.util.LinkProperties linkProperties = new LinkProperties ()
+                                                                         .setChannel("My Application")
+                                                                         .setFeature("sharing");
+
+
 
         ShareSheetStyle shareSheetStyle = new ShareSheetStyle (EventPageActivity.this, "Check this out!", "This stuff is awesome: ")
-                                                  .setCopyUrlStyle (getResources ().getDrawable (android.R.drawable.ic_menu_send), "Copy", "Added to clipboard")
-                                                  .setMoreOptionStyle (getResources ().getDrawable (android.R.drawable.ic_menu_search), "Show more")
-                                                  .addPreferredSharingOption (SharingHelper.SHARE_WITH.FACEBOOK)
-                                                  .addPreferredSharingOption (SharingHelper.SHARE_WITH.EMAIL)
-                                                  .addPreferredSharingOption (SharingHelper.SHARE_WITH.WHATS_APP);
+                                                  .setCopyUrlStyle(getResources().getDrawable(android.R.drawable.ic_menu_send), "Copy", "Added to clipboard")
+                                                  .setMoreOptionStyle(getResources().getDrawable(android.R.drawable.ic_menu_search), "Show more")
+                                                  .addPreferredSharingOption(SharingHelper.SHARE_WITH.FACEBOOK)
+                                                  .addPreferredSharingOption(SharingHelper.SHARE_WITH.WHATS_APP);
 
-        branchUniversalObject.showShareSheet (this,
-                                                     linkProperties,
-                                                     shareSheetStyle,
-                                                     new Branch.BranchLinkShareListener () {
-                                                         @Override
-                                                         public void onShareLinkDialogLaunched() {
-                                                         }
+           branchUniversalObject.showShareSheet(this,
+                   linkProperties,
+                   shareSheetStyle,
+                   new Branch.BranchLinkShareListener() {
+                       @Override
+                       public void onShareLinkDialogLaunched() {
+                       }
 
-                                                         @Override
-                                                         public void onShareLinkDialogDismissed() {
-                                                         }
+                       @Override
+                       public void onShareLinkDialogDismissed() {
+                       }
 
-                                                         @Override
-                                                         public void onLinkShareResponse(String sharedLink, String sharedChannel, BranchError error) {
-                                                         }
+                       @Override
+                       public void onLinkShareResponse(String sharedLink, String sharedChannel, BranchError error) {
+                       }
 
-                                                         @Override
-                                                         public void onChannelSelected(String channelName) {
-                                                         }
-                                                     });
-        branchUniversalObject.generateShortUrl (getApplicationContext (), linkProperties, new Branch.BranchLinkCreateListener () {
+                       @Override
+                       public void onChannelSelected(String channelName) {
+
+                       }
+                   });
+
+
+        branchUniversalObject.generateShortUrl(getApplicationContext(), linkProperties, new Branch.BranchLinkCreateListener() {
             @Override
             public void onLinkCreate(String url, BranchError error) {
                 if (error == null) {
-                    //Toast.makeText (getApplicationContext (), url, Toast.LENGTH_LONG).show ();
+                    Toast.makeText(getApplicationContext(), url, Toast.LENGTH_LONG).show();
                 } else {
-                    Toast.makeText (getApplicationContext (), error.getMessage () + "", Toast.LENGTH_SHORT).show ();
+                    Toast.makeText(getApplicationContext(), error.getMessage() + "", Toast.LENGTH_SHORT).show();
                 }
-
             }
         });
-
     }
 
     public void editEvent(View view) {
@@ -579,7 +584,7 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
             public void done(List<EventsSeats> eventsSeatsList, ParseException e) {
                 if (e == null) {
                     if (eventsSeatsList.size () >= eventInfo.getNumOfTickets ()) {
-                        getTicketsButton.setText ("NO TICKET LEFT");
+                        getTicketsButton.setText ("No Ticket Left");
                         getTicketsButton.setClickable (false);
                     }
                 } else {

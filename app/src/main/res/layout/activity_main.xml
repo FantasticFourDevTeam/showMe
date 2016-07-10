@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="fill_parent"
                 android:background="#F1F1F1"
                 tools:context="com.example.FundigoApp.MainActivity"
     >
@@ -13,9 +13,7 @@
         android:layout_height="30dp"
         android:background="#71B7E6"
         android:orientation="horizontal"
-        android:weightSum="700.0"
-
-        >
+        android:weightSum="700.0">
 
         <ImageView
             android:id="@+id/settings_item"
@@ -139,7 +137,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/listView">
+        android:layout_above="@+id/listViewLayout">
 
         <TextView
             android:id="@+id/filterView"
@@ -152,12 +150,16 @@
             android:textStyle="bold"
             android:visibility="gone"/>
     </LinearLayout>
-
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_below="@+id/devider11"
+        android:orientation="vertical"
+        android:id="@+id/listViewLayout"
+        android:layout_height="fill_parent">
     <ListView
         android:id="@+id/listView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@+id/devider11"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
         android:animationCache="false"
@@ -165,8 +167,18 @@
         android:divider="#F1F1F1"
         android:dividerHeight="0dp"
         android:drawSelectorOnTop="false"
+        android:layout_weight="10"
         android:scrollingCache="false"/>
 
+     <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="wrap_content"
+         android:layout_weight="1"
+        android:layout_alignParentBottom="true">
+        <include layout="@layout/push_messages_bar"/>
+    </LinearLayout>
+    </LinearLayout>
     <Button
         android:id="@+id/create_button"
         android:layout_width="wrap_content"
@@ -176,12 +188,4 @@
         android:onClick="createEvent"
         android:text="@string/create_event"
         android:visibility="invisible"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true">
-        <include layout="@layout/push_messages_bar"/>
-    </LinearLayout>
-
 </RelativeLayout>

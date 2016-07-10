@@ -49,7 +49,10 @@
         </activity>
         <activity android:name=".Producer.Artists.QR_producer">
         </activity>
-        <activity android:name=".Filter.FilterPageActivity">
+        <activity android:name=".Filter.FilterPageActivity"
+
+            android:noHistory="true">
+
         </activity>
         <activity android:name=".Tickets.WebBrowserActivity">
         </activity>
@@ -110,10 +113,10 @@
 
         <meta-data
             android:name="com.parse.APPLICATION_ID"
-            android:value="4DLuoyE0i6vTL7CwBwY8YAfdHF7HuVsVxHeVeW4G"/>
+            android:value="gmmXjFV5aZf4BlIepRBfFRxj6PhdCmwX3F4KC84I"/>
         <meta-data
             android:name="com.parse.CLIENT_KEY"
-            android:value="4QSCwOTo9gdFRZIjZplMJhHdncXxTOzhTwJTQ5Cq"/>
+            android:value="xQR9WWoE7igtemCeiP9FJEW0BPrGJMdpjxwUF28m"/>
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
@@ -132,7 +135,10 @@
             android:name="com.example.FundigoApp.Chat.ChatActivity"
             android:label="@string/title_activity_chat"
             android:theme="@style/AppTheme"/>
-        <activity android:name=".Filter.FilterPageActivity2"/>
+        <activity android:name=".Filter.FilterPageActivity2"
+            android:noHistory="true"
+            />
+
         <activity
             android:name=".Chat.ChatToCustomersActivity"
             android:label="@string/title_activity_chat_to_customers"
@@ -175,6 +181,7 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version"/>
+
     </application>
 
 </manifest>

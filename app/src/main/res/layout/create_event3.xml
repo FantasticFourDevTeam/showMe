@@ -36,6 +36,7 @@
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:text="(Optional)"
+                    android:visibility="gone"
                     android:textSize="10sp"/>
             </LinearLayout>
 
@@ -74,6 +75,7 @@
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:text="(Optional)"
+                    android:visibility="gone"
                     android:textSize="10sp"/>
             </LinearLayout>
 
@@ -100,8 +102,8 @@
             app:ms_enableErrorLabel="false"
             app:ms_enableFloatingLabel="true"
             app:ms_errorColor="@color/Red"
-            app:ms_floatingLabelText="This will be your first tag, you can add more!"
-            app:ms_hint="Pick a filter"
+            app:ms_floatingLabelText="The selection is the first event tag, you are able to manually add more in Tags"
+            app:ms_hint="Pick a filter*"
             app:ms_hintColor="@color/DarkRed"
             app:ms_multiline="false"
             app:ms_thickness="2dp"/>
@@ -132,6 +134,7 @@
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:text="(Optional)"
+                    android:visibility="gone"
                     android:textSize="10sp"/>
             </LinearLayout>
 
@@ -167,7 +170,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="10dp"
+            android:layout_margin="25dp"
             android:text="@string/finish"/>
 
     </LinearLayout>

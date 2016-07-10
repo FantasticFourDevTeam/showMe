@@ -36,8 +36,8 @@ public class MyEventsTicketsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate (savedInstanceState);
-        setContentView (R.layout.activity_customer_events_tickets);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_customer_events_tickets);
         noTickets = (TextView) findViewById (R.id.noTickets);
         listT = (ListView) findViewById (R.id.listOfEventsTickets);
 
@@ -67,7 +67,9 @@ public class MyEventsTicketsActivity extends AppCompatActivity {
                         } catch (ParseException e1) {
                             e1.printStackTrace ();
                         }
-                        qrCode = BitmapFactory.decodeByteArray (data, 0, data.length);
+                             Bitmap imageDecode = BitmapFactory.decodeByteArray(data, 0, data.length);
+                             qrCode = Bitmap.createScaledBitmap(imageDecode, 250, 250, true);// convert decoded bitmap into well scalled Bitmap format.
+
                     } else {
                         qrCode = null;
                     }
@@ -93,6 +95,9 @@ public class MyEventsTicketsActivity extends AppCompatActivity {
             e.printStackTrace ();
         } catch (Exception e) {
             e.printStackTrace ();
+        }
+        catch (OutOfMemoryError err) {
+            err.printStackTrace();
         }
     }
 

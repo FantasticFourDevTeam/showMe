@@ -126,7 +126,7 @@ public class EventInfo {
         this.price = price;
     }
 
-    public String getInfo() {
+    public String getInfo() {// Event Description
         return info;
     }
 

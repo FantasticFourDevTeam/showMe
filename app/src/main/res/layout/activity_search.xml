@@ -10,7 +10,6 @@
     android:orientation="horizontal"
     android:weightSum="250"
     android:id="@+id/autoText"
-
     >
     <SearchView
         android:id="@+id/b_search"
@@ -18,8 +17,8 @@
         android:layout_width="0dp"
         android:layout_weight="250"
         android:background="@color/colorAccent"
+        android:onClick="onClick"
         />
-
 
 </LinearLayout>
     <LinearLayout
@@ -36,6 +35,7 @@
             android:text="@string/history"
             android:background="@color/colorPrimary"
             android:id="@+id/b_history"
+            android:textSize="17sp"
             />
 
         <Button

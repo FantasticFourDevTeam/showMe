@@ -136,7 +136,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_above="@+id/listView"
+        android:layout_above="@+id/listViewLayout"
         android:layout_height="wrap_content">
         <TextView
             android:layout_width="match_parent"
@@ -149,17 +149,22 @@
             android:text="filter line"
             android:layout_height="wrap_content" />
     </LinearLayout>
-
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:orientation="vertical"
+        android:layout_below="@+id/devider11"
+        android:id="@+id/listViewLayout"
+        android:layout_height="fill_parent">
     <ListView
         android:id="@+id/listView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@+id/devider11"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
         android:background="#F1F1F1"
         android:divider="#F1F1F1"
         android:dividerHeight="0dp"
+        android:layout_weight="10"
         android:drawSelectorOnTop="false"
         android:scrollingCache="false"
         android:animationCache="false"/>
@@ -167,7 +172,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_alignParentBottom="true"
+        android:layout_weight="1"
         android:layout_height="wrap_content">
         <include layout="@layout/push_messages_bar"/>
+    </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

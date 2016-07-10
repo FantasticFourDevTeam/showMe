@@ -1,5 +1,7 @@
 package com.example.FundigoApp.Events;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -40,6 +42,7 @@ public class HttpHandler {
             if (connection.getResponseCode() >= 300) {
                 return null;
             }
+            Log.d("TAG HTTP CON.","connection");
 
             // we can read the response from the connection's input stream:
             // we'll wrap it with a Input Stream Reader to read it as text
@@ -56,6 +59,7 @@ public class HttpHandler {
             }
 
             // return as string:
+            Log.d("TAG Repsonse",response.toString());
             return response.toString();
 
         } catch (MalformedURLException e) {

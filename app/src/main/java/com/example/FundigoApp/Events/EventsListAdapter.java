@@ -79,6 +79,8 @@ public class EventsListAdapter extends BaseAdapter {
         eventListHolder.tags.setText (event.getTags ());
         eventListHolder.price.setText (EventDataMethods.getDisplayedEventPrice (event.getPrice ()));
         eventListHolder.place.setText (event.getPlace ());
+        eventListHolder.address.setText(event.getAddress());
+
         checkIfChangeColorToSaveButtton (event, eventListHolder.saveEvent);
         eventListHolder.saveEvent.setOnClickListener (new View.OnClickListener () {
             @Override

@@ -14,17 +14,15 @@
         android:id="@+id/qr_scan_button"
         android:text="@string/start_scan"
         />
-
-    <ListView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/qr_scan_list_view">
-    </ListView>
-
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/customer_enter_butt"
         android:text="@string/custme_enter"/>
 
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/qr_scan_list_view">
+    </ListView>
 </LinearLayout>
