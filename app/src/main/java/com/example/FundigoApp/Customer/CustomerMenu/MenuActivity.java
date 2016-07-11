@@ -21,6 +21,7 @@ import com.example.FundigoApp.GlobalVariables;
 import com.example.FundigoApp.R;
 import com.example.FundigoApp.StaticMethod.FileAndImageMethods;
 import com.example.FundigoApp.StaticMethod.UserDetailsMethod;
+import com.example.FundigoApp.Verifications.LoginActivity;
 import com.example.FundigoApp.Verifications.SmsSignUpActivity;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -61,12 +62,16 @@ public class MenuActivity extends AppCompatActivity {
     Button user_evnets_tickets_button;
     Button save_credit_card_button;
     Button delete_credit_card_button;
+    /**
+     * button for producer login
+     */
+    Button producerPage_button;
     ImageLoader loader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate (savedInstanceState);
-        setContentView (R.layout.activity_menu);
+        setContentView(R.layout.activity_menu);
 
         context = this;
         facebook_login_button = (LoginButton) findViewById (R.id.login_button11);
@@ -77,6 +82,7 @@ public class MenuActivity extends AppCompatActivity {
         user_profile_update_button = (Button) findViewById (R.id.buttonUserProfileUpdate);
         user_evnets_tickets_button = (Button) findViewById (R.id.eventsTicketsButton);
         facebook_logout_button = (LoginButton) findViewById (R.id.logout_button11);
+        producerPage_button = (Button) findViewById (R.id.producerPage_button);
         save_credit_card_button = (Button) findViewById (R.id.save_credit_card);
         delete_credit_card_button = (Button) findViewById (R.id.delete_credit_card);
         tableLayout = (TableLayout) findViewById (R.id.profileTable);
@@ -90,6 +96,9 @@ public class MenuActivity extends AppCompatActivity {
             user_profile_update_button.setVisibility (View.VISIBLE);
             user_evnets_tickets_button.setVisibility (View.VISIBLE);
         }
+
+
+
         final AccessToken accessToken = AccessToken.getCurrentAccessToken ();
         if (accessToken != null) {
             facebook_login_button.setVisibility (View.GONE);
@@ -142,7 +151,7 @@ public class MenuActivity extends AppCompatActivity {
             @Override
             public void onError(FacebookException exception) {
                 Toast.makeText (context, R.string.error_logging_facebook, Toast.LENGTH_SHORT).show ();
-                Log.e("R.string.error_logging_facebook", exception.getMessage());
+                Log.e("error_logging_facebook", exception.getMessage());
                 exception.printStackTrace ();
             }
         });
@@ -156,6 +165,16 @@ public class MenuActivity extends AppCompatActivity {
 
     public void smsLogin(View view) {
         Intent intent = new Intent (MenuActivity.this, SmsSignUpActivity.class);
+        startActivity(intent);
+    }
+
+    /**
+     *
+     * @param view = producer login button.
+     *             start the MainActivity producer page
+     */
+    public void producerLogin(View view) {
+        Intent intent = new Intent (MenuActivity.this, LoginActivity.class);
         startActivity (intent);
     }
 

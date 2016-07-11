@@ -122,7 +122,17 @@
         android:visibility="gone"
         android:layout_centerHorizontal="true"
         />
-
+    <!--  login button for producer -->
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/producer_login"
+        android:id="@+id/producerPage_button"
+        android:layout_below="@+id/eventsTicketsButton"
+        android:textSize="20sp"
+        android:onClick="producerLogin"
+        android:layout_centerHorizontal="true"
+        />
     <TableLayout
         android:id="@+id/profileTable"
         android:layout_width="wrap_content"

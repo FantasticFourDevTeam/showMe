@@ -28,6 +28,7 @@ import com.example.FundigoApp.Customer.CustomerMenu.MenuActivity;
 import com.example.FundigoApp.Customer.RealTime.RealTimeActivity;
 import com.example.FundigoApp.Customer.SavedEvents.SavedEventActivity;
 import com.example.FundigoApp.Customer.Social.MyNotificationsActivity;
+import com.example.FundigoApp.Customer.Social.Profile;
 import com.example.FundigoApp.Events.CreateEventActivity;
 import com.example.FundigoApp.Events.EventInfo;
 import com.example.FundigoApp.Events.EventPageActivity;
@@ -37,12 +38,16 @@ import com.example.FundigoApp.MyLocation.CityMenu;
 import com.example.FundigoApp.Producer.TabPagerAdapter;
 import com.example.FundigoApp.StaticMethod.EventDataMethods;
 import com.example.FundigoApp.StaticMethod.EventDataMethods.GetEventsDataCallback;
+import com.example.FundigoApp.StaticMethod.FileAndImageMethods;
 import com.example.FundigoApp.StaticMethod.FilterMethods;
 import com.example.FundigoApp.StaticMethod.GPSMethods;
 import com.example.FundigoApp.StaticMethod.GPSMethods.GpsICallback;
 import com.example.FundigoApp.StaticMethod.GeneralStaticMethods;
+import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseInstallation;
 import com.parse.ParseObject;
+import com.parse.ParsePush;
 import com.parse.ParseQuery;
 
 import org.json.JSONException;
@@ -50,6 +55,7 @@ import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
@@ -78,11 +84,20 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate (savedInstanceState);
-        if (GlobalVariables.IS_CUSTOMER_GUEST || GlobalVariables.IS_CUSTOMER_REGISTERED_USER) {
-            createCustomerMainPage ();
-        } else if (GlobalVariables.IS_PRODUCER) {
+        GlobalVariables.CUSTOMER_PHONE_NUM = FileAndImageMethods.getCustomerPhoneNumFromFile(this);
+
+
+        /**
+         * only one if condition, not like before
+         */
+        if (GlobalVariables.IS_PRODUCER) {
             createProducerMainPage ();
+        }else{
+            customerLogin();
+            createCustomerMainPage ();
         }
+
+
     }
 
     public void createProducerMainPage() {
@@ -175,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                                                               GlobalVariables.namesCity,
                                                               GlobalVariables.indexCityChosen);
         if (GlobalVariables.MY_LOCATION == null) {
-            GPSMethods.updateDeviceLocationGPS (this.context, this);
+//            GPSMethods.updateDeviceLocationGPS (this.context, this);
         }
     }
 
@@ -251,7 +266,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 eventsListAdapter.notifyDataSetChanged ();
                 currentCityButton.setText (GlobalVariables.CITY_GPS + "(GPS)");
             } else {
-                ArrayList<EventInfo> tempEventsList =
+        /*        ArrayList<EventInfo> tempEventsList =
                         FilterMethods.filterByCityAndFilterName (
                                                                         GlobalVariables.namesCity[GlobalVariables.indexCityChosen],
                                                                         GlobalVariables.CURRENT_FILTER_NAME,
@@ -262,6 +277,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 filtered_events_data.clear ();
                 filtered_events_data.addAll (tempEventsList);
                 eventsListAdapter.notifyDataSetChanged ();
+          */
             }
             // display the filter line
             try {
@@ -571,7 +587,49 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public void onPause() {
         super.onPause ();  // Always call the superclass method first
         if(display != null) {
-            display.cancel (true);
+  //          display.cancel (true);
         }
     }
+
+    /**
+     * customerLogin() method from LoginActivity for guest and registered users
+     */
+    public void customerLogin() {
+        if (GlobalVariables.CUSTOMER_PHONE_NUM == null || GlobalVariables.CUSTOMER_PHONE_NUM.equals ("")) {
+            GlobalVariables.IS_CUSTOMER_REGISTERED_USER = false;
+            GlobalVariables.IS_CUSTOMER_GUEST = true;
+            GlobalVariables.CUSTOMER_PHONE_NUM = "";
+        } else {
+            GlobalVariables.IS_CUSTOMER_GUEST = false;
+            GlobalVariables.IS_CUSTOMER_REGISTERED_USER = true;
+            ParseQuery<Profile> query = ParseQuery.getQuery ("Profile");
+            query.whereEqualTo ("number", GlobalVariables.CUSTOMER_PHONE_NUM);
+            query.findInBackground (new FindCallback<Profile>() {
+                @Override
+                public void done(List<Profile> objects, ParseException e) {
+                    if (e == null) {
+                        if(objects.get (0).getChanels () != null){
+                            if(GlobalVariables.userChanels.size () == 0) {
+                                GlobalVariables.userChanels.addAll (objects.get (0).getChanels ());
+                            }
+                            ParseInstallation installation = ParseInstallation.getCurrentInstallation ();
+                            installation.addAll ("Channels", (Collection<?>) GlobalVariables.userChanels);
+                            installation.saveInBackground ();
+                            for (int i = 0; i < GlobalVariables.userChanels.size (); i++) {
+                                ParsePush.subscribeInBackground("a" + GlobalVariables.userChanels.get(i));
+                            }
+                        }
+                    } else{
+                        e.printStackTrace ();
+                    }
+                }
+
+            });
+        }
+        GlobalVariables.IS_PRODUCER = false;
+        GlobalVariables.PRODUCER_PARSE_OBJECT_ID = null;
+        GlobalVariables.ALL_EVENTS_DATA.clear ();
+
+    }
+
 }
