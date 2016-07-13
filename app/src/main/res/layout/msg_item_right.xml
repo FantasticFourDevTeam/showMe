@@ -41,7 +41,6 @@
             android:textColor="#ff000000"
             android:textSize="15sp"
             android:layout_alignParentEnd="true"
-            android:text="hfghfghf ghfghfgh fghfgbnb  fghnjhjhjhj hjghjghj hgjgh ghj fgbh fjrjfgn fnbfg nfgj"
             android:padding="5dp"
             android:gravity="left"/>
 

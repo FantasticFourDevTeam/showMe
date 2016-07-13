@@ -105,7 +105,7 @@ public class MessageAdapter extends BaseAdapter {
                 viewHolder.textTextView.setVisibility (View.VISIBLE);
                 if (messageChat.getIsSend ()) {
                     LayoutParams sendTimeTextViewLayoutParams = (LayoutParams) viewHolder.sendTimeTextView.getLayoutParams ();
-                    sendTimeTextViewLayoutParams.addRule (RelativeLayout.ALIGN_LEFT, R.id.textTextView);
+                    sendTimeTextViewLayoutParams.addRule (RelativeLayout.LEFT_OF, R.id.textTextView);
                     if (!isRealTime) {
                         viewHolder.sendTimeTextView.setLayoutParams (sendTimeTextViewLayoutParams);
                     } else {
@@ -113,7 +113,7 @@ public class MessageAdapter extends BaseAdapter {
                     }
                 } else {
                     LayoutParams sendTimeTextViewLayoutParams = (LayoutParams) viewHolder.sendTimeTextView.getLayoutParams ();
-                    sendTimeTextViewLayoutParams.addRule (RelativeLayout.ALIGN_RIGHT, R.id.textTextView);
+                    sendTimeTextViewLayoutParams.addRule (RelativeLayout.RIGHT_OF, R.id.textTextView);
                     viewHolder.sendTimeTextView.setLayoutParams (sendTimeTextViewLayoutParams);
                     if (isRealTime) {
                         viewHolder.sendTimeTextView.setText (messageChat.getFromUserName ());

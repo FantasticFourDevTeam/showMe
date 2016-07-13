@@ -2,12 +2,9 @@ package com.example.FundigoApp;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
-
 import io.branch.indexing.BranchUniversalObject;
 import io.branch.referral.Branch;
 import io.branch.referral.BranchError;
@@ -31,7 +28,7 @@ public class DeepLinkActivity extends Activity {
                                                               .setTitle (""+R.string.my_content_title)
                                                               .setContentDescription (""+R.string.my_content_description)
                                                               .setContentIndexingMode (BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
-                                                              .addContentMetadata ("objectId", getIntent ().getStringExtra ("objectId"));
+                                                              .addContentMetadata ("objectId", intent.getStringExtra ("objectId"));
 
         LinkProperties linkProperties = new LinkProperties ()
                                                 .setChannel ("My Application")
@@ -79,8 +76,19 @@ public class DeepLinkActivity extends Activity {
 
     public void WebPage(View v) {
         String faceBookUrl = intent.getStringExtra("fbUrl");
-        Intent webIntent;
+        Intent share = new Intent(android.content.Intent.ACTION_SEND);
+        share.setType("text/plain");
+        share.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
 
+        // Add data to the intent, the receiving app will decide
+        // what to do with it.
+        share.putExtra(Intent.EXTRA_SUBJECT, "Title Of The Post");
+        share.putExtra(Intent.EXTRA_TEXT, faceBookUrl);
+
+        startActivity(Intent.createChooser(share, "Share link!"));
+        /*
+        Intent webIntent;
+        Log.e("---",faceBookUrl+"");
         if (faceBookUrl != "" && faceBookUrl != null) {
             try {
                 getPackageManager().getPackageInfo("com.facebook.katana", 0);
@@ -98,5 +106,6 @@ public class DeepLinkActivity extends Activity {
                 }            }
         } else
             Toast.makeText(v.getContext(), "No FaceBook Page to Present", Toast.LENGTH_SHORT).show();
+    */
     }
 }

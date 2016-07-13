@@ -72,21 +72,31 @@ public class ArtistStatsActivity extends Activity implements GetEventsDataCallba
                                                    eventsList);
         updateEventsSeatsLists (eventsList);
         getCalculatedData (eventsList);
-        sumIncomeTV.setText (sumIncomeSold + "₪");
-        numOfTicketsSoldTV.setText (numTicketsSold + "");
-        numOfPastEventsTV.setText (numOfPastEvents + "");
+        sumIncomeTV.setText(sumIncomeSold + "₪");
+        numOfTicketsSoldTV.setText(numTicketsSold + "");
+        numOfPastEventsTV.setText(numOfPastEvents + "");
         double sumIncomeSoldDouble = (double) sumIncomeSold / (double) numTicketsSold;
         DecimalFormat df = new DecimalFormat ("#.##");
-        String dx = df.format (sumIncomeSoldDouble);
-        soldTicketsPriceAvgTv.setText (dx + "₪");
+        String dx;
+        if(sumIncomeSoldDouble >= 0) {
+            dx = df.format(sumIncomeSoldDouble);
+            soldTicketsPriceAvgTv.setText (dx + "₪");
+        }
+        else
+        soldTicketsPriceAvgTv.setText (0 + "₪");
 
         sumIncomeUpcomingTV.setText (sumIncomeUpcoming + "₪");
         numOfTicketsUpcomingTV.setText (numTicketsUpcoming + "");
         numOfUpcomingEventsTV.setText (numOfUpcomingEvents + "");
         double sumIncomeUpcomingDouble = (double) sumIncomeUpcoming / (double) numTicketsUpcoming;
         DecimalFormat df2 = new DecimalFormat ("#.##");
-        String dx2 = df2.format (sumIncomeUpcomingDouble);
-        upcomingTicketsPriceAvgTv.setText (dx2 + "₪");
+        String dx2;
+        if(sumIncomeUpcomingDouble >= 0) {
+            dx2 = df2.format (sumIncomeUpcomingDouble);
+            upcomingTicketsPriceAvgTv.setText(dx2 + "₪");
+        }
+        else
+            upcomingTicketsPriceAvgTv.setText(0 + "₪");
 
     }
 

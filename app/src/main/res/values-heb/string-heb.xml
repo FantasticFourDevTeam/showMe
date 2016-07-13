@@ -240,7 +240,7 @@
     <string name="big_fassion_event_real_time_chat">Big Fassion Event - Real Time Chat</string>
     <string name="history">היסטוריה</string>
     <string name="clear_history">נקה היסטוריה</string>
-    <string name="email">דאימייל</string>
+    <string name="email">אימייל</string>
     <string name="password">סיסמה</string>
     <string name="finish_reistration">הרשמה הסתיימה</string>
     <string name="create_your_fundigo_account">צור חשבון בפנדיגו</string>
@@ -265,7 +265,7 @@
     <string name="place">מקום: </string>
     <string name="hall_capacity">תכולת אולם: </string>
     <string name="parking">חניה: </string>
-    <string name="tags">טגיות</string>
+    <string name="tags">תגיות</string>
     <string name="toilet">שירותים: </string>
     <string name="atm">כספומט</string>
     <string name="finish">סיים</string>

@@ -40,7 +40,6 @@
             android:focusable="true"
             android:background="#ffffff"
             android:autoText="false"
-            android:text="fghfghfhfg gnjgfh ghktym, bghkghkmgh ghkmghm gh gkg ghmghjmghm hj,m"
             android:padding="5dp"
             android:onClick="startMessageWithCustomer"
             android:layout_alignParentStart="true"/>

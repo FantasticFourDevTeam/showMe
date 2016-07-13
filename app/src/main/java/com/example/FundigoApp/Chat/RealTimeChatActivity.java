@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -64,6 +65,7 @@ public class RealTimeChatActivity extends AppCompatActivity {//implements Adapte
         } else if (GlobalVariables.IS_PRODUCER) {
             current_user_id = GlobalVariables.PRODUCER_PARSE_OBJECT_ID;
         }
+        Log.e("rtefw","rfedws");
         editTextMessage = (EditText) findViewById (R.id.etMessage_rt_Chat);
         listViewChat = (ListView) findViewById (R.id.messageListview_rt_Chat);
         chatMessagesList = new ArrayList<MessageChat> ();

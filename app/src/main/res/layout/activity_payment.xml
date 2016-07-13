@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.devmarvel.creditcardentry.library.CreditCardForm
+        android:id="@+id/form_no_zip"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        app:card_number_hint="XXXX XXXX XXXX XXXX"
+        app:helper_text_color="@color/text_helper_color"
+        app:include_helper="false"
+        app:include_zip="false"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Text"
+        android:id="@+id/event_name_tv"
+        android:layout_marginTop="132dp"
+        android:textSize="25sp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_above="@+id/form_no_zip"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/event_name_tv">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/price"
+
+        android:textSize="25sp"
+        android:id="@+id/textView6"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="2"
+            android:layout_marginLeft="10dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Text"
+        android:id="@+id/price_tv"
+        android:textSize="25sp"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="3" />
+     </TableRow>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Button"
+        android:id="@+id/button5"
+        android:onClick="pay"
+        android:layout_below="@+id/form_no_zip"
+        android:layout_alignRight="@+id/event_name_tv"
+        android:layout_alignEnd="@+id/event_name_tv"
+        android:layout_marginTop="61dp" />
+
+
+
+
+</RelativeLayout>

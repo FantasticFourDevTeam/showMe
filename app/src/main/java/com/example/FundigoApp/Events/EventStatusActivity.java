@@ -18,9 +18,11 @@ import com.parse.ParseException;
 import com.parse.ParseQuery;
 
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class EventStatusActivity extends Activity implements AdapterView.OnItemClickListener {
 
@@ -38,7 +40,6 @@ public class EventStatusActivity extends Activity implements AdapterView.OnItemC
     TextView numberGuestsEnterTV;
     int numberFoGust;
     TextView enter_gusst_value;
-
 
     ListView lv_tickets;
     TextView tv_price;
@@ -85,22 +86,33 @@ public class EventStatusActivity extends Activity implements AdapterView.OnItemC
         tv_ticket = (TextView) findViewById (R.id.ticketItem_tv_ticket);
         imageView = (ImageView) findViewById (R.id.iv_arena);
         if (!eventInfo.isStadium) {
-            imageView.setVisibility (View.GONE);
+            imageView.setVisibility(View.GONE);
         }
 
         sumIncomeTV.setText (sumIncomeSold + "₪");
         numOfTicketsSoldTV.setText (numTicketsSold + "");
         double sumIncomeSoldDouble = (double) sumIncomeSold / (double) numTicketsSold;
-        DecimalFormat df = new DecimalFormat ("#.##");
-        String dx = df.format (sumIncomeSoldDouble);
-        soldTicketsPriceAvgTv.setText (dx + "₪");
+        if(sumIncomeSoldDouble >= 0) {
+            DecimalFormat df = new DecimalFormat ("#.##");
+            String dx = df.format(sumIncomeSoldDouble);
+            soldTicketsPriceAvgTv.setText(dx + "₪");
+        }
+        else
+        soldTicketsPriceAvgTv.setText(0 + "₪");
 
+        NumberFormat nf = NumberFormat.getNumberInstance(Locale.ENGLISH);
         sumIncomeUpcomingTV.setText (sumIncomeUpcoming + "₪");
         numOfTicketsUpcomingTV.setText (numTicketsUpcoming + "");
         double sumIncomeUpcomingDouble = (double) sumIncomeUpcoming / (double) numTicketsUpcoming;
-        DecimalFormat df2 = new DecimalFormat ("#.##");
-        String dx2 = df2.format (sumIncomeUpcomingDouble);
-        upcomingTicketsPriceAvgTv.setText (dx2 + "₪");
+        DecimalFormat df2 = (DecimalFormat)nf;
+        df2 = new DecimalFormat ("#.##", df2.getDecimalFormatSymbols ());
+        String dx2;
+        if(sumIncomeUpcomingDouble >= 0) {
+            dx2 = df2.format (sumIncomeUpcomingDouble);
+            upcomingTicketsPriceAvgTv.setText(dx2 + "₪");
+        }
+        else
+            upcomingTicketsPriceAvgTv.setText(0 + "₪");
     }
 
     public void getListOfEventsTickets(EventInfo eventInfo) {

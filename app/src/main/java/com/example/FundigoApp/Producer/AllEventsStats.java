@@ -87,15 +87,27 @@ public class AllEventsStats extends Fragment implements GetEventsDataCallback {
         NumberFormat nf = NumberFormat.getNumberInstance(Locale.ENGLISH);
         DecimalFormat df = (DecimalFormat)nf;
         df = new DecimalFormat ("#.##", df.getDecimalFormatSymbols ());
-        String dx = df.format (sumIncomeSoldDouble);
-        soldTicketsPriceAvgTv.setText (dx + "₪");
+        String dx;
+        if(sumIncomeSoldDouble >= 0) {
+            dx = df.format(sumIncomeSoldDouble);
+            soldTicketsPriceAvgTv.setText(dx + "₪");
+        }
+        else
+            soldTicketsPriceAvgTv.setText(0 + "₪");
 
         sumIncomeUpcomingTV.setText (sumIncomeUpcoming + "₪");
         numOfTicketsUpcomingTV.setText (numTicketsUpcoming + "");
         numOfUpcomingEventsTV.setText (numOfUpcomingEvents + "");
         double sumIncomeUpcomingDouble = (double) sumIncomeUpcoming / (double) numTicketsUpcoming;
-        String dx2 = df.format (sumIncomeUpcomingDouble);
-        upcomingTicketsPriceAvgTv.setText (dx2 + "₪");
+        DecimalFormat df2 = (DecimalFormat)nf;
+        df2 = new DecimalFormat ("#.##", df2.getDecimalFormatSymbols ());
+        String dx2;
+        if(sumIncomeUpcomingDouble >= 0) {
+            dx2 = df2.format (sumIncomeUpcomingDouble);
+            upcomingTicketsPriceAvgTv.setText(dx2 + "₪");
+        }
+        else
+            upcomingTicketsPriceAvgTv.setText(0 + "₪");
     }
 
     @Override
