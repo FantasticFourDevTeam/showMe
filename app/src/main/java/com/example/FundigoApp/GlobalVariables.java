@@ -27,7 +27,7 @@ public class GlobalVariables {
     public static final int REQUEST_CODE_MY_PICK = 1;
     public static final int SELECT_PICTURE = 1;
     public static final String GEO_API_ADDRESS = "https://maps.googleapis.com/maps/api/geocode/json?";
-    public static final String GEO_API_KEY = "AIzaSyBiHICjzRCGOMur1nnH4tcBjLiaQM8m2aw";
+    public static final String GEO_API_KEY = "AIzaSyAO_BADR0qgh5i6oirplDXw0wCCxCZoLe8";
 
     public static boolean IS_CUSTOMER_GUEST = false;
     public static boolean IS_CUSTOMER_REGISTERED_USER = false;

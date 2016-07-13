@@ -1,14 +1,20 @@
 package com.example.FundigoApp.Customer.CustomerMenu;
 
+import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.content.IntentCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.example.FundigoApp.Customer.CustomerDetails;
@@ -16,11 +22,25 @@ import com.example.FundigoApp.GlobalVariables;
 import com.example.FundigoApp.R;
 import com.example.FundigoApp.StaticMethod.FileAndImageMethods;
 import com.example.FundigoApp.StaticMethod.UserDetailsMethod;
+import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
+import com.facebook.Profile;
+import com.facebook.login.LoginManager;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.squareup.picasso.Picasso;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.URI;
+import java.sql.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CustomerProfileUpdate extends AppCompatActivity {
@@ -82,10 +102,62 @@ public class CustomerProfileUpdate extends AppCompatActivity {
     }
 
     public void imageUpload(View view) {
-        Intent i = new Intent (Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        if (i.resolveActivity (getPackageManager ()) != null) {
-            startActivityForResult (i, GlobalVariables.SELECT_PICTURE);
-        }
+         String str[] = new String[] { "Camera", "Gallery","Facebook" };
+         new AlertDialog.Builder(CustomerProfileUpdate.this).setTitle("Choose Your Photo").setItems(str,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent i;
+                        Log.e("int click" ,""+which);
+                        switch (which)
+                        {
+                            case 0:
+                                i = new Intent ("android.media.action.IMAGE_CAPTURE");
+                                startActivityForResult(i,GlobalVariables.SELECT_PICTURE);
+                                break;
+                            case 1:
+                                 i = new Intent (Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                                if (i.resolveActivity (getPackageManager ()) != null) {
+                                    startActivityForResult (i, GlobalVariables.SELECT_PICTURE);
+                                }
+                                break;
+                            case 2:
+                                if(Profile.getCurrentProfile()!=null)
+                                {
+                                    //String id = GlobalVariables.FB_ID;
+                                    Bundle parameters = new Bundle ();
+                                    parameters.putString ("fields", "email,name,picture,link");
+                                    new GraphRequest(
+                                            AccessToken.getCurrentAccessToken(),
+                                            /*"/"+id+"/picture"*/"/me",
+                                            parameters,
+                                            HttpMethod.GET,
+                                            new GraphRequest.Callback() {
+                                                public void onCompleted(GraphResponse response) {
+                                            /* handle the result */
+                                                    try {
+                                                        JSONObject picture = response.getJSONObject ().getJSONObject ("picture");
+                                                        JSONObject data = picture.getJSONObject ("data");
+                                                        Picasso.with (CustomerProfileUpdate.this).load (data.getString ("url")).into (customerImg);
+                                                        IMAGE_SELECTED =true;
+                                                        Toast.makeText(CustomerProfileUpdate.this,"finish",Toast.LENGTH_SHORT).show();
+                                                    } catch (JSONException e) {
+                                                        //e.printStackTrace();
+                                                        Toast.makeText(CustomerProfileUpdate.this,"Not Success try agian",Toast.LENGTH_SHORT).show();
+                                                    }
+                                                }
+                                            }
+                                    ).executeAsync();
+                                }
+                                else
+                                {
+                                    Toast.makeText(CustomerProfileUpdate.this,"You need to login facebook via fundigo",Toast.LENGTH_SHORT).show();
+                                }
+                                break;
+                        }
+                    }
+                }).show();
+
     }
 
     public byte[] imageUpdate() {

@@ -1,10 +1,19 @@
 package com.example.FundigoApp.Chat;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.Window;
@@ -13,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.FundigoApp.Customer.CustomerDetails;
 import com.example.FundigoApp.Events.EventInfo;
@@ -24,7 +34,14 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.parse.FindCallback;
 import com.parse.ParseACL;
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.sinch.android.rtc.PushPair;
+import com.sinch.android.rtc.messaging.MessageClient;
+import com.sinch.android.rtc.messaging.MessageClientListener;
+import com.sinch.android.rtc.messaging.MessageDeliveryInfo;
+import com.sinch.android.rtc.messaging.MessageFailureInfo;
+import com.sinch.android.rtc.messaging.WritableMessage;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -49,11 +66,51 @@ public class ChatActivity extends Activity {
     private Room room;
     ImageLoader loader;
 
+    //private String recipientId;
+    //private EditText messageBodyField;
+    //private String messageBody1;
+    private MessageService.MessageServiceInterface messageService
+            ;
+   // private String currentUserId;
+    private ServiceConnection serviceConnection = new MyServiceConnection();
+    private MyMessageClientListener myMessageClientListener =new MyMessageClientListener();
+    private ProgressDialog progressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate (savedInstanceState);
         this.requestWindowFeature (Window.FEATURE_NO_TITLE);
         setContentView (R.layout.activity_main_chat);
+        bindService(new Intent(this, MessageService.class), serviceConnection, BIND_AUTO_CREATE);
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("Loading");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.show();
+//broadcast receiver to listen for the broadcast
+//from MessageService
+        BroadcastReceiver receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Boolean success = intent.getBooleanExtra("success", false);
+                progressDialog.dismiss();
+                //show a toast message if the Sinch
+                //service failed to start
+                if (!success) {
+                    Toast.makeText(getApplicationContext(), "Messaging service failed to start", Toast.LENGTH_LONG).show();
+                }
+            }
+        };
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter("com.sinch.com.example.FundigoApp.Chat.ChatActivity"));
+
+
+
+
+
+
+
+
+
         loader = FileAndImageMethods.getImageLoader (this);
         profileImage = (ImageView) findViewById (R.id.profileImage_chat);
         profileName = (Button) findViewById (R.id.ProfileName_chat);
@@ -74,6 +131,7 @@ public class ChatActivity extends Activity {
             profileName.setText (eventName + getResources ().getString (R.string.chat_with_producer));
             setEventInfo (eventInfo.getPicUrl());
         }
+        getAllMessagesFromParseInBackground(eventInfo.getProducerId (), customerPhone);
         editTextMessage = (EditText) findViewById (R.id.etMessageChat);
         chatListView = (ListView) findViewById (R.id.messageListviewChat);
         mMessageChatsList = new ArrayList<MessageChat> ();
@@ -118,34 +176,29 @@ public class ChatActivity extends Activity {
         loader.displayImage (picUrl, profileImage);
     }
 
-    private Runnable runnable = new Runnable () {
+  /*  private Runnable runnable = new Runnable () {
         @Override
         public void run() {
             getAllMessagesFromParseInBackground (eventInfo.getProducerId (), customerPhone);
             handler.postDelayed (this, 300);
         }
-    };
+    };*/
 
     public void sendMessage(View view) {
         messageBody = editTextMessage.getText ().toString ();
-        Message message = new Message ();
-        message.setBody (messageBody);
-        if (GlobalVariables.IS_CUSTOMER_REGISTERED_USER) {
-            message.setUserId (customerPhone);
-        } else {
-            message.setUserId (eventInfo.getProducerId ());
+
+        if(messageService==null)
+        {
+            Toast.makeText(this,"Can't Send",Toast.LENGTH_LONG).show();
         }
-        message.setCustomer (customerPhone);
-        message.setProducer (eventInfo.getProducerId ());
-        message.setEventObjectId (eventInfo.getParseObjectId ());
-        try {
-            message.save ();
-        } catch (ParseException e) {
-            e.printStackTrace ();
+        else
+        {
+            if(GlobalVariables.IS_PRODUCER)messageService.sendMessage(customerPhone, messageBody);
+            else messageService.sendMessage(eventInfo.getProducerId(), messageBody);
         }
         editTextMessage.setText ("");
-        getAllMessagesFromParseInMainThread (eventInfo.getProducerId (), customerPhone);
-        updateMessageRoomItemInBackGround (message);
+       // getAllMessagesFromParseInMainThread (eventInfo.getProducerId (), customerPhone);
+        //updateMessageRoomItemInBackGround (message);
     }
 
     private void getAllMessagesFromParseInBackground(final String producer, final String customer) {
@@ -174,7 +227,8 @@ public class ChatActivity extends Activity {
         query.whereEqualTo ("eventObjectId", eventInfo.getParseObjectId ());
         query.orderByAscending ("createdAt");
         List<Message> messages = null;
-        try {
+        try
+        {
             messages = query.find ();
             if (messages.size () > mMessageChatsList.size ()) {
                 updateMessagesList (messages);
@@ -239,7 +293,7 @@ public class ChatActivity extends Activity {
     @Override
     public void onPause() {
         super.onPause ();
-        handler.removeCallbacks (runnable);
+        //handler.removeCallbacks (runnable);
         room = null;
     }
 
@@ -249,7 +303,7 @@ public class ChatActivity extends Activity {
         if(room == null) {
             room = getRoomObject ();
         }
-        handler.postDelayed (runnable, 0);
+        //handler.postDelayed (runnable, 0);
     }
 
     public void oOpenFacebookIntent(View view) {
@@ -293,4 +347,161 @@ public class ChatActivity extends Activity {
         }
         return null;
     }
+
+
+
+
+    /**
+     * Created by benjamin on 04/05/2016.
+     */
+    @Override
+    public void onDestroy() {
+        unbindService(serviceConnection);
+        messageService.removeMessageClientListener(myMessageClientListener);
+        super.onDestroy();
+    }
+
+
+    private MessageChat fromMeessageToMessageChat(Message messages,String from) {
+            Message msg = messages;
+            String id = msg.getUserId ();
+            boolean isMe = false;
+            if (!GlobalVariables.IS_PRODUCER) {
+                if (id.equals (customerPhone)) {
+                    isMe = true;
+                } else {
+                    id = "Producer # " + id;
+                }
+            } else {
+                if (id.equals (eventInfo.getProducerId ())) {
+                    isMe = true;
+                } else {
+                    id = "Customer " + id;
+                }
+            }
+        if(from.equals("onIncomingMessage"))isMe=false;
+            return new MessageChat (
+                    MessageChat.MSG_TYPE_TEXT,
+                    MessageChat.MSG_STATE_SUCCESS,
+                    id,
+                    msg.getBody (),
+                    isMe,
+                    true,
+                    msg.getCreatedAt ());
+
+    }
+
+    private void updateAdapterFromSinch(MessageChat messageChat)
+    {
+        mMessageChatsList.add(messageChat);
+        mAdapter.notifyDataSetChanged (); // update adapter
+        // Scroll to the bottom of the eventList on initial load
+            chatListView.setSelection(mAdapter.getCount() - 1);
+            messagesFirstLoad = false;
+    }
+
+    private class MyServiceConnection implements ServiceConnection {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            messageService = (MessageService.MessageServiceInterface) iBinder;
+            messageService.addMessageClientListener(myMessageClientListener);
+            Toast.makeText(ChatActivity.this.getApplication().getBaseContext(), "ServiceConnection line 382", Toast.LENGTH_LONG).show();
+        }
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            messageService = null;
+
+        }
+    }
+
+
+
+    public class MyMessageClientListener implements MessageClientListener
+    {
+        //Notify the user if their message failed to send
+        @Override
+        public void onMessageFailed(MessageClient messageClient, com.sinch.android.rtc.messaging.Message message, MessageFailureInfo messageFailureInfo) {
+            Toast.makeText(ChatActivity.this.getApplication().getBaseContext(), "Message failed to send.", Toast.LENGTH_LONG).show();
+        }
+        @Override
+        public void onIncomingMessage(MessageClient messageClient, com.sinch.android.rtc.messaging.Message message) {
+            //Display an incoming message
+            Message parseMessage = new Message ();
+            parseMessage.setBody (message.getTextBody());
+            if (GlobalVariables.IS_CUSTOMER_REGISTERED_USER) {
+                parseMessage.setUserId (customerPhone);
+            } else {
+                parseMessage.setUserId (eventInfo.getProducerId ());
+            }
+            parseMessage.setCustomer (customerPhone);
+            parseMessage.setProducer (eventInfo.getProducerId ());
+            parseMessage.setEventObjectId (eventInfo.getParseObjectId ());
+            updateAdapterFromSinch(fromMeessageToMessageChat(parseMessage,"onIncomingMessage"));
+           Log.e("onIncomingMessage",message.getTextBody());
+            Toast.makeText(ChatActivity.this.getApplication().getBaseContext(), message.getTextBody(), Toast.LENGTH_LONG).show();
+        }
+
+        @Override
+        public void onMessageSent(MessageClient client, com.sinch.android.rtc.messaging.Message message, String recipientId) {
+            //Display the message that was just sent
+            //Later, I'll show you how to store the
+            //message in Parse, so you can retrieve and
+            //display them every time the conversation is opened
+            Message parseMessage = new Message ();
+            parseMessage.setBody (message.getTextBody());
+            if (GlobalVariables.IS_CUSTOMER_REGISTERED_USER) {
+                parseMessage.setUserId (customerPhone);
+            } else {
+                parseMessage.setUserId (eventInfo.getProducerId ());
+            }
+            parseMessage.setCustomer (customerPhone);
+            parseMessage.setProducer (eventInfo.getProducerId ());
+            parseMessage.setEventObjectId (eventInfo.getParseObjectId ());
+            parseMessage.put("sinchId", message.getMessageId());
+            parseMessage.saveInBackground();
+            updateAdapterFromSinch(fromMeessageToMessageChat(parseMessage,"onMessageSent"));
+
+
+
+
+
+            Toast.makeText(ChatActivity.this.getApplication().getBaseContext(), "onMessageSent="+message.getTextBody(), Toast.LENGTH_LONG).show();
+            Log.e("onMessageSent",message.getTextBody());
+           // final WritableMessage writableMessage = new WritableMessage(message.getRecipientIds().get(0), message.getTextBody());
+            //only add message to parse database if it doesn't already exist there
+            /*arseQuery<ParseObject> query = ParseQuery.getQuery("ParseMessage");
+            query.whereEqualTo("sinchId", message.getMessageId());
+            query.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> messageList, com.parse.ParseException e) {
+                    if (e == null) {
+                        if (messageList.size() == 0) {
+                            ParseObject parseMessage = new ParseObject("Message");
+                            parseMessage.put("userId", customerPhone);
+                            parseMessage.put("producer", writableMessage.getRecipientIds().get(0));
+                            parseMessage.put("messageText", writableMessage.getTextBody());
+                            parseMessage.put("sinchId", writableMessage.getMessageId());
+                            parseMessage.saveInBackground();
+                          //  messageAdapter.addMessage(writableMessage, MessageAdapter.DIRECTION_OUTGOING);
+                        }
+                    }
+                }
+            });*/
+        }
+
+        //Do you want to notify your user when the message is delivered?
+        @Override
+        public void onMessageDelivered(MessageClient client, MessageDeliveryInfo deliveryInfo)
+        {
+            Toast.makeText(ChatActivity.this.getApplication().getBaseContext(),"onMessageDelivered line 441", Toast.LENGTH_LONG).show();
+        }
+
+        //Don't worry about this right now
+        @Override
+        public void onShouldSendPushData(MessageClient client,com.sinch.android.rtc.messaging.Message message, List<PushPair> pushPairs)
+        {
+            Toast.makeText(ChatActivity.this.getApplication().getBaseContext(),"onShouldSendPushData line 448", Toast.LENGTH_LONG).show();
+        }
+    }
+
 }

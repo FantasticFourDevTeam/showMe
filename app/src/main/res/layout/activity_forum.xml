@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.FundigoApp.Customer.Social.Forum">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:id="@+id/linerLayout_forum">
+
+        <Button
+            android:layout_width="100dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center_horizontal|center"
+            android:id="@+id/newPost_Forum"
+            android:text="New Post"
+            />
+
+    </LinearLayout>
+    <ListView
+        android:id="@+id/listViewOfForum"
+        android:layout_below="@+id/linerLayout_forum"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:animationCache="false"
+        android:background="#F1F1F1"
+        android:divider="#F1F1F1"
+        android:dividerHeight="0dp"
+        android:drawSelectorOnTop="false"
+        android:scrollingCache="false"
+        android:focusable="false"
+        />
+
+</RelativeLayout>

@@ -13,8 +13,6 @@ android {
         applicationId "com.example.events"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
     }
     buildTypes {
         release {
@@ -25,7 +23,7 @@ android {
 }
 
 dependencies {
-    compile group: 'org.apache.httpcomponents' , name: 'httpclient-android' , version: '4.3.5.1'
+    compile 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
     compile 'com.facebook.android:facebook-android-sdk:4.+'
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
@@ -35,7 +33,7 @@ dependencies {
     compile 'com.parse:parse-android:1.+'
     compile 'com.android.support:design:23.1.1'
     compile 'com.github.dbachelder:CreditCardEntry:1.4.7'
-    compile files('libs/sinch-android-verification-1.1.5.jar')
+    compile files('libs/sinch-android-verification-1.1.2.jar')
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.google.android.gms:play-services-appindexing:8.4.0'
     compile 'io.branch.sdk.android:library:1.+'
@@ -45,5 +43,6 @@ dependencies {
     compile 'com.stripe:stripe-android:+'
     compile 'com.github.ganfra:material-spinner:1.1.1'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+    compile files('libs/sinch-android-rtc-3.9.4.jar')
 }
 

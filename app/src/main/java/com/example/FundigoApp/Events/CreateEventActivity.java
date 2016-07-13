@@ -199,7 +199,7 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
                     }
 
                 }
-
+                showThirdStage ();
 
                 break;
             case R.id.btn_validate_address:

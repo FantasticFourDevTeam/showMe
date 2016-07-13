@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.example.FundigoApp.Customer.CustomerDetails;
 import com.example.FundigoApp.GlobalVariables;
@@ -29,20 +28,18 @@ public class MessagesRoomProducerActivity extends Activity implements AdapterVie
     int event_index;
     private Handler handler = new Handler ();
     HashMap<String, CustomerDetails> customerPhoneToDetailsMap = new HashMap<String, CustomerDetails> ();
-    TextView noMessages;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate (savedInstanceState);
         setContentView (R.layout.activity_messages_producer_room);
 
         list_view = (ListView) findViewById (R.id.listView);
         Intent intent = getIntent ();
         event_index = intent.getIntExtra ("index", 0);
         messageRoomAdapter = new MessageRoomAdapter (this, conversationsList);
-        list_view.setAdapter(messageRoomAdapter);
+        list_view.setAdapter (messageRoomAdapter);
         list_view.setOnItemClickListener (this);
-        noMessages = (TextView) findViewById(R.id.noMessagesTv);
         getConversationsFromParseMainThread ();
         handler.postDelayed (runnable, 500);
     }
@@ -69,8 +66,6 @@ public class MessagesRoomProducerActivity extends Activity implements AdapterVie
         query.findInBackground (new FindCallback<Room> () {
             public void done(List<Room> rooms, ParseException e) {
                 if (e == null) {
-                    if(rooms.size() <= 0)
-                        noMessages.setVisibility(View.VISIBLE);
                     updateConvData (rooms);
                 } else {
                     e.printStackTrace ();

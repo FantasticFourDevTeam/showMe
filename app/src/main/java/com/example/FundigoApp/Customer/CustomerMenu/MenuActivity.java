@@ -121,6 +121,7 @@ public class MenuActivity extends AppCompatActivity {
                                                                                           "email"));
             }
         });
+
         // Callback registration
         facebook_login_button.registerCallback (callbackManager, new FacebookCallback<LoginResult> () {
             @Override
@@ -132,7 +133,6 @@ public class MenuActivity extends AppCompatActivity {
                 profileFacebookPictureView.setVisibility (View.VISIBLE);
                 facebookUserNameView.setVisibility (View.VISIBLE);
             }
-
             @Override
             public void onCancel() {
                 Toast.makeText (context, R.string.canceled_logging_facebook, Toast.LENGTH_SHORT).show ();
@@ -142,7 +142,6 @@ public class MenuActivity extends AppCompatActivity {
             @Override
             public void onError(FacebookException exception) {
                 Toast.makeText (context, R.string.error_logging_facebook, Toast.LENGTH_SHORT).show ();
-                Log.e("R.string.error_logging_facebook", exception.getMessage());
                 exception.printStackTrace ();
             }
         });
@@ -236,7 +235,7 @@ public class MenuActivity extends AppCompatActivity {
                                              Picasso.with (context).load (data.getString ("url")).into (profileFacebookPictureView);
                                              facebookUserNameView.setText (response.getJSONObject ().getString ("name"));
                                          } catch (JSONException e) {
-                                             e.printStackTrace ();
+                                                e.printStackTrace ();
                                          }
                                      }
                                  }

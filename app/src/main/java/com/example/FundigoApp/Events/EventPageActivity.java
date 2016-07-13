@@ -23,8 +23,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.FundigoApp.Chat.ChatActivity;
+import com.example.FundigoApp.Chat.MessageService;
 import com.example.FundigoApp.Chat.MessagesRoomProducerActivity;
 import com.example.FundigoApp.Chat.RealTimeChatActivity;
+import com.example.FundigoApp.Customer.Social.Forum;
 import com.example.FundigoApp.GlobalVariables;
 import com.example.FundigoApp.Producer.ProducerSendPuchActivity;
 import com.example.FundigoApp.R;
@@ -246,7 +248,7 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
     public void onClick(View v) {
         switch (v.getId ()) {
             case R.id.imageEvenetPageView2:
-                AlertDialog.Builder builder = new AlertDialog.Builder (this);
+                final AlertDialog.Builder builder = new AlertDialog.Builder (this);
                 builder.setMessage ("Share:")
                         .setCancelable (false)
                         .setPositiveButton (this.getString (R.string.share_app_page), new DialogInterface.OnClickListener () {
@@ -289,8 +291,55 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
                 }
                 break;
             case R.id.imageEvenetPageView5:
-                AlertDialog.Builder builder2 = new AlertDialog.Builder (this);
-                builder2.setTitle (this.getString (R.string.you_can_get_more_info_about_the_event));
+                String [] items = {this.getString (R.string.see_customers_massages),
+                        this.getString (R.string.real_time_chat),"Forum",this.getString (R.string.cancel)};
+                if (!GlobalVariables.IS_PRODUCER) {
+                    items[0] = this.getString (R.string.Send_message_to_producer);
+                }
+                new AlertDialog.Builder (EventPageActivity.this)./*setMessage(this.getString (R.string.how_do_you_want_to_do_it)).*/setTitle(this.getString (R.string.you_can_get_more_info_about_the_event)).
+                        setItems(items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intentToSend;
+                        switch (which)
+                        {
+                            case 0:
+                                if (GlobalVariables.IS_CUSTOMER_REGISTERED_USER) {
+
+                                    intentToSend = new Intent (EventPageActivity.this, ChatActivity.class);
+                                    intentToSend.putExtra ("index", intent.getIntExtra ("index", 0));
+                                    intentToSend.putExtra ("customer_phone", GlobalVariables.CUSTOMER_PHONE_NUM);
+                                    startActivity (intentToSend);
+
+                                } else if (GlobalVariables.IS_PRODUCER) {
+                                    loadMessagesPageProducer ();
+                                } else if (GlobalVariables.IS_CUSTOMER_GUEST) {
+                                    dialogForGuestToRegister (); // in case of Guest
+                                }
+                                break;
+                            case 1:
+                                if (GlobalVariables.IS_CUSTOMER_GUEST) {
+                                    dialogForGuestToRegister (); //in case of Guest
+                                } else {
+                                    intentToSend = new Intent (EventPageActivity.this, RealTimeChatActivity.class);
+                                    intentToSend.putExtra ("eventName", eventName);
+                                    intentToSend.putExtra ("eventObjectId", eventInfo.getParseObjectId ());
+                                    startActivity (intentToSend);
+                                }
+                                break;
+                            case 2:
+                                intentToSend = new Intent (EventPageActivity.this, Forum.class);
+                                startActivity (intentToSend);
+                                break;
+                            case 3:
+                                dialog.dismiss ();
+                                break;
+
+                        }
+                    }
+                }).show();
+                /* AlertDialog.Builder builder2 = new AlertDialog.Builder (this);
+               builder2.setTitle (this.getString (R.string.you_can_get_more_info_about_the_event));
                 builder2.setMessage (this.getString (R.string.how_do_you_want_to_do_it));
                 if (!GlobalVariables.IS_PRODUCER) {
                     builder2.setPositiveButton (this.getString (R.string.Send_message_to_producer), listener);
@@ -303,6 +352,7 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
                 dialog.show ();
                 TextView messageText = (TextView) dialog.findViewById (android.R.id.message);
                 messageText.setGravity (Gravity.CENTER);
+                */
                 break;
         }
     }
