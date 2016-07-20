@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.example.FundigoApp.Customer.CustomerDetails;
 import com.example.FundigoApp.GlobalVariables;
@@ -28,6 +29,7 @@ public class MessagesRoomProducerActivity extends Activity implements AdapterVie
     int event_index;
     private Handler handler = new Handler ();
     HashMap<String, CustomerDetails> customerPhoneToDetailsMap = new HashMap<String, CustomerDetails> ();
+    private static TextView noMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +41,8 @@ public class MessagesRoomProducerActivity extends Activity implements AdapterVie
         event_index = intent.getIntExtra ("index", 0);
         messageRoomAdapter = new MessageRoomAdapter (this, conversationsList);
         list_view.setAdapter (messageRoomAdapter);
-        list_view.setOnItemClickListener (this);
+        list_view.setOnItemClickListener(this);
+        noMessage = (TextView)findViewById(R.id.noMessage);
         getConversationsFromParseMainThread ();
         handler.postDelayed (runnable, 500);
     }
@@ -52,7 +55,14 @@ public class MessagesRoomProducerActivity extends Activity implements AdapterVie
         query.orderByDescending ("updatedAt");
         try {
             roomsParsList = query.find ();
-            updateConvData (roomsParsList);
+            if(roomsParsList.size()!=0) {
+                noMessage.setVisibility(View.GONE);
+                updateConvData(roomsParsList);
+            }
+            else {
+                noMessage.setVisibility(View.VISIBLE);
+                noMessage.setText("No waiting Message from Customers");
+            }
         } catch (ParseException e) {
             e.printStackTrace ();
         }

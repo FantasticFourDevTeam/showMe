@@ -132,6 +132,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 startActivity(intent);
             }
         });
+
     }
 
     public void createCustomerMainPage() {
@@ -177,6 +178,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         }
         pushViewText = (TextView) findViewById (R.id.pushView);
+
     }
 
     @Override
@@ -285,10 +287,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 }
                 displayFilterBanner();  // display the filter Banner
                 // display the filter line
-            }
 
-            PushDisplay display = new PushDisplay(); // Assaf :execute the the push notifications display in the Textview
-            display.execute();
+                PushDisplay display = new PushDisplay(); // Assaf :execute the the push notifications display in the Textview
+                display.execute();
+            }
         }
         catch (Exception ex)
         {

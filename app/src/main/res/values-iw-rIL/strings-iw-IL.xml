@@ -295,6 +295,7 @@
     <string name="please_enter_valid_address">הכנס כתובת נכונה בבקשה</string>
     <string name="please_fill_empty_forms">מלא נתונים חסרים</string>
     <string name="event_has_created_successfully">אירוע נוצר בהצלחה!</string>
+    <string name="event_hasnot_created_successfully">יצירת אירוע נכשלה נסה שוב</string>
     <string name="please_fill_empty_fields">"מלא שדות חסרים</string>
     <string name="are_you_sure_you_want_to_exit">האם אתה בטוח שברצונך לצאת?</string>
     <string name="validating">מוודא</string>

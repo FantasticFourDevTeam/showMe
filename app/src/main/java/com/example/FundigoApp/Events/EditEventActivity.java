@@ -159,70 +159,79 @@ public class EditEventActivity extends AppCompatActivity implements AdapterView.
     }
 
     public void setAll() {
-        et_name.setText (event.getName ());
-        et_address.setText (event.getAddress ());
+        et_name.setText(event.getName());
+        et_address.setText(event.getAddress());
         et_description.setText (event.getDescription ());
-        et_place.setText (event.getPlace ());
-        et_artist.setText (event.getArtist ());
+        et_place.setText(event.getPlace());
+        et_artist.setText(event.getArtist());
         String cap = event.getEventCapacityService ();
-        if (cap != null && !cap.isEmpty ()) {
-            String[] a = cap.split ("\\s+");
-            for (int i = 0; i < a.length; i++) {
-                a[i] = a[i].replaceAll (",", "");
-                Log.e (TAG, "a " + a[i]);
-            }
 
-            et_hall_cap_edit.setText (a[2]);
+        try {
+            if (cap != null && !cap.isEmpty()) {
+                String[] a = cap.split("\\s+");
+                for (int i = 0; i < a.length; i++) {
+                    a[i] = a[i].replaceAll(",", "");
+                    Log.e(TAG, "a " + a[i]);
+                }
+
+                et_hall_cap_edit.setText(a[2]);
+            }
+            String park = event.getEventParkingService();
+            if (park != null && !park.isEmpty()) {
+                String[] b = park.split("\\s+");
+                for (int i = 0; i < b.length; i++) {
+                    b[i] = b[i].replaceAll(",", "");
+                    Log.e(TAG, "b " + b[i]);
+                }
+                et_parking_edit.setText(b[2]);
+            }
+            String toilet = event.getEventToiletService();
+            if (toilet != null && !toilet.isEmpty()) {
+                String[] c = toilet.split("\\s+");
+                for (int i = 0; i < c.length; i++) {
+                    c[i] = c[i].replaceAll(",", "");
+                    Log.e(TAG, "c " + c[i]);
+                }
+                if (c[0].equals("")) {
+
+                } else if (c[0].equals("None")) {
+                    toiletSpinner.setSelection(1);
+                } else if (c[0].equals("Unknown")) { // ADDED
+                    toiletSpinner.setSelection(12);
+                } else {
+                    toiletSpinner.setSelection(Integer.parseInt(c[0]) + 1);
+                }
+                if (c[2].equals("")) {
+
+                } else if (c[2].equals("None")) {
+                    handicapToiletSpinner.setSelection(1);
+                } else if (c[2].equals("Unknown")) { // ADDED
+                    handicapToiletSpinner.setSelection(12);
+                } else {
+                    handicapToiletSpinner.setSelection(Integer.parseInt(c[2]) + 1);
+                }
+            }
+            String atm = event.getEventATMService();
+            if (atm != null && !atm.isEmpty()) {
+                if (atm.equals("Yes")) {
+                    atmSpinner.setSelection(2);
+                } else if (atm.equals("No")) {
+                    atmSpinner.setSelection(3);
+                } else if (atm.equals("")) {
+                    //atmSpinner.setSelection(1);
+                } else if (atm.equals("Unknown")) {
+                    atmSpinner.setSelection(1); // added
+                }
+            }
+            et_tags_edit.setText(event.getTags());
+            lat = event.getX();
+            lng = event.getY();
         }
-        String park = event.getEventParkingService ();
-        if (park != null && !park.isEmpty ()) {
-            String[] b = park.split ("\\s+");
-            for (int i = 0; i < b.length; i++) {
-                b[i] = b[i].replaceAll (",", "");
-                Log.e (TAG, "b " + b[i]);
-            }
-            et_parking_edit.setText (b[2]);
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(),"Error occured with present event detailes",Toast.LENGTH_SHORT).show();
         }
-        String toilet = event.getEventToiletService ();
-        if (toilet != null && !toilet.isEmpty ()) {
-            String[] c = toilet.split ("\\s+");
-            for (int i = 0; i < c.length; i++) {
-                c[i] = c[i].replaceAll (",", "");
-                Log.e (TAG, "c " + c[i]);
-            }
-            if (c[0].equals ("")) {
-
-            } else if (c[0].equals ("None")) {
-                toiletSpinner.setSelection (1);
-            } else {
-                toiletSpinner.setSelection (Integer.parseInt (c[0]) + 1);
-            }
-            if (c[2].equals ("")) {
-
-            } else if (c[0].equals ("0")) {
-                handicapToiletSpinner.setSelection (1);
-            } else {
-                handicapToiletSpinner.setSelection (Integer.parseInt (c[2]) + 1);
-            }
-        }
-        String atm = event.getEventATMService ();
-        if (atm != null && !atm.isEmpty ()) {
-            if (atm.equals ("Yes")) {
-                atmSpinner.setSelection (1);
-                //  atmStatus = ATMS[0];
-            } else if (atm.equals ("No")) {
-                atmSpinner.setSelection (2);
-                //   atmStatus = ATMS[1];
-            } else if (atm.equals ("")) {
-                //  atmStatus = ATMS[2];
-                atmSpinner.setSelection (3);
-            }
-        }
-        et_tags_edit.setText (event.getTags ());
-        lat = event.getX ();
-        lng = event.getY ();
-
-
     }
 
     @Override
@@ -276,7 +285,9 @@ public class EditEventActivity extends AppCompatActivity implements AdapterView.
                     case 10:
                         numOfToilets = TOILETS[10];
                         break;
-
+                    case 11:
+                        numOfToilets = TOILETS[11];
+                        break;
                 }
                 break;
             case R.id.handicapToiletSpinner_edit:
@@ -313,6 +324,9 @@ public class EditEventActivity extends AppCompatActivity implements AdapterView.
                         break;
                     case 10:
                         numOfHandicapToilets = TOILETS[10];
+                        break;
+                    case 11:
+                        numOfHandicapToilets = TOILETS[11];
                         break;
 
                 }

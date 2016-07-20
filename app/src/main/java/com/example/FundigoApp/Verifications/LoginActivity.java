@@ -58,55 +58,121 @@ public class LoginActivity extends Activity {
         }
     }
 
+
+
     public void producerLogin(View v) {
-        producer_username = producer_usernameET.getText ().toString ();
-        producer_password = producer_passwordET.getText ().toString ();
+        producer_username = producer_usernameET.getText().toString();
+        producer_password = producer_passwordET.getText().toString();
         passwordVerified = false;
         emailVerified = false;
-        List<ParseUser> parseUsers = new ArrayList<ParseUser> ();
-        ParseQuery<ParseUser> query1 = ParseUser.getQuery ();
+        List<ParseUser> parseUsers = new ArrayList<ParseUser>();
+        ParseQuery<ParseUser> query1 = ParseUser.getQuery();
         try {
-            parseUsers = query1.find ();
-        } catch (ParseException e) {
-            e.printStackTrace ();
-        }
-        boolean exists = false;
-        for (ParseUser user : parseUsers) {
-            if (user.getUsername ().equals (producer_username)) {
-                exists = true;
-                if (user.get ("emailVerified") != null &&
-                            (boolean) user.get ("emailVerified")) {
-                    emailVerified = true;
+            query1.findInBackground(new FindCallback<ParseUser>() {
+                @Override
+                public void done(List<ParseUser> objects, ParseException e) {
+                    if (e == null) {
+                        boolean exists = false;
+                        for (ParseUser user : objects) {
+                            if (user.getUsername().equals(producer_username)) {
+                                exists = true;
+                                if (user.get("emailVerified") != null &&
+                                        (boolean) user.get("emailVerified")) {
+                                    emailVerified = true;
+                                }
+                                break;
+                            }
+                        }
+                        if (exists) {
+                            try {
+                                ParseUser.logIn(producer_username, producer_password);
+                                if (!emailVerified) {
+                                    Toast.makeText(getApplicationContext(), R.string.verify_email, Toast.LENGTH_SHORT).show();
+                                    ParseUser.logOut();
+                                    return;
+                                }
+                                Toast.makeText(getApplicationContext(), R.string.successfully_logged_in_as_producer, Toast.LENGTH_SHORT).show();
+                                GlobalVariables.IS_PRODUCER = true;
+                                GlobalVariables.IS_CUSTOMER_REGISTERED_USER = false;
+                                GlobalVariables.IS_CUSTOMER_GUEST = false;
+                                GlobalVariables.CUSTOMER_PHONE_NUM = null;
+                                GlobalVariables.PRODUCER_PARSE_OBJECT_ID = ParseUser.getCurrentUser().getObjectId();
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                GlobalVariables.ALL_EVENTS_DATA.clear();
+                                startActivity(intent);
+                                finish();
+                            } catch (Exception e1) {
+                                e1.printStackTrace();
+                                Toast.makeText(getApplicationContext(), R.string.wrong_password_try_again, Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Toast.makeText(getApplicationContext(), R.string.this_user_does_not_exist_try_again, Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        e.printStackTrace();
+                    }
                 }
-                break;
-            }
+            });
         }
-        if (exists) {
-            try {
-                ParseUser.logIn (producer_username, producer_password);
-                if (!emailVerified) {
-                    Toast.makeText (getApplicationContext (), R.string.verify_email, Toast.LENGTH_SHORT).show ();
-                    ParseUser.logOut ();
-                    return;
-                }
-                Toast.makeText (getApplicationContext (), R.string.successfully_logged_in_as_producer, Toast.LENGTH_SHORT).show ();
-                GlobalVariables.IS_PRODUCER = true;
-                GlobalVariables.IS_CUSTOMER_REGISTERED_USER = false;
-                GlobalVariables.IS_CUSTOMER_GUEST = false;
-                GlobalVariables.CUSTOMER_PHONE_NUM = null;
-                GlobalVariables.PRODUCER_PARSE_OBJECT_ID = ParseUser.getCurrentUser ().getObjectId ();
-                Intent intent = new Intent (this, MainActivity.class);
-                GlobalVariables.ALL_EVENTS_DATA.clear ();
-                startActivity (intent);
-                finish ();
-            } catch (ParseException e1) {
-                e1.printStackTrace ();
-                Toast.makeText (getApplicationContext (), R.string.wrong_password_try_again, Toast.LENGTH_SHORT).show ();
-            }
-        } else {
-            Toast.makeText (getApplicationContext (), R.string.this_user_does_not_exist_try_again, Toast.LENGTH_SHORT).show ();
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
         }
     }
+
+
+    /////////////////////////////////////////////////////////////////////////
+//    public void producerLogin(View v) {
+//        producer_username = producer_usernameET.getText ().toString ();
+//        producer_password = producer_passwordET.getText ().toString ();
+//        passwordVerified = false;
+//        emailVerified = false;
+//        List<ParseUser> parseUsers = new ArrayList<ParseUser> ();
+//        ParseQuery<ParseUser> query1 = ParseUser.getQuery ();
+//        try {
+//            parseUsers = query1.find ();
+//        } catch (ParseException e) {
+//            e.printStackTrace ();
+//        }
+//        boolean exists = false;
+//        for (ParseUser user : parseUsers) {
+//            if (user.getUsername ().equals (producer_username)) {
+//                exists = true;
+//                if (user.get ("emailVerified") != null &&
+//                            (boolean) user.get ("emailVerified")) {
+//                    emailVerified = true;
+//                }
+//                break;
+//            }
+//        }
+//        if (exists) {
+//            try {
+//                ParseUser.logIn (producer_username, producer_password);
+//                if (!emailVerified) {
+//                    Toast.makeText (getApplicationContext (), R.string.verify_email, Toast.LENGTH_SHORT).show ();
+//                    ParseUser.logOut ();
+//                    return;
+//                }
+//                Toast.makeText (getApplicationContext (), R.string.successfully_logged_in_as_producer, Toast.LENGTH_SHORT).show ();
+//                GlobalVariables.IS_PRODUCER = true;
+//                GlobalVariables.IS_CUSTOMER_REGISTERED_USER = false;
+//                GlobalVariables.IS_CUSTOMER_GUEST = false;
+//                GlobalVariables.CUSTOMER_PHONE_NUM = null;
+//                GlobalVariables.PRODUCER_PARSE_OBJECT_ID = ParseUser.getCurrentUser ().getObjectId ();
+//                Intent intent = new Intent (this, MainActivity.class);
+//                GlobalVariables.ALL_EVENTS_DATA.clear ();
+//                startActivity (intent);
+//                finish ();
+//            } catch (ParseException e1) {
+//                e1.printStackTrace ();
+//                Toast.makeText (getApplicationContext (), R.string.wrong_password_try_again, Toast.LENGTH_SHORT).show ();
+//            }
+//        } else {
+//            Toast.makeText (getApplicationContext (), R.string.this_user_does_not_exist_try_again, Toast.LENGTH_SHORT).show ();
+//        }
+//    }
+
+    //////////////////////////////////////////////////////////////
 
     public void customerLogin(View v) {
         Toast.makeText (this, R.string.successfully_logged_in_as_customer, Toast.LENGTH_SHORT).show ();

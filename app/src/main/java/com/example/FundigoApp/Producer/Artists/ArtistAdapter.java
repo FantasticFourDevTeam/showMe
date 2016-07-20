@@ -25,9 +25,9 @@ public class ArtistAdapter extends BaseAdapter {
     }
 
     @Override
-    public int getCount() {
-        return artistList .size();
-    }
+   public int getCount() {
+       return artistList .size();
+   }
 
     @Override
     public Object getItem(int position) {

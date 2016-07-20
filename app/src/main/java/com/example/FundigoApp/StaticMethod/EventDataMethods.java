@@ -42,6 +42,9 @@ public class EventDataMethods {
         void eventDataCallback();
     }
 
+
+
+    ///////Assaf:not in background Method - no change was done
     public static void downloadEventsData(final GetEventsDataCallback ic,
                                           String producerId,
                                           final Context context,
@@ -54,7 +57,7 @@ public class EventDataMethods {
         query.orderByDescending ("createdAt");
         List<Event> eventParse = null;
         try {
-            eventParse = query.find ();
+            eventParse = query.find();
             for (int i = 0; i < eventParse.size (); i++) {
                 Event event = eventParse.get (i);
                 tempEventsList.add (new EventInfo (event.getPic ().getUrl (),
@@ -90,22 +93,22 @@ public class EventDataMethods {
             GlobalVariables.ALL_EVENTS_DATA.addAll (tempEventsList);
 
             if (!GlobalVariables.IS_PRODUCER) {
-                GlobalVariables.cityMenuInstance = new CityMenu (tempEventsList, context);
-                GlobalVariables.namesCity = GlobalVariables.cityMenuInstance.getCityNames ();
-                if (!GlobalVariables.deepLinkEventObjID.equals ("")) {
-                    for (int i = 0; i < GlobalVariables.ALL_EVENTS_DATA.size (); i++) {
-                        if (GlobalVariables.deepLinkEventObjID.equals (GlobalVariables.ALL_EVENTS_DATA.get (i).getParseObjectId ())) {
-                            Bundle b = new Bundle ();
-                            onEventItemClick (i, GlobalVariables.ALL_EVENTS_DATA, intent);
-                            intent.putExtras (b);
-                            context.startActivity (intent);
-                            ic.eventDataCallback ();
+                GlobalVariables.cityMenuInstance = new CityMenu(tempEventsList, context);
+                GlobalVariables.namesCity = GlobalVariables.cityMenuInstance.getCityNames();
+                if (!GlobalVariables.deepLinkEventObjID.equals("")) {
+                    for (int i = 0; i < GlobalVariables.ALL_EVENTS_DATA.size(); i++) {
+                        if (GlobalVariables.deepLinkEventObjID.equals(GlobalVariables.ALL_EVENTS_DATA.get(i).getParseObjectId())) {
+                            Bundle b = new Bundle();
+                            onEventItemClick(i, GlobalVariables.ALL_EVENTS_DATA, intent);
+                            intent.putExtras(b);
+                            context.startActivity(intent);
+                            ic.eventDataCallback();
                             return;
                         }
                     }
                 }
             }
-            ic.eventDataCallback ();
+            ic.eventDataCallback();
         } catch (ParseException e) {
             e.printStackTrace ();
         }
@@ -120,8 +123,8 @@ public class EventDataMethods {
         return null;
     }
 
-    public static void uploadArtistData(List<Artist> artist_list) {
-        artist_list.clear ();
+    public static void uploadArtistData() { // Assaf: updated , Global Varialble.Artist was added
+        GlobalVariables.artist_list.clear();
         List<String> temp_artist_list = new ArrayList<String> ();
         for (int i = 0; i < GlobalVariables.ALL_EVENTS_DATA.size (); i++) {
             EventInfo eventInfo = GlobalVariables.ALL_EVENTS_DATA.get (i);
@@ -129,10 +132,11 @@ public class EventDataMethods {
                         !eventInfo.getArtist ().equals ("") &&
                         !temp_artist_list.contains (eventInfo.getArtist ())) {
                 temp_artist_list.add (eventInfo.getArtist ());
-                artist_list.add (new Artist (eventInfo.getArtist ()));
+                GlobalVariables.artist_list.add(new Artist (eventInfo.getArtist ()));// assaf added
             }
         }
-        artist_list.add (new Artist (GlobalVariables.No_Artist_Events));
+        GlobalVariables.artist_list.add(new Artist (GlobalVariables.No_Artist_Events));// assaf added
+
     }
 
     public static String getEventDateAsString(Date eventDate) {

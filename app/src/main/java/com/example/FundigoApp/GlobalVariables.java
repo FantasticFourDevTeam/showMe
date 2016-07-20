@@ -4,6 +4,7 @@ import android.location.Location;
 
 import com.example.FundigoApp.Events.EventInfo;
 import com.example.FundigoApp.MyLocation.CityMenu;
+import com.example.FundigoApp.Producer.Artists.Artist;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,6 +37,7 @@ public class GlobalVariables {
     public static String PRODUCER_PARSE_OBJECT_ID = null;
 
     public static List<EventInfo> ALL_EVENTS_DATA = new ArrayList<EventInfo> ();
+    public static List<Artist> artist_list = new ArrayList<> ();
     public static String CITY_GPS = null;
     public static Location MY_LOCATION = null;
     public static String CURRENT_FILTER_NAME = "";

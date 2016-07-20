@@ -168,7 +168,7 @@
             app:ms_enableErrorLabel="false"
             app:ms_enableFloatingLabel="false"
             app:ms_errorColor="@color/Red"
-            app:ms_hint="Is there an ATM?*"
+            app:ms_hint="Is there an ATM?"
             app:ms_hintColor="@color/DarkRed"
             app:ms_multiline="false"
             app:ms_thickness="2dp"/>
@@ -186,7 +186,7 @@
             app:ms_enableErrorLabel="false"
             app:ms_enableFloatingLabel="false"
             app:ms_errorColor="@color/Red"
-            app:ms_hint="Toilets amount*"
+            app:ms_hint="Toilets amount"
             app:ms_hintColor="@color/DarkRed"
             app:ms_multiline="false"
             app:ms_thickness="2dp"/>
@@ -204,7 +204,7 @@
             app:ms_enableErrorLabel="false"
             app:ms_enableFloatingLabel="false"
             app:ms_errorColor="@color/Red"
-            app:ms_hint="Handicap toilets amount*"
+            app:ms_hint="Handicap toilets amount"
             app:ms_hintColor="@color/DarkRed"
             app:ms_multiline="false"
             app:ms_thickness="2dp"/>

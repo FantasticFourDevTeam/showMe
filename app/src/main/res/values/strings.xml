@@ -244,9 +244,9 @@
 
 
     <string-array name="atms">
+        <item>Unknown</item>
         <item>Yes</item>
         <item>No</item>
-        <item>Unknown</item>
     </string-array>
 
     <string-array name="toilets">
@@ -260,7 +260,8 @@
         <item>7</item>
         <item>8</item>
         <item>9</item>
-        <item>10 or more</item>
+        <item>10</item>
+        <item>Unknown</item>
     </string-array>
 
     <string-array name="colors">
@@ -400,7 +401,8 @@
     <string name="saved_in_calendar">Invitation was sent to your calendar</string>
     <string name="please_enter_valid_address">Please enter valid address</string>
     <string name="please_fill_empty_forms">Please fill empty forms</string>
-    <string name="event_has_created_successfully">Event has created successfully!</string>
+    <string name="event_has_created_successfully">Event has created successfully</string>
+    <string name="event_hasnot_created_successfully">Event creation was failed please try again</string>
     <string name="please_fill_empty_fields">"Please Fill The  Empty Fields</string>
     <string name="are_you_sure_you_want_to_exit">Are you sure you want to exit?</string>
     <string name="validating">Validating...</string>
