@@ -43,16 +43,16 @@ public class MessagesRoomProducerActivity extends Activity implements AdapterVie
         list_view.setAdapter (messageRoomAdapter);
         list_view.setOnItemClickListener(this);
         noMessage = (TextView)findViewById(R.id.noMessage);
-        getConversationsFromParseMainThread ();
-        handler.postDelayed (runnable, 500);
+        getConversationsFromParseMainThread();
+        handler.postDelayed(runnable, 500);
     }
 
     private void getConversationsFromParseMainThread() {
         List<Room> roomsParsList;
         ParseQuery<Room> query = ParseQuery.getQuery (Room.class);
         query.whereEqualTo ("producer_id", GlobalVariables.PRODUCER_PARSE_OBJECT_ID);
-        query.whereEqualTo ("eventObjId", GlobalVariables.ALL_EVENTS_DATA.get (event_index).getParseObjectId ());
-        query.orderByDescending ("updatedAt");
+        query.whereEqualTo("eventObjId", GlobalVariables.ALL_EVENTS_DATA.get(event_index).getParseObjectId());
+        query.orderByDescending("updatedAt");
         try {
             roomsParsList = query.find ();
             if(roomsParsList.size()!=0) {
@@ -71,40 +71,48 @@ public class MessagesRoomProducerActivity extends Activity implements AdapterVie
     private void getConversationsFromParseInBackground() {
         ParseQuery<Room> query = ParseQuery.getQuery (Room.class);
         query.whereEqualTo ("producer_id", GlobalVariables.PRODUCER_PARSE_OBJECT_ID);
-        query.whereEqualTo ("eventObjId", GlobalVariables.ALL_EVENTS_DATA.get (event_index).getParseObjectId ());
-        query.orderByDescending ("updatedAt");
-        query.findInBackground (new FindCallback<Room> () {
+        query.whereEqualTo("eventObjId", GlobalVariables.ALL_EVENTS_DATA.get(event_index).getParseObjectId());
+        query.orderByDescending("updatedAt");
+        query.findInBackground(new FindCallback<Room>() {
             public void done(List<Room> rooms, ParseException e) {
                 if (e == null) {
-                    updateConvData (rooms);
+                    updateConvData(rooms);
                 } else {
-                    e.printStackTrace ();
+                    e.printStackTrace();
                 }
             }
         });
     }
 
     private void updateConvData(List<Room> roomsParsList) {
-        List<MessageRoomBean> tempConversationsList = new ArrayList<MessageRoomBean> ();
-        for (int i = 0; i < roomsParsList.size (); i++) {
-            tempConversationsList.add (new MessageRoomBean (roomsParsList.get (i).getLastMessage (),
-                                                                   roomsParsList.get (i).getCustomer_id (),
-                                                                   GlobalVariables.PRODUCER_PARSE_OBJECT_ID));
-        }
-        for (MessageRoomBean messageRoomBean : tempConversationsList) {
-            if (customerPhoneToDetailsMap.get (messageRoomBean.getCustomer_id ()) == null) {
-                updateUserDetailsFromParse (messageRoomBean);
-            } else {
-                updateMessageBeanWithCustomerDetails (messageRoomBean,
-                                                             customerPhoneToDetailsMap.get (messageRoomBean.getCustomer_id ()));
 
+        try {
+            List<MessageRoomBean> tempConversationsList = new ArrayList<MessageRoomBean>();
+            for (int i = 0; i < roomsParsList.size(); i++) {
+                tempConversationsList.add(new MessageRoomBean(roomsParsList.get(i).getLastMessage(),
+                        roomsParsList.get(i).getCustomer_id(),
+                        GlobalVariables.PRODUCER_PARSE_OBJECT_ID));
             }
-        }
-        conversationsList.clear ();
-        conversationsList.addAll (tempConversationsList);
-        messageRoomAdapter.notifyDataSetChanged ();
+            for (MessageRoomBean messageRoomBean : tempConversationsList) {
+                if (customerPhoneToDetailsMap.get(messageRoomBean.getCustomer_id()) == null) {
+                    updateUserDetailsFromParse(messageRoomBean);
+                } else {
+                    updateMessageBeanWithCustomerDetails(messageRoomBean,
+                            customerPhoneToDetailsMap.get(messageRoomBean.getCustomer_id()));
 
+                }
+            }
+            conversationsList.clear();
+            conversationsList.addAll(tempConversationsList);
+            messageRoomAdapter.notifyDataSetChanged();
+
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
     }
+
 
     private void updateUserDetailsFromParse(MessageRoomBean messageRoomBean) {
         CustomerDetails customerDetails = UserDetailsMethod.getUserDetailsFromParseInMainThread (messageRoomBean.getCustomer_id ());

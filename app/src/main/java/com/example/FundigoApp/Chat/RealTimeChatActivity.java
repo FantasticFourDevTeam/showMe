@@ -243,12 +243,28 @@ public class RealTimeChatActivity extends AppCompatActivity {//implements Adapte
     public void startMessageWithCustomer (View view)
     {
 
-        final Intent chatintent = new Intent (this,ChatToCustomersActivity.class);
+        //final Intent chatintent = new Intent (this,ChatToCustomersActivity.class);
+         final Intent chatintent;
+
 
         try {
             int position = listViewChat.getPositionForView(view); //text view postion in the list view
             String senderCustomer = chatMessagesList.get(position).getFromUserName(); // get the sender name of the chat message
-            if (!GlobalVariables.CUSTOMER_PHONE_NUM.equals(senderCustomer)) {// in case the chat is with other and not with himself
+            StringBuilder senderBuilder = new StringBuilder(senderCustomer);
+            String result = senderBuilder.substring(senderBuilder.indexOf("#")+1, senderCustomer.length()).trim();
+
+
+            if (!GlobalVariables.CUSTOMER_PHONE_NUM.equals(result)&& !result.equals(eventInfo.getProducerId())) {// in case the chat is with other and not with himself
+                chatintent = new Intent (this,ChatToCustomersActivity.class);
+                chatintent.putExtra("customer_phone", current_user_id);
+                chatintent.putExtra("senderCustomer", senderCustomer);
+                chatintent.putExtra("index", intent.getIntExtra("index", 0));// event index in All Events Liost
+                startActivity(chatintent);
+            }
+
+            else if(result.equals(eventInfo.getProducerId()))
+            {
+                chatintent = new Intent (this,ChatActivity.class);
                 chatintent.putExtra("customer_phone", current_user_id);
                 chatintent.putExtra("senderCustomer", senderCustomer);
                 chatintent.putExtra("index", intent.getIntExtra("index", 0));// even index in All Events Liost

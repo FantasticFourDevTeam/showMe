@@ -409,34 +409,41 @@ public class EditEventActivity extends AppCompatActivity implements AdapterView.
                 event.put("Y", lng);
             }
 
-            if (pictureSelected) {
-                img.buildDrawingCache();
-                Bitmap bitmap = img.getDrawingCache();
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                byte[] image = stream.toByteArray();
-                ParseFile file = new ParseFile("picturePath", image);
-                try {
-                    file.save();
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                event.put("ImageFile", file);
-            }
-
-
-            event.saveInBackground(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    if (e == null) {
-                        Toast.makeText(EditEventActivity.this, "Event saved successfully", Toast.LENGTH_SHORT).show();
-                        EventDataMethods.updateEventInfoDromParseEvent(eventInfo, event);
-                        finish();
-                    } else {
-                        Toast.makeText(EditEventActivity.this, "Not  saved " + e.toString(), Toast.LENGTH_SHORT).show();
+            try {
+                if (pictureSelected) {
+                    img.buildDrawingCache();
+                    Bitmap bitmap = img.getDrawingCache();
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                    byte[] image = stream.toByteArray();
+                    ParseFile file = new ParseFile("picturePath", image);
+                    try {
+                        file.save();
+                    } catch (ParseException e) {
+                        e.printStackTrace();
                     }
+                    event.put("ImageFile", file);
                 }
-            });
+
+
+                event.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if (e == null) {
+                            Toast.makeText(EditEventActivity.this, "Event saved successfully", Toast.LENGTH_SHORT).show();
+                            EventDataMethods.updateEventInfoDromParseEvent(eventInfo, event);
+                            finish();
+                        } else {
+                            Toast.makeText(EditEventActivity.this, "Event Not saved " + e.toString(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                ex.printStackTrace();
+                Toast.makeText(this,"error while saving the event, please try again",Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

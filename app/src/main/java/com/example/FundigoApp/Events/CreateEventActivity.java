@@ -508,6 +508,7 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
         }
         event.setEventCapacityService(eventCapacityService);
         event.setEventATMService(atmStatus);
+        try {
         if (pictureSelected) {
             pic.buildDrawingCache();
             Bitmap bitmap = pic.getDrawingCache();
@@ -521,75 +522,76 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
                 e.printStackTrace();
             }
             event.put("ImageFile", file);
-        } else {
-            Bitmap bitmap = BitmapFactory.decodeResource(this.getResources(),
-                    R.drawable.event);
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-            byte[] image = stream.toByteArray();
-            ParseFile file = new ParseFile("picturePath", image);
-            try {
-                file.saveInBackground();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            event.put("ImageFile", file);
-        }
-
-        try {
-            if (seats) {
-                event.setIsStadium(true);
-            } else {
-                event.setIsStadium(false);
-            }
-            totalIncome = 0;
-            if (!freeEvent) {
-                eventObjectId = event.getObjectId();
+       // } //else {
+            //Event Picture is mandatory
+            //Default Picture in case that No picture selected
+//            Bitmap bitmap = BitmapFactory.decodeResource(this.getResources(),
+//                    R.drawable.event);
+//            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+//            byte[] image = stream.toByteArray();
+//            ParseFile file = new ParseFile("picturePath", image);
+//            try {
+//                file.saveInBackground();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//            event.put("ImageFile", file);
+            //   }
                 if (seats) {
-                    saveTicketsPrice(eventObjectId);
-                    //the producer did not chose colored seats
+                    event.setIsStadium(true);
                 } else {
-                    totalIncome = Integer.parseInt(et_price.getText().toString()) * Integer.parseInt(et_quantity.getText().toString());
+                    event.setIsStadium(false);
                 }
-                Snackbar snackbar = Snackbar
-                        .make(linearLayout, "Expected income:" + totalIncome, Snackbar.LENGTH_LONG)
-                        .setAction("UNDO", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                deleteEvent(eventObjectId);
+                totalIncome = 0;
+                if (!freeEvent) {
+                    eventObjectId = event.getObjectId();
+                    if (seats) {
+                        saveTicketsPrice(eventObjectId);
+                        //the producer did not chose colored seats
+                    } else {
+                        totalIncome = Integer.parseInt(et_price.getText().toString()) * Integer.parseInt(et_quantity.getText().toString());
+                    }
+                    Snackbar snackbar = Snackbar
+                            .make(linearLayout, "Expected income:" + totalIncome, Snackbar.LENGTH_LONG)
+                            .setAction("UNDO", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    deleteEvent(eventObjectId);
 
-                            }
-                        });
-                snackbar.setActionTextColor(Color.YELLOW);
-                View snackbarView = snackbar.getView();
-                snackbarView.setBackgroundColor(Color.DKGRAY);
-                TextView textView = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
-                textView.setTextColor(Color.WHITE);
-                snackbar.show();
-                new Handler().postDelayed(new Runnable() {
+                                }
+                            });
+                    snackbar.setActionTextColor(Color.YELLOW);
+                    View snackbarView = snackbar.getView();
+                    snackbarView.setBackgroundColor(Color.DKGRAY);
+                    TextView textView = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+                    textView.setTextColor(Color.WHITE);
+                    snackbar.show();
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            finish();
+                        }
+                    }, 3000);
+                }
+                event.saveInBackground(new SaveCallback() {
                     @Override
-                    public void run() {
-                        finish();
+                    public void done(ParseException e) {
+                        if (e == null) {
+                            GlobalVariables.refreshArtistsList = true;
+                            Toast.makeText(CreateEventActivity.this, R.string.event_has_created_successfully, Toast.LENGTH_LONG).show();//TODO
+                            finish();
+                        } else {
+                            Toast.makeText(CreateEventActivity.this, R.string.event_hasnot_created_successfully, Toast.LENGTH_LONG).show();//TODO
+                        }
                     }
-                }, 3000);
+                });
             }
-
-            event.saveInBackground(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    if (e == null) {
-                        GlobalVariables.refreshArtistsList = true;
-                        Toast.makeText(CreateEventActivity.this, R.string.event_has_created_successfully, Toast.LENGTH_LONG).show();//TODO
-                        finish();
-                    }
-                    else
-                    {
-                        Toast.makeText(CreateEventActivity.this, R.string.event_hasnot_created_successfully, Toast.LENGTH_LONG).show();//TODO
-                    }
-                }
-            });
-
-        } catch (Exception e) {
+            else
+            {
+                Toast.makeText(this,"Please upload a picture",Toast.LENGTH_SHORT).show();
+            }
+        }catch (Exception e) {
             e.printStackTrace();
         }
     }

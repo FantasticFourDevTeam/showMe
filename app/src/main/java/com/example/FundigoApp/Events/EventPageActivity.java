@@ -333,6 +333,7 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
                         intentToSend = new Intent (EventPageActivity.this, RealTimeChatActivity.class);
                         intentToSend.putExtra ("eventName", eventName);
                         intentToSend.putExtra ("eventObjectId", eventInfo.getParseObjectId ());
+                        intentToSend.putExtra ("index", intent.getIntExtra ("index", 0));
                         startActivity (intentToSend);
                     }
                     break;

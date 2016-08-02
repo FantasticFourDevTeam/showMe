@@ -41,13 +41,19 @@ public class UserDetailsMethod {
         String customerPicFacebookUrl = null;
         String customerImage = null;
         String customerName = null;
-        if (profiles.size () > 0) {
-            Profile profile = profiles.get (0);
-            faceBookId = profile.getFbId ();
-            customerPicFacebookUrl = profile.getFbUrl ();
-            customerName = profile.getName ();
-            customerImage = profile.getPic ().getUrl ();
+        try {
+            if (profiles.size() > 0) {
+                Profile profile = profiles.get(0);
+                faceBookId = profile.getFbId();
+                customerPicFacebookUrl = profile.getFbUrl();
+                customerName = profile.getName();
+                customerImage = profile.getPic().getUrl();
+            }
         }
+          catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
         return new CustomerDetails (faceBookId, customerPicFacebookUrl, customerImage, customerName);
     }
 

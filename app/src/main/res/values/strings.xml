@@ -107,7 +107,7 @@
     <!-- Example settings for Notifications -->
     <string name="pref_header_notifications">Notifications</string>
 
-    <string name="pref_title_new_message_notifications">New message notifications</string>
+    <string name="pref_title_new_message_notifications">New message notification</string>
 
     <string name="pref_title_ringtone">Ringtone</string>
     <string name="pref_ringtone_silent">Silent</string>
@@ -413,8 +413,8 @@
     <string name="share">Share:</string>
     <string name="share_app_page">Share Event through App</string>
     <string name="share_web_page">Share Event through FaceBook</string>
-    <string name="you_can_get_more_info_about_the_event">Get information by contact the producer</string>
-    <string name="you_can_get_more_info_about_the_event_1">Get contact your clients</string>
+    <string name="you_can_get_more_info_about_the_event">Contact the producer or other participants</string>
+    <string name="you_can_get_more_info_about_the_event_1">Get contact with your clients</string>
     <string name="how_do_you_want_to_do_it">How do you want to do it?</string>
     <string name="Send_message_to_producer">Send message to producer</string>
     <string name="see_customers_massages">See Customers Messages</string>
