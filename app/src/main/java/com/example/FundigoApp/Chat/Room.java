@@ -36,4 +36,19 @@ public class Room extends ParseObject {
     public String getEventObjId() {
         return getString ("eventObjId");
     }
+
+    public void setCustomer1_id(String customer_id1) {
+        put ("customer1", customer_id1);
+    }
+
+    public String getCustomer_id1() {
+        return getString ("customer1");
+    }
+    public void setCustomer2_id(String customer_id2) {
+        put ("customer2", customer_id2);
+    }
+
+    public String getCustomer_id2() {
+        return getString ("customer2");
+    }
 }

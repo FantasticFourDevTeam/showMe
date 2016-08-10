@@ -5,24 +5,26 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.FundigoApp.Customer.CustomerDetails;
 import com.example.FundigoApp.Events.EventInfo;
 import com.example.FundigoApp.GlobalVariables;
 import com.example.FundigoApp.R;
 import com.example.FundigoApp.StaticMethod.FileAndImageMethods;
+import com.example.FundigoApp.StaticMethod.UserDetailsMethod;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.parse.FindCallback;
+import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -50,6 +52,9 @@ public class ChatToCustomersActivity extends Activity implements Comparator<Stri
 
     private String customer1;
     private String customer2;
+    MessageToCustomer message;
+    private String senderType = "";
+    CustomerDetails recieverCustomerDetailes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,17 +71,13 @@ public class ChatToCustomersActivity extends Activity implements Comparator<Stri
         recieverCustomerPhone = intent.getStringExtra("senderCustomer").substring("Customer # ".length());
 
         eventInfo = GlobalVariables.ALL_EVENTS_DATA.get(eventIndex);
-//        if(room == null) {
-//            room = getRoomObject ();
-//        }
         eventName = eventInfo.getName ();
-      //  if (GlobalVariables.IS_PRODUCER) {
-        //    profileName.setText (customerPhone);
-          //  updateUserDetailsFromParse ();
-    //    }
+
         if (GlobalVariables.IS_CUSTOMER_REGISTERED_USER) {
-            profileName.setText (recieverCustomerPhone + getResources ().getString (R.string.chat_with_customer));
-            setEventInfo (eventInfo.getPicUrl());
+            profileName.setText(recieverCustomerPhone);
+            updateUserDetailsFromParse (recieverCustomerPhone);//Present user picture
+         // recieverCustomerDetailes = UserDetailsMethod.getUserDetailsFromParseInMainThread(recieverCustomerPhone);
+         // setEventInfo(recieverCustomerDetailes.getCustomerImage());
         }
         editTextMessage = (EditText) findViewById (R.id.etMessageCustomerChat);
         chatListView = (ListView) findViewById (R.id.messageListviewCustomerChat);
@@ -99,40 +100,45 @@ public class ChatToCustomersActivity extends Activity implements Comparator<Stri
              customer2 = recieverCustomerPhone;
              customer1=customerPhone;
          }
+        if(room == null) { //01.08 Assaf updated
+            room = getRoomObject ();
+        }
     }
 
-//    private void updateUserDetailsFromParse() {
-//        CustomerDetails customerDetails = StaticMethods.getUserDetailsFromParseInMainThread (customerPhone);
-//        if (customerDetails.getFaceBookId () == null || customerDetails.getFaceBookId ().isEmpty ()) {
-//            profileFaceBook.setText ("");
-//            profileFaceBook.setClickable (false);
-//        } else {
-//            faceBookId = customerDetails.getFaceBookId ();
-//        }
-//        if (customerDetails.getPicUrl () != null && !customerDetails.getPicUrl ().isEmpty ()) {
-//            Picasso.with (this).load (customerDetails.getPicUrl ()).into (profileImage);
-//        } else if (customerDetails.getCustomerImage () != null) {
-//            loader.displayImage (customerDetails.getCustomerImage (), profileImage);
-//        }
-//        if (customerDetails.getCustomerImage () == null &&
-//                customerDetails.getPicUrl () == null &&
-//                customerDetails.getFaceBookId () == null) {
-//            profileFaceBook.setText ("");
-//            profileFaceBook.setClickable (false);
+    private void updateUserDetailsFromParse(String recieverPhone) {
+        CustomerDetails customerDetails = UserDetailsMethod.getUserDetailsFromParseInMainThread(recieverPhone);
+        if (customerDetails.getFaceBookId () == null || customerDetails.getFaceBookId ().isEmpty ()) {
+            profileFaceBook.setText ("");
+            profileFaceBook.setClickable (false);
+        } else {
+            faceBookId = customerDetails.getFaceBookId ();
+        }
+        if (customerDetails.getPicUrl () != null && !customerDetails.getPicUrl ().isEmpty ()) {
+            Picasso.with(this).load (customerDetails.getPicUrl ()).into (profileImage);
+        } else if (customerDetails.getCustomerImage () != null) {
+            loader.displayImage (customerDetails.getCustomerImage (), profileImage);
+        }
+        if (customerDetails.getCustomerImage () == null &&
+                customerDetails.getPicUrl () == null &&
+                customerDetails.getFaceBookId () == null) {
+            profileFaceBook.setText ("");
+            profileFaceBook.setClickable (false);
+        }
+    }
+
+//    private void setEventInfo(String picUrl) {
+//        profileFaceBook.setVisibility(View.GONE);
+//            float hight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 55, getResources().getDisplayMetrics());
+//            LinearLayout.LayoutParams params =
+//                    new LinearLayout.LayoutParams(
+//                            0,
+//                            Math.round(hight));
+//            params.weight = 90.0f;
+//        profileImage.setLayoutParams(params);
+//        if (picUrl!=null && picUrl!="") {
+//            loader.displayImage(picUrl, profileImage);
 //        }
 //    }
-
-    private void setEventInfo(String picUrl) {
-        profileFaceBook.setVisibility (View.GONE);
-        float hight = TypedValue.applyDimension (TypedValue.COMPLEX_UNIT_DIP, 55, getResources ().getDisplayMetrics ());
-        LinearLayout.LayoutParams params =
-                new LinearLayout.LayoutParams (
-                        0,
-                        Math.round (hight));
-        params.weight = 90.0f;
-        profileImage.setLayoutParams(params);
-        loader.displayImage(picUrl, profileImage);
-    }
 
     private Runnable runnable = new Runnable () {
         @Override
@@ -144,13 +150,13 @@ public class ChatToCustomersActivity extends Activity implements Comparator<Stri
 
     public void sendMessageToCustomer(View view) {
         messageBody = editTextMessage.getText().toString();
-        MessageToCustomer message = new MessageToCustomer();
+        message = new MessageToCustomer();
         if (!messageBody.isEmpty()) {
             message.setBody(messageBody);
             message.setCustomer1(customer1);
             message.setCustomer2(customer2);
             message.setSenderId(customerPhone);
-           //message.setEventObjectId(eventInfo.getParseObjectId());
+            message.setEventObjectId(eventInfo.getParseObjectId());//01.08 Assaf added
             try {
                 message.save();
             } catch (ParseException e) {
@@ -158,7 +164,7 @@ public class ChatToCustomersActivity extends Activity implements Comparator<Stri
             }
             editTextMessage.setText("");
             getAllMessagesFromParseInMainThread(customer1, customer2);
-            // updateMessageRoomItemInBackGround (message);
+            updateMessageRoomItemInBackGround(message); //01.08 - Assaf Unmarked
         } else {
             Toast.makeText(this, "No Message to Send", Toast.LENGTH_SHORT).show();
         }
@@ -168,7 +174,7 @@ public class ChatToCustomersActivity extends Activity implements Comparator<Stri
         ParseQuery<MessageToCustomer> query = ParseQuery.getQuery (MessageToCustomer.class);
         query.whereEqualTo ("customer2", customer2);
         query.whereEqualTo ("customer1", customer1);
-        //query.whereEqualTo ("eventObjectId", eventInfo.getParseObjectId ());
+        query.whereEqualTo ("eventObjectId", eventInfo.getParseObjectId ());
         query.orderByAscending ("createdAt");
         query.findInBackground (new FindCallback<MessageToCustomer> () {
             public void done(List<MessageToCustomer> messages, ParseException e) {
@@ -187,7 +193,7 @@ public class ChatToCustomersActivity extends Activity implements Comparator<Stri
         ParseQuery<MessageToCustomer> query = ParseQuery.getQuery (MessageToCustomer.class);
         query.whereEqualTo ("customer1", customer1);
         query.whereEqualTo ("customer2", customer2);
-        //query.whereEqualTo ("eventObjectId", eventInfo.getParseObjectId ());
+        query.whereEqualTo ("eventObjectId", eventInfo.getParseObjectId ());
         query.orderByAscending ("createdAt");
         List<MessageToCustomer> messages = null;
         try {
@@ -229,22 +235,26 @@ public class ChatToCustomersActivity extends Activity implements Comparator<Stri
             }
         }
 
+    //01.08 - Assaf updated
+    public void updateMessageRoomItemInBackGround(final MessageToCustomer message) {
 
-//    public void updateMessageRoomItemInBackGround(final Message message) {
-//        String senderType = "";
-//        if (GlobalVariables.IS_CUSTOMER_REGISTERED_USER) {
-//            senderType = "Customer : ";
-//        } else if (GlobalVariables.IS_PRODUCER) {
-//            senderType = "Producer : ";
-//        }
-//        final String senderTypeFinal = senderType;
-//        saveRoomData (room, senderTypeFinal, message);
-//    }
+        if (GlobalVariables.IS_CUSTOMER_REGISTERED_USER) {
+            // senderType = "Customer " +  message.getSenderId()+" : ";
+              senderType = message.getSenderId()+ " to " + recieverCustomerPhone + ":" + '\n';
 
-//    private void saveRoomData(Room room, String senderTypeFinal, Message message) {
-//        room.setLastMessage (senderTypeFinal + message.getBody ());
-//        room.saveInBackground ();
-//    }
+        }
+        //else if (GlobalVariables.IS_PRODUCER) {
+          //  senderType = "Producer : ";
+        //}
+        final String senderTypeFinal = senderType;
+        saveRoomData (room, senderTypeFinal, message);
+    }
+
+    //01.08 - Assaf Updated
+    private void saveRoomData(Room room, String senderTypeFinal, MessageToCustomer message) {
+        room.setLastMessage (senderTypeFinal + message.getBody ());
+        room.saveInBackground ();
+    }
 
     @Override
     public void onPause() {
@@ -257,7 +267,7 @@ public class ChatToCustomersActivity extends Activity implements Comparator<Stri
     public void onResume() {
         super.onResume();
         if(room == null) {
-           // room = getRoomObject ();
+            room = getRoomObject ();
         }
         handler.postDelayed (runnable, 0);
     }
@@ -299,31 +309,35 @@ public class ChatToCustomersActivity extends Activity implements Comparator<Stri
     }
 
 
-//    private Room getRoomObject() {
-//        ParseQuery<Room> query = ParseQuery.getQuery ("Room");
-//        query.whereEqualTo ("producer_id", eventInfo.getProducerId());
-//        query.whereEqualTo ("customer_id", customerPhone);
-//        query.whereEqualTo ("eventObjId", eventInfo.getParseObjectId ());
-//        query.orderByDescending ("createdAt");
-//        try {
-//            List<Room> roomList = query.find ();
-//            if (roomList.size () == 0) {
-//                Room room = new Room ();
-//                ParseACL parseACL = new ParseACL ();
-//                parseACL.setPublicWriteAccess (true);
-//                parseACL.setPublicReadAccess (true);
-//                room.setACL (parseACL);
-//                room.setCustomer_id (customerPhone);
-//                room.setProducer_id (eventInfo.getProducerId());
-//                room.setEventObjId (eventInfo.getParseObjectId ());
-//                return room;
-//            } else {
-//                Room room = roomList.get (0);
-//                return room;
-//            }
-//        } catch (ParseException e) {
-//            e.printStackTrace ();
-//        }
-//        return null;
-//    }
+
+    private Room getRoomObject() { //01.08 - Assaf updated
+        ParseQuery<Room> query = ParseQuery.getQuery ("Room");
+        query.whereEqualTo ("customer1", customer1);
+        query.whereEqualTo ("customer2", customer2);
+        //query.whereEqualTo ("customer_id", customerPhone);
+        query.whereEqualTo ("eventObjId", eventInfo.getParseObjectId ());
+        query.orderByDescending ("createdAt");
+        try {
+            List<Room> roomList = query.find ();
+            if (roomList.size () == 0) {
+                Room room = new Room ();
+                ParseACL parseACL = new ParseACL ();
+                parseACL.setPublicWriteAccess(true);
+                parseACL.setPublicReadAccess(true);
+                room.setACL(parseACL);
+                room.setCustomer_id(customerPhone);
+                room.setCustomer1_id(customer1);
+                room.setCustomer2_id(customer2);
+                room.setProducer_id("");// the same Room table used for Producer chat with customer and customer to customer
+                room.setEventObjId (eventInfo.getParseObjectId ());
+                return room;
+            } else {
+                Room room = roomList.get (0);
+                return room;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace ();
+        }
+        return null;
+    }
 }

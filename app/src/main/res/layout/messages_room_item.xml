@@ -4,7 +4,7 @@
     android:descendantFocusability="blocksDescendants">
 
     <ImageButton
-        android:layout_width="80dp"
+        android:layout_width="70dp"
         android:layout_height="80dp"
         android:id="@+id/message_itemIV"
         android:scaleType="fitXY"
@@ -24,7 +24,7 @@
         >
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="30dp"
+            android:layout_height="wrap_content"
             android:text="gdfgdfgdfgfdg"
             android:id="@+id/message_item_nameTV"
             android:textSize="20sp"
@@ -35,11 +35,11 @@
             android:textColor="#383838"/>
 
         <TextView
-            android:layout_width="260dp"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="gdfgdfgfdg"
             android:id="@+id/message_item_bodyTV"
-            android:textSize="16sp"
+            android:textSize="15sp"
             android:paddingStart="7dp"
             android:paddingLeft="7dp"
             android:textColor="#8c8c8c"/>

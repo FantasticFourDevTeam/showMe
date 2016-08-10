@@ -379,5 +379,10 @@
     <string name="back_main">חזרה לפילטר ראשי</string>
     <string name="default_cityMenu_value">All Cities</string>
     <string name="facebookconnector">פייסבוק</string>
+    <string name="Loading">טוען מידע...</string>
+    <string name="ticketLinkEvent"><a href="">קישור לאירוע</a></string>
+    <string name="purchase_date">תאריך רכישה:</string>
+
+
 
 </resources>

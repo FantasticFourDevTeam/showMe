@@ -50,6 +50,8 @@ public class MyEventsTicketsActivity extends AppCompatActivity {
         my_tickets_events_list.clear();
         my_tickets_list.clear();
         String _userPhoneNumber = GlobalVariables.CUSTOMER_PHONE_NUM;
+        noTickets.setVisibility(View.VISIBLE);
+        noTickets.setText(R.string.Loading);
        // List<EventsSeats> list;
         try {
             ParseQuery<EventsSeats> query = ParseQuery.getQuery ("EventsSeats");
@@ -99,6 +101,7 @@ public class MyEventsTicketsActivity extends AppCompatActivity {
                                 listT.setAdapter(_adapter);
                             }
                             listT.deferNotifyDataSetChanged();
+                            noTickets.setVisibility(View.GONE);
                         } else {
                             noTickets.setText(R.string.no_tickets_to_display);
                             noTickets.setVisibility(View.VISIBLE);

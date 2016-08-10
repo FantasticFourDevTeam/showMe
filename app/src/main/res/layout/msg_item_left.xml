@@ -27,6 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
+        android:orientation="vertical"
         >
 
         <TextView
@@ -42,7 +43,9 @@
             android:autoText="false"
             android:text="fghfghfhfg gnjgfh ghktym, bghkghkmgh ghkmghm gh gkg ghmghjmghm hj,m"
             android:padding="5dp"
+            android:layout_marginRight="50dp"
             android:onClick="startMessageWithCustomer"
+            android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"/>
 
         <TextView
@@ -51,12 +54,13 @@
             android:layout_height="wrap_content"
             android:clickable="true"
             android:focusable="true"
-            android:gravity="right|bottom"
+            android:gravity="left|bottom"
             android:textColor="#ff58616d"
             android:textSize="10sp"
             android:text="iuyiyu9jkhjl"
             android:layout_below="@+id/textTextView"
             android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
             android:paddingBottom="5dp"

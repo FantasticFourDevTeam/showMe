@@ -91,7 +91,7 @@ public class MessagesRoomProducerActivity extends Activity implements AdapterVie
             for (int i = 0; i < roomsParsList.size(); i++) {
                 tempConversationsList.add(new MessageRoomBean(roomsParsList.get(i).getLastMessage(),
                         roomsParsList.get(i).getCustomer_id(),
-                        GlobalVariables.PRODUCER_PARSE_OBJECT_ID));
+                        GlobalVariables.PRODUCER_PARSE_OBJECT_ID,"",""));
             }
             for (MessageRoomBean messageRoomBean : tempConversationsList) {
                 if (customerPhoneToDetailsMap.get(messageRoomBean.getCustomer_id()) == null) {

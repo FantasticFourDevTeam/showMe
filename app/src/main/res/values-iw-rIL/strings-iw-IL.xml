@@ -371,6 +371,10 @@
     <string name="advanced_filter">לחץ להפניה לסינון מתקדם</string>
     <string name="back_main">חזרה לפילטר ראשי</string>
     <string name="default_cityMenu_value">כל הערים</string>
+    <string name="Loading">טוען מידע...</string>
+    <string name="ticketLinkEvent"><a href="">קישור לאירוע</a></string>
+    <string name="purchase_date">תאריך רכישה:</string>
+
 
 
 </resources>

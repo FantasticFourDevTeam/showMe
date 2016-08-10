@@ -1,7 +1,5 @@
 package com.example.FundigoApp.Chat;
 
-import android.graphics.Bitmap;
-
 import java.io.Serializable;
 
 public class MessageRoomBean implements Serializable {
@@ -10,11 +8,15 @@ public class MessageRoomBean implements Serializable {
     String lastMessage;
     String customer_id;
     String producer_id;
+    String customer1;
+    String customer2;
 
-    public MessageRoomBean(String lastMessage, String customer_id, String producer_id) {
+    public MessageRoomBean(String lastMessage, String customer_id, String producer_id,String customer1, String customer2) {
         this.lastMessage = lastMessage;
         this.customer_id = customer_id;
         this.producer_id = producer_id;
+        this.customer1=customer1;
+        this.customer2=customer2;
     }
 
     public String getCustomerImage() {
@@ -55,5 +57,14 @@ public class MessageRoomBean implements Serializable {
 
     public void setProducer_id(String producer_id) {
         this.producer_id = producer_id;
+    }
+
+    public String getCustomer1_id() {
+        return customer1;
+    }
+
+    public String getCustomer2_id ()
+    {
+        return customer2;
     }
 }

@@ -19,11 +19,12 @@
 
         <TextView
             android:id="@+id/eventNameTitle"
-            android:layout_width="15dp"
+            android:layout_width="18dp"
             android:layout_weight="20"
             android:layout_height="wrap_content"
             android:text="Event Name:"
-            android:textSize="13sp"/>
+            android:textStyle="bold"
+            android:textSize="15sp"/>
 
         <TextView
             android:id="@+id/eventName"
@@ -31,7 +32,7 @@
             android:layout_weight="80"
             android:layout_height="wrap_content"
             android:text="test"
-            android:textSize="13sp"
+            android:textSize="15sp"
             android:layout_gravity="center_vertical"/>
 
     </LinearLayout>
@@ -46,11 +47,12 @@
 
         <TextView
             android:id="@+id/seatNameTitle"
-            android:layout_width="15dp"
+            android:layout_width="18dp"
             android:layout_weight="20"
             android:layout_height="wrap_content"
             android:text="Seat:"
-            android:textSize="13sp"/>
+            android:textStyle="bold"
+            android:textSize="15sp"/>
 
         <TextView
             android:id="@+id/ticketName"
@@ -58,7 +60,7 @@
             android:layout_weight="80"
             android:layout_height="wrap_content"
             android:text="test"
-            android:textSize="13sp"
+            android:textSize="15sp"
             android:layout_gravity="center_vertical"/>
 
     </LinearLayout>
@@ -72,11 +74,12 @@
 
         <TextView
             android:id="@+id/eventDateTitle"
-            android:layout_width="15dp"
+            android:layout_width="18dp"
             android:layout_weight="20"
             android:layout_height="wrap_content"
             android:text="Event Date:"
-            android:textSize="13sp"/>
+            android:textStyle="bold"
+            android:textSize="15sp"/>
 
         <TextView
             android:id="@+id/eventDate"
@@ -84,7 +87,7 @@
             android:layout_weight="80"
             android:layout_height="wrap_content"
             android:text="fgfg"
-            android:textSize="13sp"
+            android:textSize="15sp"
             android:layout_gravity="center_vertical"/>
 
     </LinearLayout>
@@ -98,11 +101,12 @@
 
         <TextView
             android:id="@+id/priceTitle"
-            android:layout_width="15dp"
+            android:layout_width="18dp"
             android:layout_weight="20"
             android:layout_height="wrap_content"
             android:text="Price:"
-            android:textSize="13sp"/>
+            android:textStyle="bold"
+            android:textSize="15sp"/>
 
         <TextView
             android:id="@+id/price"
@@ -110,7 +114,7 @@
             android:layout_weight="80"
             android:layout_height="wrap_content"
             android:text="fgfg"
-            android:textSize="13sp"
+            android:textSize="15sp"
             android:layout_gravity="center_vertical"/>
 
     </LinearLayout>
@@ -124,11 +128,12 @@
 
         <TextView
             android:id="@+id/textView11"
-            android:layout_width="15dp"
+            android:layout_width="18dp"
             android:layout_weight="20"
             android:layout_height="wrap_content"
             android:text="Purchase Date:"
-            android:textSize="13sp"/>
+            android:textStyle="bold"
+            android:textSize="15sp"/>
 
         <TextView
             android:id="@+id/purchaseDate"
@@ -136,7 +141,7 @@
             android:layout_weight="80"
             android:layout_height="wrap_content"
             android:text="fgfg"
-            android:textSize="13sp"
+            android:textSize="15sp"
             android:layout_gravity="center_vertical"
             android:paddingLeft="5dp"/>
 
@@ -165,5 +170,4 @@
         android:background="#f15d60"
         android:textColor="#ffffff"
         android:visibility="gone"/>
-
 </LinearLayout>

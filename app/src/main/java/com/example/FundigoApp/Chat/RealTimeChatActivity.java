@@ -82,32 +82,37 @@ public class RealTimeChatActivity extends AppCompatActivity {//implements Adapte
         buttonSend.setOnClickListener (new View.OnClickListener () {
             @Override
             public void onClick(View v) {
-                String body = editTextMessage.getText ().toString ();
-                SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences (RealTimeChatActivity.this);
-                String name = sp.getString (GlobalVariables.FB_NAME, null);
-                String pic_url = sp.getString (GlobalVariables.FB_PIC_URL, null);
-                String fb_id = sp.getString (GlobalVariables.FB_ID, null);
-                MsgRealTime message = new MsgRealTime ();
-                message.setUserId (current_user_id);
-                if (GlobalVariables.IS_PRODUCER) {
-                    message.setIsProducer (true);
-                } else if (GlobalVariables.IS_CUSTOMER_REGISTERED_USER) {
-                    message.setIsProducer (false);
+                String body = editTextMessage.getText().toString();
+
+                if (!body.isEmpty()) {
+                    SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(RealTimeChatActivity.this);
+                    String name = sp.getString(GlobalVariables.FB_NAME, null);
+                    String pic_url = sp.getString(GlobalVariables.FB_PIC_URL, null);
+                    String fb_id = sp.getString(GlobalVariables.FB_ID, null);
+                    MsgRealTime message = new MsgRealTime();
+                    message.setUserId(current_user_id);
+                    if (GlobalVariables.IS_PRODUCER) {
+                        message.setIsProducer(true);
+                    } else if (GlobalVariables.IS_CUSTOMER_REGISTERED_USER) {
+                        message.setIsProducer(false);
+                    }
+                    message.setBody(body);
+                    message.setEventObjectId(eventObjectId);
+                    if (name != null && pic_url != null && fb_id != null) {
+                        message.setSenderName(name);
+                        message.setPicUrl(pic_url);
+                        message.setFbId(fb_id);
+                    }
+                    try {
+                        message.save();
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    editTextMessage.setText("");
+                    getAllMessagesInMainThread();
+                } else {
+                    Toast.makeText(RealTimeChatActivity.this, "No Message to Send", Toast.LENGTH_SHORT).show();
                 }
-                message.setBody (body);
-                message.setEventObjectId (eventObjectId);
-                if (name != null && pic_url != null && fb_id != null) {
-                    message.setSenderName (name);
-                    message.setPicUrl (pic_url);
-                    message.setFbId (fb_id);
-                }
-                try {
-                    message.save ();
-                } catch (ParseException e) {
-                    e.printStackTrace ();
-                }
-                editTextMessage.setText ("");
-                getAllMessagesInMainThread ();
             }
         });
 //        listViewChat.setOnItemClickListener (this);
@@ -162,7 +167,8 @@ public class RealTimeChatActivity extends AppCompatActivity {//implements Adapte
                 if (id.equals (GlobalVariables.CUSTOMER_PHONE_NUM)) {
                     isMe = true;
                 } else if (id.equals (eventInfo.getProducerId ())) {
-                    idStringBuilder.append ("Producer # " + id);
+                  //  idStringBuilder.append ("Producer # " + id);
+                    idStringBuilder.append ("Producer #"); //no need to present ID in chat
                 } else {
                     idStringBuilder.append ("Customer # " + id);
                 }
@@ -245,24 +251,29 @@ public class RealTimeChatActivity extends AppCompatActivity {//implements Adapte
 
         //final Intent chatintent = new Intent (this,ChatToCustomersActivity.class);
          final Intent chatintent;
-
+         String result = "";
+         String producerSign = "Producer #";
 
         try {
             int position = listViewChat.getPositionForView(view); //text view postion in the list view
             String senderCustomer = chatMessagesList.get(position).getFromUserName(); // get the sender name of the chat message
-            StringBuilder senderBuilder = new StringBuilder(senderCustomer);
-            String result = senderBuilder.substring(senderBuilder.indexOf("#")+1, senderCustomer.length()).trim();
 
+            if(!senderCustomer.equals(producerSign)) {
+                StringBuilder senderBuilder = new StringBuilder(senderCustomer);
+                result = senderBuilder.substring(senderBuilder.indexOf("#") + 1, senderCustomer.length()).trim();
+            }
+            else {
+                result = senderCustomer;
+             }
 
-            if (!GlobalVariables.CUSTOMER_PHONE_NUM.equals(result)&& !result.equals(eventInfo.getProducerId())) {// in case the chat is with other and not with himself
+            if (!GlobalVariables.CUSTOMER_PHONE_NUM.equals(result)&& !result.equals(producerSign)) {// in case the chat is with other and not with himself
                 chatintent = new Intent (this,ChatToCustomersActivity.class);
                 chatintent.putExtra("customer_phone", current_user_id);
                 chatintent.putExtra("senderCustomer", senderCustomer);
                 chatintent.putExtra("index", intent.getIntExtra("index", 0));// event index in All Events Liost
                 startActivity(chatintent);
             }
-
-            else if(result.equals(eventInfo.getProducerId()))
+            else if(result.equals(producerSign))
             {
                 chatintent = new Intent (this,ChatActivity.class);
                 chatintent.putExtra("customer_phone", current_user_id);

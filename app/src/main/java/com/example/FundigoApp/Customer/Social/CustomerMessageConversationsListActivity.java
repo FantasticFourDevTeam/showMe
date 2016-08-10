@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.example.FundigoApp.Chat.ChatActivity;
+import com.example.FundigoApp.Chat.ChatToCustomersActivity;
 import com.example.FundigoApp.Chat.MessageRoomAdapter;
 import com.example.FundigoApp.Chat.MessageRoomBean;
 import com.example.FundigoApp.Chat.Room;
@@ -70,10 +71,21 @@ public class CustomerMessageConversationsListActivity extends AppCompatActivity 
     private void getMassage() {
         List<Room> listOfConversationWithProducer = new ArrayList<> ();
         ParseQuery<Room> query = ParseQuery.getQuery (Room.class);
-        query.whereEqualTo ("customer_id", customer_id);
-        query.orderByDescending ("createdAt");
+        ParseQuery<Room> query1 = ParseQuery.getQuery(Room.class);//Added to support messages from customers also
+        ParseQuery<Room> query2 = ParseQuery.getQuery(Room.class);
+        List<ParseQuery<Room>> listOfQueries= new ArrayList<>();
+        query.whereEqualTo("customer_id", customer_id);//Added to support messages from customers also
+        query1.whereEqualTo("customer1", customer_id);
+        query2.whereEqualTo("customer2", customer_id);
+        listOfQueries.add(query);
+        listOfQueries.add(query1);
+        listOfQueries.add(query2);
+
+
+        ParseQuery<Room> query3 = ParseQuery.or(listOfQueries);//Added to support messages from customers also
+        query3.orderByDescending ("updatedAt");
         try {
-            listOfConversationWithProducer = query.find ();
+            listOfConversationWithProducer = query3.find ();
             updateLists (listOfConversationWithProducer);
         } catch (ParseException e) {
             e.printStackTrace ();
@@ -81,10 +93,23 @@ public class CustomerMessageConversationsListActivity extends AppCompatActivity 
     }
 
     private void getMassageInBackGround() {
+       // ParseQuery<Room> query = ParseQuery.getQuery (Room.class);
+       // query.whereEqualTo ("customer_id", customer_id);
+      //  query.orderByDescending ("createdAt");
         ParseQuery<Room> query = ParseQuery.getQuery (Room.class);
-        query.whereEqualTo ("customer_id", customer_id);
-        query.orderByDescending ("createdAt");
-        query.findInBackground (new FindCallback<Room> () {
+        ParseQuery<Room> query1 = ParseQuery.getQuery(Room.class);//Added to support messages from customers also
+        ParseQuery<Room> query2 = ParseQuery.getQuery(Room.class);
+        List<ParseQuery<Room>> listOfQueries= new ArrayList<>();
+        query.whereEqualTo("customer_id", customer_id);//Added to support messages from customers also
+        query1.whereEqualTo("customer1", customer_id);
+        query2.whereEqualTo("customer2", customer_id);
+        listOfQueries.add(query);
+        listOfQueries.add(query1);
+        listOfQueries.add(query2);
+
+        ParseQuery<Room> query3 = ParseQuery.or(listOfQueries);//Added to support messages from customers also
+        query3.orderByDescending ("updatedAt");
+        query3.findInBackground (new FindCallback<Room> () {
             public void done(List<Room> listOfConversationWithProducer, ParseException e) {
                 if (e == null) {
                     updateLists (listOfConversationWithProducer);
@@ -106,8 +131,8 @@ public class CustomerMessageConversationsListActivity extends AppCompatActivity 
                 eventImageListTemp.add (eventInfo.getPicUrl ());
                 event_info_list_temp.add (eventInfo);
                 tempConversationsList.add (new MessageRoomBean (room.getLastMessage (),
-                                                                       eventInfo.getName (),
-                                                                       room.getProducer_id ()));
+                                                                       eventInfo.getName(),
+                                                                       room.getProducer_id(),room.getCustomer_id1(),room.getCustomer_id2()));
             }
         }
         listOfConversationsBeans.clear ();
@@ -121,10 +146,26 @@ public class CustomerMessageConversationsListActivity extends AppCompatActivity 
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        Intent intent = new Intent (this, ChatActivity.class);
-        intent.putExtra ("index", event_info_list.get (i).getIndexInFullList ());
-        intent.putExtra ("customer_phone", GlobalVariables.CUSTOMER_PHONE_NUM);
-        startActivity (intent);
+        Intent intent;
+        String producerIdOfViewListItem = listOfConversationsBeans.get(i).getProducer_id();
+        if (!producerIdOfViewListItem.equals("")) {
+            intent = new Intent(this, ChatActivity.class);
+            intent.putExtra("index", event_info_list.get(i).getIndexInFullList());
+            intent.putExtra("customer_phone", GlobalVariables.CUSTOMER_PHONE_NUM);
+            startActivity(intent);
+        }
+        else {
+         String recieverCustomerIdForChat=listOfConversationsBeans.get(i).getCustomer1_id();
+         if (GlobalVariables.CUSTOMER_PHONE_NUM.equals(recieverCustomerIdForChat))
+         {
+             recieverCustomerIdForChat = listOfConversationsBeans.get(i).getCustomer2_id();
+         }
+        intent = new Intent (this,ChatToCustomersActivity.class);
+        intent.putExtra("customer_phone",GlobalVariables.CUSTOMER_PHONE_NUM);
+        intent.putExtra("senderCustomer", "Customer # "+recieverCustomerIdForChat);
+        intent.putExtra("index", event_info_list.get(i).getIndexInFullList());// event index in All Events List
+        startActivity(intent);
+        }
     }
 
     private Runnable runnable = new Runnable () {

@@ -23,13 +23,15 @@
             <TextView
                 android:layout_column="1"
                 android:layout_alignParentStart="true"
-                android:textSize="20dp"
+                android:textSize="18sp"
                 android:layout_marginRight="5dp"
-                android:text="Purchase Date:"/>
+                android:textStyle="bold"
+                android:text="@string/purchase_date"/>
 
             <TextView
                 android:id="@+id/dateRow"
                 android:padding="5dp"
+                android:textSize="14sp"
                 android:text="Purchase Date:"
                 />
         </TableRow>
@@ -43,7 +45,7 @@
           android:clickable="true"
           android:autoLink="all"
           android:linksClickable="true"
-          android:textSize="20dp"
+          android:textSize="18dp"
           android:text="@string/ticketLinkEvent"
          android:layout_below="@+id/ticketMoreDetailesTable"
          android:layout_alignParentStart="true" />

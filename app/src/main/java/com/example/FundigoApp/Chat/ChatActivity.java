@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.FundigoApp.Customer.CustomerDetails;
 import com.example.FundigoApp.Events.EventInfo;
@@ -129,23 +130,28 @@ public class ChatActivity extends Activity {
     public void sendMessage(View view) {
         messageBody = editTextMessage.getText ().toString ();
         Message message = new Message ();
-        message.setBody (messageBody);
-        if (GlobalVariables.IS_CUSTOMER_REGISTERED_USER) {
-            message.setUserId (customerPhone);
-        } else {
-            message.setUserId (eventInfo.getProducerId ());
+        if (!messageBody.isEmpty()) {
+            message.setBody(messageBody);
+            if (GlobalVariables.IS_CUSTOMER_REGISTERED_USER) {
+                message.setUserId(customerPhone);
+            } else {
+                message.setUserId(eventInfo.getProducerId());
+            }
+            message.setCustomer(customerPhone);
+            message.setProducer(eventInfo.getProducerId());
+            message.setEventObjectId(eventInfo.getParseObjectId());
+            try {
+                message.save();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            editTextMessage.setText("");
+            getAllMessagesFromParseInMainThread(eventInfo.getProducerId(), customerPhone);
+            updateMessageRoomItemInBackGround(message);
         }
-        message.setCustomer (customerPhone);
-        message.setProducer(eventInfo.getProducerId());
-        message.setEventObjectId(eventInfo.getParseObjectId());
-        try {
-            message.save ();
-        } catch (ParseException e) {
-            e.printStackTrace ();
+        else {
+            Toast.makeText(this, "No Message to Send", Toast.LENGTH_SHORT).show();
         }
-        editTextMessage.setText("");
-        getAllMessagesFromParseInMainThread(eventInfo.getProducerId(), customerPhone);
-        updateMessageRoomItemInBackGround(message);
     }
 
     private void getAllMessagesFromParseInBackground(final String producer, final String customer) {
@@ -224,9 +230,9 @@ public class ChatActivity extends Activity {
     public void updateMessageRoomItemInBackGround(final Message message) {
         String senderType = "";
         if (GlobalVariables.IS_CUSTOMER_REGISTERED_USER) {
-            senderType = "Customer : ";
+            senderType = GlobalVariables.CUSTOMER_PHONE_NUM + " to Producer: "+ '\n';
         } else if (GlobalVariables.IS_PRODUCER) {
-            senderType = "Producer : ";
+            senderType = "Producer to " +customerPhone + ":" + '\n';
         }
         final String senderTypeFinal = senderType;
         saveRoomData (room, senderTypeFinal, message);
@@ -279,11 +285,13 @@ public class ChatActivity extends Activity {
                 Room room = new Room ();
                 ParseACL parseACL = new ParseACL ();
                 parseACL.setPublicWriteAccess (true);
-                parseACL.setPublicReadAccess (true);
-                room.setACL (parseACL);
-                room.setCustomer_id (customerPhone);
-                room.setProducer_id (eventInfo.getProducerId ());
-                room.setEventObjId (eventInfo.getParseObjectId ());
+                parseACL.setPublicReadAccess(true);
+                room.setACL(parseACL);
+                room.setCustomer_id(customerPhone);
+                room.setProducer_id(eventInfo.getProducerId());
+                room.setEventObjId(eventInfo.getParseObjectId());
+                room.setCustomer1_id("");// the same Room table used for Prodcuer chat with customer and customer to customer
+                room.setCustomer2_id("");// the same Room table used for Prodcuer chat with customer and customer to customer
                 return room;
             } else {
                 Room room = roomList.get (0);

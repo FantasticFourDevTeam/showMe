@@ -120,7 +120,7 @@
     <string name="tickets">My Events Tickets</string>
     <string name="title_activity_events_tickets">EventsTickets</string>
     <string name="title_activity_mipo">Mipo</string>
-    <string name="ticketLinkEvent"><a href="">Press the link to view the event</a></string>
+    <string name="ticketLinkEvent"><a href="">link to the event</a></string>
     />
 
     <string-array name="filters">
@@ -481,7 +481,7 @@
     <string name="start_scan">Start Scan QR Code</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string name="purchase_date">Purchase Date</string>
+    <string name="purchase_date">Purchase Date:</string>
     <string name="customer_phone">Customer Phone</string>
     <string name="seat_number">Seat Number</string>
     <string name="confirmation_code">Confirmation Code</string>
@@ -502,6 +502,10 @@
     <string name="back_main">Back to main filter</string>
     <string name="default_cityMenu_value">All Cities</string>
     <string name="facebookconnector">Facebook</string>
+    <string name="Loading">Loading...</string>
+
+
+
 
 
 </resources>
