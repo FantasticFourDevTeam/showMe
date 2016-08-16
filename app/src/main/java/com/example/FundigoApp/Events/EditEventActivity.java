@@ -201,14 +201,18 @@ public class EditEventActivity extends AppCompatActivity implements AdapterView.
                 } else {
                     toiletSpinner.setSelection(Integer.parseInt(c[0]) + 1);
                 }
-                if (c[2].equals("")) {
+                if (c[c.length-1].equals("")) { //14.08 - updated - Assaf
 
-                } else if (c[2].equals("None")) {
+                } else if (c[c.length-1].equals("None")) {
                     handicapToiletSpinner.setSelection(1);
-                } else if (c[2].equals("Unknown")) { // ADDED
+                } else if (c[c.length-1].equals("Unknown")) { // ADDED
                     handicapToiletSpinner.setSelection(12);
+                }
+                 else if (c[c.length-1].equals("Handicapped"))
+                {
+
                 } else {
-                    handicapToiletSpinner.setSelection(Integer.parseInt(c[2]) + 1);
+                    handicapToiletSpinner.setSelection(Integer.parseInt(c[c.length-1]) + 1);
                 }
             }
             String atm = event.getEventATMService();
@@ -385,7 +389,15 @@ public class EditEventActivity extends AppCompatActivity implements AdapterView.
         }
         else {
             event.put("Name", et_name.getText().toString());
+            if (numOfToilets==null){
+                numOfToilets = "";
+            }
+            if (numOfHandicapToilets==null) {
+                numOfHandicapToilets="";
+            }
+
             event.put("eventToiletService", numOfToilets + ", Handicapped " + numOfHandicapToilets);
+
             event.put("place", et_place.getText().toString());
             if (et_parking_edit.getText().toString().equals("")) {
                 eventParkingService = "";
@@ -400,7 +412,9 @@ public class EditEventActivity extends AppCompatActivity implements AdapterView.
             }
 
             event.put("eventCapacityService", eventCapacityService);
-            event.put("eventATMService", atmStatus);
+            if (atmStatus!=null){
+              event.put("eventATMService", atmStatus);
+            }
             event.put("artist", et_artist.getText().toString());
             if (!event.getAddress().equals(et_address.getText().toString())) {
                 event.put("address", valid_address);
