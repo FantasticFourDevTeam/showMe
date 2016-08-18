@@ -101,23 +101,26 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
         eventInfo.setIsFutureEvent (eventDate.after (currentDate));
         saveOrPushBotton = (ImageView) findViewById (R.id.imageEvenetPageView3);
         if (eventInfo.getPrice ().equals ("FREE")) {
-            getTicketsButton.setText ("FUNDIGO");
-            getTicketsButton.setClickable (false);
+            //getTicketsButton.setText("Free Event");
+            getTicketsButton.setText("Register"); //09.08 - Assaf changed for the option to register also fr Free events
+            getTicketsButton.setClickable(true);
+            //getTicketsButton.setClickable (false);
         }
         if (!GlobalVariables.IS_PRODUCER && !eventInfo.isFutureEvent ()) {
-            getTicketsButton.setText ("EVENT ENDED");
+            getTicketsButton.setText ("Event Expired");
             getTicketsButton.setClickable (false);
         }
         if (GlobalVariables.IS_PRODUCER) {
-            if (!eventInfo.getPrice ().equals ("FREE")) {
-                getTicketsButton.setText (this.getString (R.string.tickets_status));
-            }
+
+                getTicketsButton.setText (this.getString (R.string.tickets_status));//09.08 - Assaf changed for the option to register also for Free events
+
             saveOrPushBotton.setImageResource (R.drawable.ic_micro_send_push_frame);
         } else {
-            if (eventInfo.isFutureEvent () && !eventInfo.getPrice ().equals ("FREE")) {
+              if (eventInfo.isFutureEvent ())
+                {
                 checkIfTicketsLeft ();
-            }
-        }
+              }
+           }
 
         faceBookUrl = intent.getStringExtra ("fbUrl");//get link from the Intent
         GlobalVariables.deepLinkEventObjID = "";
@@ -209,17 +212,19 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
                     intentSeat.putExtra ("eventObjectId", eventInfo.getParseObjectId ());
                     startActivity (intentSeat);
                 } else {
-                    Handler handler = new Handler ();
-                    handler.postDelayed (new Runnable () {
-                        @Override
-                        public void run() {
-                            for (int i = 0; i < 3; i++) {
-                                Toast.makeText (getApplicationContext (),
-                                                       "You Have 20 Minutes to complete the purchase, Otherwise the ticket will be available to all again",
-                                                       Toast.LENGTH_SHORT).show ();
+                    if (!eventInfo.getPrice().equals("FREE")) { //Save a Seat and buy ticket is only for events that not free
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                for (int i = 0; i < 3; i++) {
+                                    Toast.makeText(getApplicationContext(),
+                                            "You Have 20 Minutes to complete the purchase, Otherwise the ticket will be available to all again",
+                                            Toast.LENGTH_SHORT).show();
+                                }
                             }
-                        }
-                    }, 0);
+                        }, 0);
+                    }
                     Intent intentPelePay = new Intent (EventPageActivity.this, WebBrowserActivity.class);
                     intentPelePay.putExtra ("eventObjectId", eventInfo.getParseObjectId ());
                     intentPelePay.putExtra ("isChoose", "no");
@@ -256,7 +261,6 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
                         .setNegativeButton (this.getString (R.string.share_web_page), new DialogInterface.OnClickListener () {
                             public void onClick(DialogInterface dialog, int id) {
                                 // Assaf: OPEN THE EVENT FACEBBOK PAGE IF EXIST . THE PAGE STORED IN PARSE
-                                //THis option need ot be replaced by share the App link into facebook
                                 Intent webIntent;
                                 if (faceBookUrl != "" && faceBookUrl != null) {
                                     try {

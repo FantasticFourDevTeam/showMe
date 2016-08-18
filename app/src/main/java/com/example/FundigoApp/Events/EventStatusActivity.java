@@ -85,7 +85,7 @@ public class EventStatusActivity extends Activity implements AdapterView.OnItemC
         tv_ticket = (TextView) findViewById (R.id.ticketItem_tv_ticket);
         imageView = (ImageView) findViewById (R.id.iv_arena);
         if (!eventInfo.isStadium) {
-            imageView.setVisibility (View.GONE);
+            imageView.setVisibility (View.INVISIBLE);//invisible for keep the gap in UI still active
         }
 
         sumIncomeTV.setText (sumIncomeSold + "₪");
@@ -160,8 +160,16 @@ public class EventStatusActivity extends Activity implements AdapterView.OnItemC
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Intent intent = new Intent (this, EventDetailsActivity.class);
-        intent.putExtra (GlobalVariables.OBJECTID, list.get (position).getObjectId ());
-        startActivity (intent);
+
+        TextView temp = (TextView)view.findViewById(R.id.ticketItem_tv_sold);
+        if (temp.getText().toString().equals(getResources().getString(R.string.sold_ticket))) {
+            Intent intent = new Intent(this, EventDetailsActivity.class);
+            intent.putExtra(GlobalVariables.OBJECTID, list.get(position).getObjectId());
+            startActivity(intent);
+        }
+        else
+        {
+            return;
+        }
     }
 }

@@ -43,9 +43,9 @@ public class TicketAdapter extends ArrayAdapter<EventsSeats> {
         holder.tv_price.setText (ticket.getPrice () + "₪");
         holder.tv_ticket.setText (ticket.getSeatNumber ());
         if (!ticket.getIsSold ()) {
-            holder.tv_sold.setText ("available");
+            holder.tv_sold.setText (R.string.available_ticket);
         } else{
-            holder.tv_sold.setText ("sold");
+            holder.tv_sold.setText (R.string.sold_ticket);
         }
         return convertView;
     }
@@ -54,5 +54,6 @@ public class TicketAdapter extends ArrayAdapter<EventsSeats> {
         TextView tv_price;
         TextView tv_ticket;
         TextView tv_sold;
+
     }
 }

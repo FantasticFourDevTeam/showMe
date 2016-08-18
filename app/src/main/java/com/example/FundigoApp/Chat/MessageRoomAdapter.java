@@ -74,9 +74,13 @@ public class MessageRoomAdapter extends BaseAdapter {
         } else if (message_bean.getCustomerImage () != null) {
             loader.displayImage (message_bean.getCustomerImage (), holder.customerOrEventImage);
         }
+        else if (message_bean.getCustomerImage ()== null) {
+            loader.displayImage ("", holder.customerOrEventImage);
+        }
+
         holder.messageBody.setText (message_bean.getLastMessage ());
         holder.customerOrEventName.setText (message_bean.getCustomer_id ());
-        holder.customerOrEventImage.setTag (message_bean);
+        holder.customerOrEventImage.setTag(message_bean);
         holder.customerOrEventName.setTag (message_bean);
         holder.messageBody.setTag (message_bean);
 

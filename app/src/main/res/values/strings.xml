@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">FUNDIGO</string>
+    <string name="app_name">whoGo</string>
 
     <string name="filterPageName">Filter</string>
 
@@ -314,7 +314,7 @@
     <string name="edit_event">Edit Event</string>
     <string name="food_drink_convention">#Food Drink #Convention</string>vv
     v
-    <string name="get_tickets">GET TICKETS</string>
+    <string name="get_tickets">Get Tickets</string>
     <string name="real_time">Real Time</string>
     <string name="events_stats">Events Stats</string>
     <string name="list_of_my_events_and_tickets">List of My Events and Tickets</string>
@@ -336,15 +336,15 @@
     <string name="event_name">Event Name</string>
     <string name="date">Date</string>
     <string name="go_to_event">Go To Event</string>
-    <string name="fundigo">FUNDIGO</string>
+    <string name="fundigo">whoGo</string>
     <string name="turn_on_gps_to_see_real_time_events">Turn On GPS To See Real Time Events</string>
     <string name="big_fassion_event_real_time_chat">Big Fassion Event - Real Time Chat</string>
     <string name="history">History</string>
     <string name="clear_history">Clear History</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
-    <string name="finish_reistration">Finish Reistration</string>
-    <string name="create_your_fundigo_account">Create Your Fundigo Account</string>
+    <string name="finish_reistration">Register</string>
+    <string name="create_your_fundigo_account">create your whoGo account</string>
     <string name="insert_image">Insert Image</string>
     <string name="signup">Signup</string>
     <string name="upload">Upload</string>
@@ -381,7 +381,7 @@
     <string name="chat_with_customer">(Chat with Customer)</string>
     <string name="customer">Customer : </string>
     <string name="producer">Producer :</string>
-    <string name="real_time_chat">Real Time Chat</string>
+    <string name="real_time_chat">Chat</string>
     <string name="visit_user_facebook">Visit user facebook page</string>
     <string name="go">Go!</string>
     <string name="cancel">Cancel</string>
@@ -408,7 +408,7 @@
     <string name="validating">Validating...</string>
     <string name="something_went_wrong_plese_try_again">Something went wrong, plese try again</string>
     <string name="problem_is">The address is not valid, the problem is </string>
-    <string name="tickets_status">Tickets Status</string>
+    <string name="tickets_status">Event Status</string>
     <string name="event_is_free">Event Is Free</string>
     <string name="share">Share:</string>
     <string name="share_app_page">Share Event through App</string>
@@ -416,7 +416,7 @@
     <string name="you_can_get_more_info_about_the_event">Contact the producer or other participants</string>
     <string name="you_can_get_more_info_about_the_event_1">Get contact with your clients</string>
     <string name="how_do_you_want_to_do_it">How do you want to do it?</string>
-    <string name="Send_message_to_producer">Send message to producer</string>
+    <string name="Send_message_to_producer">Message to producer</string>
     <string name="see_customers_massages">See Customers Messages</string>
     <string name="scan_didnt_finish">Scan did not finish</string>
     <string name="my_content_title">My Content Title</string>
@@ -440,12 +440,12 @@
     <string name="free">Free</string>
     <string name="buy_ticket">Buy Ticket</string>
     <string name="card_valid_and_complete">Card valid and complete</string>
-    <string name="enjoy_yout_ticket">Enjoy Yout Ticket!</string>
+    <string name="enjoy_yout_ticket">Enjoy your ticket</string>
     <string name="guest_login">GUEST LOGIN</string>
     <string name="verify_email">Verify Email</string>
     <string name="successfully_logged_in_as_producer">Successfully Logged in as producer</string>
-    <string name="wrong_password_try_again">Wrong Password, try again :)</string>
-    <string name="this_user_does_not_exist_try_again">This user does not exist, try again :)</string>
+    <string name="wrong_password_try_again">Wrong Password, try again</string>
+    <string name="this_user_does_not_exist_try_again">This user does not exist, try again</string>
     <string name="successfully_logged_in_as_customer">Successfully Logged in as customer</string>
     <string name="account_created_successfully_verification_mail">Account Created Successfully!
         Verification mail sent to your mailbox
@@ -503,9 +503,10 @@
     <string name="default_cityMenu_value">All Cities</string>
     <string name="facebookconnector">Facebook</string>
     <string name="Loading">Loading...</string>
-
-
-
+    <string name="Registered_seats">Registered seat</string>
+    <string name="available_ticket">available</string>
+    <string name="sold_ticket">sold</string>
+    <string name="Registration_failure">Registration failed and not completed</string>
 
 
 </resources>

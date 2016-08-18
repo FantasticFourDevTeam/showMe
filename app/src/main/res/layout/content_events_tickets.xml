@@ -166,7 +166,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/moreDetailesButton"
-        android:text="Event Ended"
+        android:text="Event Expired"
         android:background="#f15d60"
         android:textColor="#ffffff"
         android:visibility="gone"/>

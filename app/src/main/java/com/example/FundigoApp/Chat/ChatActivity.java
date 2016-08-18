@@ -192,7 +192,7 @@ public class ChatActivity extends Activity {
     }
 
     private void updateMessagesList(List<Message> messages) {
-        mMessageChatsList.clear ();
+        mMessageChatsList.clear();
         for (int i = 0; i < messages.size (); i++) {
             Message msg = messages.get (i);
             String id = msg.getUserId ();
@@ -219,7 +219,7 @@ public class ChatActivity extends Activity {
                                                            true,
                                                            msg.getCreatedAt ()));
         }
-        mAdapter.notifyDataSetChanged (); // update adapter
+        mAdapter.notifyDataSetChanged(); // update adapter
         // Scroll to the bottom of the eventList on initial load
         if (messagesFirstLoad) {
             chatListView.setSelection (mAdapter.getCount () - 1);
@@ -240,19 +240,19 @@ public class ChatActivity extends Activity {
 
     private void saveRoomData(Room room, String senderTypeFinal, Message message) {
         room.setLastMessage (senderTypeFinal + message.getBody ());
-        room.saveInBackground ();
+        room.saveInBackground();
     }
 
     @Override
     public void onPause() {
         super.onPause ();
-        handler.removeCallbacks (runnable);
+        handler.removeCallbacks(runnable);
         room = null;
     }
 
     @Override
     public void onResume() {
-        super.onResume ();
+        super.onResume();
         if(room == null) {
             room = getRoomObject ();
         }
@@ -260,7 +260,7 @@ public class ChatActivity extends Activity {
     }
 
     public void oOpenFacebookIntent(View view) {
-        startActivity (getOpenFacebookIntent ());
+        startActivity(getOpenFacebookIntent());
     }
 
     public Intent getOpenFacebookIntent() {
@@ -301,5 +301,14 @@ public class ChatActivity extends Activity {
             e.printStackTrace ();
         }
         return null;
+    }
+
+
+    public void startMessageWithCustomer(View view)
+    {
+        //do nothing .
+        // msg_item_left layout used by several activties .
+        // this is to prevent error in case user (by mistake) pressed for open private chat or prodcuer to
+        // open privater chat with customer
     }
 }

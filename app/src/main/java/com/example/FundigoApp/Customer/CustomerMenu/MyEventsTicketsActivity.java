@@ -82,22 +82,36 @@ public class MyEventsTicketsActivity extends AppCompatActivity {
                                 Date current_date = new Date();
                                 Date event_date = eventInfo.getDate();
                                 eventInfo.setIsFutureEvent(event_date.after(current_date));
-                                try {
-                                    ParseObject soldTickets = eventsSeats.getSoldTicketsPointer().fetch();
 
-                                    my_tickets_events_list.add(eventInfo);
-                                    my_tickets_list.add(new EventsSeatsInfo(eventsSeats.getSeatNumber(),
-                                            qrCode,
-                                            soldTickets.getCreatedAt(),
-                                            eventsSeats.getIntPrice(),
-                                            eventInfo,
-                                            soldTickets));
-                                }
+                                    try {
+                                        if (!eventInfo.getPrice().equals("FREE")) { //11.08 - Assaf added to support Free events also
+                                            ParseObject soldTickets = eventsSeats.getSoldTicketsPointer().fetch();
 
-                                catch (ParseException exception)
-                                {
-                                    exception.printStackTrace();
-                                }
+                                            my_tickets_events_list.add(eventInfo);
+                                            my_tickets_list.add(new EventsSeatsInfo(eventsSeats.getSeatNumber(),
+                                                    qrCode,
+                                                    //soldTickets.getCreatedAt(),
+                                                    eventsSeats.getPurchaseDate(),
+                                                    eventsSeats.getIntPrice(),
+                                                    eventInfo,
+                                                    soldTickets));
+                                        }
+
+                                        else //11.08 - Assaf added to support Free events also
+                                        {
+                                            my_tickets_events_list.add(eventInfo);
+                                            my_tickets_list.add(new EventsSeatsInfo(eventsSeats.getSeatNumber(),
+                                                    qrCode,
+                                                    eventsSeats.getCreatedAt(),
+                                                    eventsSeats.getIntPrice(),
+                                                    eventInfo,
+                                                    null));
+                                        }
+
+                                    } catch (ParseException exception) {
+                                        exception.printStackTrace();
+                                    }
+
                                 listT.setAdapter(_adapter);
                             }
                             listT.deferNotifyDataSetChanged();

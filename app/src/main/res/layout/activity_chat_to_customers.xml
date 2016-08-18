@@ -78,7 +78,7 @@
             android:layout_height="wrap_content"
             android:gravity="top"
             android:hint="@string/message_hint"
-            android:inputType="textLongMessage"
+            android:inputType="textLongMessage|textMultiLine"
             android:imeOptions="actionSend"
             />
         <Button

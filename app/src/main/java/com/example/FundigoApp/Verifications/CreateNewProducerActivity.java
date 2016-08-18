@@ -53,8 +53,8 @@ public class CreateNewProducerActivity extends Activity {
                     alert.show ();
                     Toast.makeText (getApplicationContext (), R.string.successfully_signed_up, Toast.LENGTH_SHORT).show ();
                 } else {
-                    Toast.makeText (getApplicationContext (), "error = " + e.getMessage (), Toast.LENGTH_SHORT).show ();
-                    Log.e ("CreateNewProducer", e.getMessage ());
+                    Toast.makeText (getApplicationContext (), R.string.Registration_failure, Toast.LENGTH_SHORT).show ();
+                    Log.e("CreateNewProducer", e.getMessage());
                 }
             }
         });

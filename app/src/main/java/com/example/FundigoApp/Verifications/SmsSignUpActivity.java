@@ -300,7 +300,7 @@ public class SmsSignUpActivity extends AppCompatActivity {
     }
 
     public void smsVerify(String phone_number) {
-        Config config = SinchVerification.config ().applicationKey("b9ee3da5-0dc9-40aa-90aa-3d30320746f3").context(getApplicationContext()).build();
+        Config config = SinchVerification.config ().applicationKey("a80ac872-351d-4f45-bc84-deb3c0eb2ccc").context(getApplicationContext()).build();
         VerificationListener listener = new MyVerificationListener();
         String defaultRegion = PhoneNumberUtils.getDefaultCountryIso (this);
         String phoneNumberInE164 = PhoneNumberUtils.formatNumberToE164(phone_number, defaultRegion);

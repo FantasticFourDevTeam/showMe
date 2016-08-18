@@ -214,14 +214,15 @@
             android:id="@+id/iv_arena"
             android:layout_alignBottom="@+id/upcomingTicketPriceAvg"
             android:layout_width="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="20dp"
             android:layout_height="100dp"
             android:layout_gravity="center_horizontal"
             android:src="@drawable/auditorium_arena_stage"/>
         <ListView
             android:id="@+id/lv_tickets"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="10dp"
             android:layout_width="fill_parent"
+            android:textSize="12sp"
             android:layout_height="match_parent"
             android:layout_alignBottom="@+id/iv_arena"
             android:minHeight="250dp"/>
