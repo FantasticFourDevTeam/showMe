@@ -50,7 +50,7 @@ public class LoginActivity extends Activity {
         producer_usernameET = (EditText) findViewById (R.id.username_et);
         producer_passwordET = (EditText) findViewById (R.id.password_et);
         producer_loginButton = (Button) findViewById (R.id.button_login);
-        customer_loginButton = (Button) findViewById (R.id.button_customer);
+       // customer_loginButton = (Button) findViewById (R.id.button_customer);
 
         GlobalVariables.CUSTOMER_PHONE_NUM = FileAndImageMethods.getCustomerPhoneNumFromFile (this);
         if (GlobalVariables.CUSTOMER_PHONE_NUM == null || GlobalVariables.CUSTOMER_PHONE_NUM.equals ("")) {
@@ -174,6 +174,10 @@ public class LoginActivity extends Activity {
 
     //////////////////////////////////////////////////////////////
 
+    /**
+          *
+          * @param v  have no use, method moved to MainActivity
+     */
     public void customerLogin(View v) {
         Toast.makeText (this, R.string.successfully_logged_in_as_customer, Toast.LENGTH_SHORT).show ();
         Intent intent = new Intent (this, MainActivity.class);

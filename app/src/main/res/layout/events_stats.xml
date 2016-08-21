@@ -17,7 +17,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Income so far"
-                android:textSize="23sp"
+                android:textSize="20sp"
                 android:layout_weight="3"
                 android:layout_marginLeft="5dp" />
 
@@ -26,7 +26,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
-                android:textSize="23sp"
+                android:textSize="20sp"
                 android:textColor="#000000"
                 android:layout_weight="2" />
         </TableRow>
@@ -41,7 +41,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Tickets Sold"
-                android:textSize="23sp"
+                android:textSize="20sp"
                 android:layout_weight="3"
                 android:layout_marginLeft="5dp" />
 
@@ -50,7 +50,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
-                android:textSize="23sp"
+                android:textSize="20sp"
                 android:textColor="#000000"
                 android:layout_weight="2" />
         </TableRow>
@@ -65,7 +65,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Past Events"
-                android:textSize="23sp"
+                android:textSize="20sp"
                 android:layout_weight="3"
                 android:layout_marginLeft="5dp" />
 
@@ -74,7 +74,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
-                android:textSize="23sp"
+                android:textSize="20sp"
                 android:textColor="#000000"
                 android:layout_weight="2" />
         </TableRow>
@@ -89,7 +89,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Sold Ticket Price Avg"
-                android:textSize="23sp"
+                android:textSize="20sp"
                 android:layout_weight="3"
                 android:layout_marginLeft="5dp" />
 
@@ -98,7 +98,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
-                android:textSize="23sp"
+                android:textSize="20sp"
                 android:textColor="#000000"
                 android:layout_weight="4" />
         </TableRow>
@@ -113,7 +113,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Upcoming Income"
-                android:textSize="23sp"
+                android:textSize="20sp"
                 android:layout_weight="3"
                 android:layout_marginLeft="5dp" />
 
@@ -122,7 +122,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
-                android:textSize="23sp"
+                android:textSize="20sp"
                 android:textColor="#000000"
                 android:layout_weight="2" />
         </TableRow>
@@ -137,7 +137,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Upcoming Events"
-                android:textSize="23sp"
+                android:textSize="20sp"
                 android:layout_weight="3"
                 android:layout_marginLeft="5dp" />
 
@@ -146,7 +146,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
-                android:textSize="23sp"
+                android:textSize="20sp"
                 android:textColor="#000000"
                 android:layout_weight="2" />
         </TableRow>
@@ -161,7 +161,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Upcoming Tickets"
-                android:textSize="23sp"
+                android:textSize="20sp"
                 android:layout_weight="3"
                 android:layout_marginLeft="5dp" />
 
@@ -170,7 +170,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
-                android:textSize="23sp"
+                android:textSize="20sp"
                 android:textColor="#000000"
                 android:layout_weight="2" />
         </TableRow>
@@ -194,7 +194,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
-                android:textSize="23sp"
+                android:textSize="20sp"
                 android:textColor="#000000"
                 android:layout_weight="3" />
         </TableRow>

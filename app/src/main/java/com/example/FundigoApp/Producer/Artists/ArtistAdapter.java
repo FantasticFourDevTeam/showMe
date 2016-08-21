@@ -7,7 +7,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.example.FundigoApp.Events.EventInfo;
 import com.example.FundigoApp.R;
+import com.example.FundigoApp.StaticMethod.FilterMethods;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +19,7 @@ public class ArtistAdapter extends BaseAdapter {
     List<Artist> artistList = new ArrayList<Artist>();
     Context context;
     LayoutInflater inflater;
+    private Artist artist;
 
     public ArtistAdapter(Context c, List<Artist> artistList) {
         this.context = c;
@@ -50,17 +53,32 @@ public class ArtistAdapter extends BaseAdapter {
             mViewHolder = (MyViewHolder) convertView.getTag();
         }
 
-        Artist artist = (Artist) getItem(position);
+        artist = (Artist) getItem(position);
         mViewHolder.tvTitle.setText(artist.getName());
-
+        mViewHolder.numOfArtistEvents.setText(Integer.toString(getArtistEvents()));
         return convertView;
     }
 
     private class MyViewHolder {
         TextView tvTitle;
+        TextView numOfArtistEvents;
+
 
         public MyViewHolder(View item) {
             tvTitle = (TextView) item.findViewById(R.id.artistName);
+            numOfArtistEvents = (TextView)item.findViewById(R.id.numOfArtistEvents);
         }
+    }
+
+    private int getArtistEvents() {
+        List<EventInfo> eventsListbyArtist = new ArrayList();
+        try {
+            FilterMethods.filterEventsByArtist(artist.getName(),
+                    eventsListbyArtist);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return eventsListbyArtist.size();
     }
 }

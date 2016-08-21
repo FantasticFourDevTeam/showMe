@@ -15,7 +15,7 @@ import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import com.example.FundigoApp.Verifications.LoginActivity;
 import com.example.FundigoApp.Customer.CustomerDetails;
 import com.example.FundigoApp.GlobalVariables;
 import com.example.FundigoApp.R;
@@ -61,6 +61,10 @@ public class MenuActivity extends AppCompatActivity {
     Button user_evnets_tickets_button;
     Button save_credit_card_button;
     Button delete_credit_card_button;
+    /**
+       * button for producer login
+    */
+    Button producerPage_button;
     ImageLoader loader;
 
     @Override
@@ -77,6 +81,7 @@ public class MenuActivity extends AppCompatActivity {
         user_profile_update_button = (Button) findViewById (R.id.buttonUserProfileUpdate);
         user_evnets_tickets_button = (Button) findViewById (R.id.eventsTicketsButton);
         facebook_logout_button = (LoginButton) findViewById (R.id.logout_button11);
+        producerPage_button = (Button) findViewById (R.id.producerPage_button);
         save_credit_card_button = (Button) findViewById (R.id.save_credit_card);
         delete_credit_card_button = (Button) findViewById (R.id.delete_credit_card);
         tableLayout = (TableLayout) findViewById (R.id.profileTable);
@@ -157,6 +162,18 @@ public class MenuActivity extends AppCompatActivity {
         Intent intent = new Intent (MenuActivity.this, SmsSignUpActivity.class);
         startActivity (intent);
     }
+
+    /**
+     +     *
+     +     * @param view = producer login button.
+     +     *             start the MainActivity producer page
+     +     */
+    public void producerLogin(View view) {
+        Intent intent = new Intent (MenuActivity.this, LoginActivity.class);
+        startActivity (intent);
+    }
+
+
 
     @Override
     protected void onResume() {

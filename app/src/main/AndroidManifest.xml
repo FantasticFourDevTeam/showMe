@@ -34,7 +34,20 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity">
+            android:name=".MainActivity"
+            android:configChanges="orientation|screenSize">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <intent-filter>
+                <data android:scheme="event"/>
+                <action android:name="android.intent.action.VIEW"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+            </intent-filter>
         </activity>
         <activity
             android:name=".Events.EventPageActivity">
@@ -60,17 +73,7 @@
         </activity>
         <activity android:name=".Customer.CustomerMenu.SaveCreditCard"/>
         <activity android:name=".Verifications.LoginActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-            <intent-filter>
-                <data android:scheme="event"/>
-                <action android:name="android.intent.action.VIEW"/>
 
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-            </intent-filter>
         </activity>
         <activity android:name=".Customer.RealTime.RealTimeActivity">
         </activity>
@@ -113,10 +116,10 @@
 
         <meta-data
             android:name="com.parse.APPLICATION_ID"
-            android:value="Ab8wpoXahdU64ItR15g0ZKYhypCAdOg05JNd5HB9"/>
+            android:value="b5Mz60x6YArzWHJfk0uVLNvPyV44s59dNC8TMkOx"/>
         <meta-data
             android:name="com.parse.CLIENT_KEY"
-            android:value="CgvMrrUkyiwPA4ZDASsr04DQDwn42M3RacaHYki0"/>
+            android:value="DYuxDXOKR2ZAO29Wc3jq29gxM7kpGkeNQ1r1fMY1"/>
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"

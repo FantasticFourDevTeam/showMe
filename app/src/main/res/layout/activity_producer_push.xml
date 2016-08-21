@@ -12,6 +12,7 @@
         android:ems="10"
         android:id="@+id/editTextPush"
         android:layout_marginTop="120dp"
+        android:maxLength="45"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 

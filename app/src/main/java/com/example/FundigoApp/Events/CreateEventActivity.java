@@ -171,7 +171,7 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
                 }
                 break;
             case R.id.btn_next1:
-               // Log.e(TAG, "event is free " + freeEvent);
+
                 if (freeEvent) {
                     if (!validateQuantity()) {
                         Toast.makeText(CreateEventActivity.this, "Please enter valid quantity", Toast.LENGTH_SHORT).show();
@@ -181,9 +181,7 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
                         Toast.makeText(CreateEventActivity.this, R.string.please_enter_valid_address, Toast.LENGTH_SHORT).show();
                     }
                 }
-                //Log.e(TAG, "seats " + seats);
                 if (seats) {
-                    Log.e(TAG, "seats1 " + seats);
                     if (!validateQuantity()) {
                         Toast.makeText(CreateEventActivity.this, "Please enter valid quantity", Toast.LENGTH_SHORT).show();
                     }else if (address_ok) {
@@ -192,7 +190,6 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
                         Toast.makeText(CreateEventActivity.this, R.string.please_enter_valid_address, Toast.LENGTH_SHORT).show();
                     }
                 } else if (!seats && !freeEvent) {
-                   // Log.e(TAG, "seats3 " + seats);
                     if (!validatePrice() || !validateQuantity()) {
                         Toast.makeText(CreateEventActivity.this, "Please enter valid price and quantity", Toast.LENGTH_SHORT).show();
                     } else {

@@ -42,7 +42,7 @@ public class ProducerMainActivity extends Fragment implements GetEventsDataCallb
          Intent intent = new Intent (this.getActivity (), EventPageActivity.class);
          EventDataMethods.downloadEventsData(this, GlobalVariables.PRODUCER_PARSE_OBJECT_ID, this.getContext(), intent);
 
-        artistListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+         artistListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 Intent intent = new Intent(getActivity(), ArtistStatsActivity.class);
@@ -56,7 +56,7 @@ public class ProducerMainActivity extends Fragment implements GetEventsDataCallb
 
     @Override
     public void eventDataCallback() {
-        EventDataMethods.uploadArtistData ();
+        EventDataMethods.uploadArtistData();
         artistAdapter.notifyDataSetChanged();
     }
 

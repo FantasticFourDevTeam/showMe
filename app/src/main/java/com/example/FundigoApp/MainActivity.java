@@ -1,5 +1,6 @@
 package com.example.FundigoApp;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,7 +24,12 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import com.example.FundigoApp.Customer.Social.Profile;
+import com.example.FundigoApp.StaticMethod.FileAndImageMethods;
+import com.parse.FindCallback;
+import com.parse.ParseInstallation;
+import com.parse.ParsePush;
+import java.util.Collection;
 import com.example.FundigoApp.Customer.CustomerMenu.MenuActivity;
 import com.example.FundigoApp.Customer.RealTime.RealTimeActivity;
 import com.example.FundigoApp.Customer.SavedEvents.SavedEventActivity;
@@ -78,17 +84,23 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     PushDisplay display;
     private static Boolean EXIT;// a flag to close main activities that in stack when press back
     private static ImageView qr_scan_icon;
+    public static ProgressDialog dialog;
+    public static int dialogCounter; //for present the progress dialog only once when statiscics page loaded
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (GlobalVariables.IS_CUSTOMER_GUEST || GlobalVariables.IS_CUSTOMER_REGISTERED_USER) {
+		GlobalVariables.CUSTOMER_PHONE_NUM = FileAndImageMethods.getCustomerPhoneNumFromFile(this);
+        /**
+         * only one if condition, not like before
+         */
+        if (GlobalVariables.IS_PRODUCER) {
+             createProducerMainPage ();
+        }else{
+            customerLogin();
             createCustomerMainPage ();
-            EXIT = false;
-        } else if (GlobalVariables.IS_PRODUCER) {
-            createProducerMainPage ();
-        }
-
+			EXIT = false;
+         }		        
     }
 
     public void createProducerMainPage() {
@@ -99,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             tabLayout.addTab (tabLayout.newTab ().setText ("אמנים"));
             tabLayout.addTab (tabLayout.newTab ().setText ("מידע"));
         } else {
-            tabLayout.addTab (tabLayout.newTab ().setText ("Artist"));
+            tabLayout.addTab (tabLayout.newTab ().setText ("Artists"));
             tabLayout.addTab (tabLayout.newTab ().setText ("State"));
         }
 
@@ -108,16 +120,29 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         final TabPagerAdapter adapter = new TabPagerAdapter
                                                 (getSupportFragmentManager (), tabLayout.getTabCount ());
         qr_scan_icon = (ImageView)findViewById(R.id.qr_scan_produ);
-        viewPager.setAdapter (adapter);
+        viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
+                if (tab.getPosition()==1 && dialogCounter==0)
+                {
+                 dialog = new ProgressDialog (MainActivity.this);
+                 dialog.setMessage ("Loading...");
+                 dialog.show();
+                }
                 viewPager.setCurrentItem(tab.getPosition());
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
+                if (tab.getPosition()==1)
+                {
+                    dialogCounter ++;
+                }
+                viewPager.setCurrentItem(tab.getPosition());
             }
 
             @Override
@@ -586,9 +611,50 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public void onPause() {
         super.onPause ();  // Always call the superclass method first
         if(display != null) {
-            display.cancel (true);
+         //   display.cancel (true);
         }
     }
+	
+	/**
+     * customerLogin() method from LoginActivity for guest and registered users
+     */
+     public void customerLogin() {
+        if (GlobalVariables.CUSTOMER_PHONE_NUM == null || GlobalVariables.CUSTOMER_PHONE_NUM.equals ("")) {
+            GlobalVariables.IS_CUSTOMER_REGISTERED_USER = false;
+            GlobalVariables.IS_CUSTOMER_GUEST = true;
+            GlobalVariables.CUSTOMER_PHONE_NUM = "";
+       } else {
+            GlobalVariables.IS_CUSTOMER_GUEST = false;
+           GlobalVariables.IS_CUSTOMER_REGISTERED_USER = true;
+            ParseQuery<Profile> query = ParseQuery.getQuery ("Profile");
+            query.whereEqualTo ("number", GlobalVariables.CUSTOMER_PHONE_NUM);
+            query.findInBackground (new FindCallback<Profile>() {
+                @Override
+                public void done(List<Profile> objects, ParseException e) {
+                    if (e == null) {
+                        if(objects.get (0).getChanels () != null){
+                            if(GlobalVariables.userChanels.size () == 0) {
+                                GlobalVariables.userChanels.addAll (objects.get (0).getChanels ());
+                            }
+                            ParseInstallation installation = ParseInstallation.getCurrentInstallation ();
+                            installation.addAll ("Channels", (Collection<?>) GlobalVariables.userChanels);
+                            installation.saveInBackground ();
+                            for (int i = 0; i < GlobalVariables.userChanels.size (); i++) {
+                                ParsePush.subscribeInBackground("a" + GlobalVariables.userChanels.get(i));
+                            }
+                        }
+                    } else{
+                        e.printStackTrace ();
+                    }
+                }
+
+            });
+        }		         
+        GlobalVariables.IS_PRODUCER = false;
+        GlobalVariables.PRODUCER_PARSE_OBJECT_ID = null;
+        GlobalVariables.ALL_EVENTS_DATA.clear ();
+     }
+	
 @Override
    public void onBackPressed() {//prevent the back Button to the Activities that sent intents to the Main Activity
         super.onBackPressed();

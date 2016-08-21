@@ -1,5 +1,6 @@
 package com.example.FundigoApp.Customer.CustomerMenu;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -34,6 +35,7 @@ public class MyEventsTicketsActivity extends AppCompatActivity {
     private static ListView listT;
     private static TextView noTickets;
     private static ListAdapter _adapter;
+    ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,9 +52,10 @@ public class MyEventsTicketsActivity extends AppCompatActivity {
         my_tickets_events_list.clear();
         my_tickets_list.clear();
         String _userPhoneNumber = GlobalVariables.CUSTOMER_PHONE_NUM;
-        noTickets.setVisibility(View.VISIBLE);
-        noTickets.setText(R.string.Loading);
-       // List<EventsSeats> list;
+        dialog = new ProgressDialog(this);
+        dialog.setMessage("Loading...");
+        dialog.show();
+
         try {
             ParseQuery<EventsSeats> query = ParseQuery.getQuery ("EventsSeats");
             query.whereEqualTo ("CustomerPhone", _userPhoneNumber).whereEqualTo ("sold", true).orderByDescending("updatedAt");
@@ -114,8 +117,8 @@ public class MyEventsTicketsActivity extends AppCompatActivity {
 
                                 listT.setAdapter(_adapter);
                             }
-                            listT.deferNotifyDataSetChanged();
-                            noTickets.setVisibility(View.GONE);
+
+                            dialog.dismiss();
                         } else {
                             noTickets.setText(R.string.no_tickets_to_display);
                             noTickets.setVisibility(View.VISIBLE);

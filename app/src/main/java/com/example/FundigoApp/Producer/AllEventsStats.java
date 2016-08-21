@@ -1,5 +1,6 @@
 package com.example.FundigoApp.Producer;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import com.example.FundigoApp.Events.EventInfo;
 import com.example.FundigoApp.Events.EventPageActivity;
 import com.example.FundigoApp.GlobalVariables;
+import com.example.FundigoApp.MainActivity;
 import com.example.FundigoApp.Producer.Artists.Artist;
 import com.example.FundigoApp.R;
 import com.example.FundigoApp.StaticMethod.EventDataMethods;
@@ -39,6 +41,8 @@ public class AllEventsStats extends Fragment implements GetEventsDataCallback {
     TextView numOfUpcomingEventsTV;
     TextView numOfTicketsUpcomingTV;
     TextView upcomingTicketsPriceAvgTv;
+    private ProgressDialog dialog;
+
 
     int sumIncomeSold = 0;
     int numTicketsSold = 0;
@@ -83,31 +87,23 @@ public class AllEventsStats extends Fragment implements GetEventsDataCallback {
     }
 
 
-    private class CalcStatistics extends AsyncTask<Void, Integer, String> {
+    private class CalcStatistics extends AsyncTask<Void, Void, String> {
 
         @Override
         protected String doInBackground(Void... params) {
-           // int count =0;
             calculateStats();
-          //  for (;count<10;count++)
-          //  {
-            //    count++;
-              //  publishProgress(count);
-          //  }
             return "done";
         }
 
 
-//        @Override
-//        protected void onProgressUpdate(Integer... values) {
-//            super.onProgressUpdate(values);
-//            Toast.makeText(getContext(),values[0].toString(),Toast.LENGTH_SHORT).show();
-//        }
-
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
+            MainActivity.dialogCounter++;
             showResults(result);
+            if (MainActivity.dialog !=null) {
+                MainActivity.dialog.dismiss();
+            }
         }
     }
 
@@ -140,6 +136,7 @@ public class AllEventsStats extends Fragment implements GetEventsDataCallback {
         double sumIncomeUpcomingDouble = (double) sumIncomeUpcoming / (double) numTicketsUpcoming;
         String dx2 = df.format(sumIncomeUpcomingDouble);
         upcomingTicketsPriceAvgTv.setText(dx2 + "₪");
+
     }
 
     @Override
