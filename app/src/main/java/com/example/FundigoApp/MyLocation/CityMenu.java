@@ -29,7 +29,7 @@ public class CityMenu {
     private List<HashMap<String, String>> totalCityList = new ArrayList<> ();
     private String[] cityNames;
     private boolean GPS_ENABLE = false;
-    private int MENU_LENGTH = 11;
+    private int MENU_LENGTH = 51;
     Context context;
 
     public CityMenu(List<EventInfo> _listOfEventsDetailes, Context context) {
@@ -145,8 +145,8 @@ public class CityMenu {
 
     public String[] cityListAsMeunMaxLength(String[] cityList) {
 
-           if (cityNames.length<MENU_LENGTH) {
-               MENU_LENGTH = cityList.length;// in case the real number of cities  is smaller then 11;
+           if (cityList.length<MENU_LENGTH) {
+               MENU_LENGTH = cityList.length;// in case the actual number of cities  is smaller then 11;
            }
           String[] tempCityList = new String[MENU_LENGTH];
         try {

@@ -1,6 +1,5 @@
 package com.example.FundigoApp.Producer;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -41,8 +40,6 @@ public class AllEventsStats extends Fragment implements GetEventsDataCallback {
     TextView numOfUpcomingEventsTV;
     TextView numOfTicketsUpcomingTV;
     TextView upcomingTicketsPriceAvgTv;
-    private ProgressDialog dialog;
-
 
     int sumIncomeSold = 0;
     int numTicketsSold = 0;
@@ -75,14 +72,15 @@ public class AllEventsStats extends Fragment implements GetEventsDataCallback {
             if (GlobalVariables.artist_list.size() == 0)
             {
                  EventDataMethods.uploadArtistData();
-                calcStatistics.execute();
+                // calcStatistics.execute();
+                 calcStatistics.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
             else
             {
-                 calcStatistics.execute();
+                //calcStatistics.execute();
+                calcStatistics.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         }
-
         return rootView;
     }
 
