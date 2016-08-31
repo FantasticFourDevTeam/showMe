@@ -198,10 +198,11 @@
     <string name="description">תיאור</string>
     <string name="next">הבא</string>
     <string name="user_name">שם משתמש:</string>
+    <string name="email_address"></string>
     <string name="select_picture">בחר תמונה:</string>
 
-    <string name="image_upload">העלה תמונה</string>
-    <string name="submit">טען</string>
+    <string name="image_upload">העלה תמונת פרופיל</string>
+    <string name="submit">שמור עדכון</string>
     <string name="what_to_share">מה תרצה לשתף?</string>
     <string name="app_pafw">דף האפליקציה</string>
     <string name="web_page">עמוד האינטרנט</string>
@@ -211,10 +212,10 @@
     <string name="push">התראות:</string>
     v
     <string name="edit_event">ערוך אירוע</string>
-    <string name="food_drink_convention">#אוכל #שתייה #שיחות</string>vv
-    v
+    <string name="food_drink_convention">#אוכל #שתייה #שיחות</string>
+    <string name="fundigo">כל הערים</string>
     <string name="get_tickets">קנה כרטיס</string>
-    <string name="real_time">זמן אמת</string>
+    <string name="real_time">לפי מרחק</string>
     <string name="events_stats">מצב אירוע</string>
     <string name="list_of_my_events_and_tickets">רשימת הכרטיסים והאירועים</string>
     <string name="enter_phone_number_hear">הכנס מספר טלפון</string>
@@ -235,19 +236,19 @@
     <string name="event_name">שם האירוע</string>
     <string name="date">תאריך</string>
     <string name="go_to_event">לך לאירוע</string>
-    <string name="turn_on_gps_to_see_real_time_events">הפעל GPS כדי לראות אירועים בזמן אמת</string>
-    <string name="big_fassion_event_real_time_chat">Big Fassion Event - Real Time Chat</string>
+    <string name="turn_on_gps_to_see_real_time_events">לא קיימת קליטת GPS ,מידע מבוסס מיקום לא מוצג</string>
+    <string name="big_fassion_event_real_time_chat">Big Fashion Event - Real Time Chat</string>
     <string name="history">היסטוריה</string>
     <string name="clear_history">נקה היסטוריה</string>
     <string name="email">כתובת מייל</string>
     <string name="password">סיסמה</string>
     <string name="finish_reistration">הרשם</string>
-    <string name="create_your_fundigo_account">צור חשבון ב whoGo</string>
+    <string name="create_your_fundigo_account">צור חשבון ב WhoGO</string>
     <string name="insert_image">הכנס תמונה</string>
     <string name="signup">הרשם</string>
     <string name="upload">העלה</string>
     <string name="optional">(אופציונלי)</string>
-    <string name="your_first_use">משתמש יקר, מאחר וזאת הפעם הראשונה שאתה רוכש כרטיס דרך האפליקציה- עליך לעבור תהליך הרשמה קצר.</string>
+    <string name="your_first_use">אורח יקר,עקוב בבקשה אחר ההנחיות לתהליך רישום ל WhoGO בשלב ראשון מספר הטלפון שתזין</string>
     <string name="adir_miler">אדיר מילר</string>
     <string name="sum_income">סכום הכנסות:</string>
     <string name="sum_tickets">סכום כרטיסים</string>
@@ -347,7 +348,7 @@
     <string name="account_created_successfully_verification_mail">חשבון נוצר בהצלחה!
         אימייל אימות נשלח לתיבת הדואר הנכנס שלך
         אנא ודא אימייל והתחבר </string>
-    <string name="successfully_signed_up">"נרשם בהצלחה</string>
+    <string name="successfully_signed_up">תהליך ההרשמה הסתיים בהצלחה</string>
     <string name="Registration_failure">תהליך ההרשמה נכשל ולא הושלם בהצלחה</string>
     <string name="invalid_phone_number_try_again">מספר טלפון לא קיים נסה שוב</string>
     <string name="sports">ספורט</string>
@@ -377,7 +378,7 @@
     <string name="advanced_filter">לחץ להפניה לסינון מתקדם</string>
     <string name="filter_results">לקבלת תוצאות סינון</string>
     <string name="back_main">חזרה לפילטר ראשי</string>
-    <string name="default_cityMenu_value">All Cities</string>
+    <string name="default_cityMenu_value">כל הערים</string>
     <string name="facebookconnector">פייסבוק</string>
     <string name="Loading">טוען מידע...</string>
     <string name="ticketLinkEvent"><a href="">קישור לאירוע</a></string>
@@ -385,6 +386,7 @@
     <string name="Registered_seats">מושב רשום </string>
     <string name="available_ticket">זמין</string>
     <string name="sold_ticket">נמכר</string>
+    <string name="long_walk">למעלה משעה</string>
 
 
 

@@ -158,14 +158,22 @@ public class Profile extends ParseObject {
     }
 
     public void setCanels(String chanel) {
-        add ("Chanels", chanel);
+        add("Chanels", chanel);
     }
 
     public List<String> getChanels() {
-        return getList ("Chanels");
+        return getList("Chanels");
     }
 
     public void addChanels(String str) {
         add("Chanels", str);
+    }
+
+    public String getEmail() {
+        return getString ("email");
+    }
+
+    public void setEmail(String email) {
+        put("email", email);
     }
 }

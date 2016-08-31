@@ -74,9 +74,11 @@ public class RealTimeActivity extends AppCompatActivity implements View.OnClickL
         pushViewText = (TextView) findViewById (R.id.pushView);
         filterTextView = (TextView) findViewById (R.id.filterView);
         RealTime.setTextColor (Color.WHITE);
-        if (GlobalVariables.MY_LOCATION == null && !GPSMethods.isLocationEnabled (this)) {
+        if (GlobalVariables.MY_LOCATION == null || !GPSMethods.isLocationEnabled (this)) {
             turnOnGps ();
         }
+
+
 
         if (GlobalVariables.ALL_EVENTS_DATA.size () == 0) {
             Intent intent = new Intent (this, EventPageActivity.class);

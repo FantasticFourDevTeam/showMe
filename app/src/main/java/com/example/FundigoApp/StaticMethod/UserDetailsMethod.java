@@ -23,6 +23,7 @@ public class UserDetailsMethod {
         String picUrl = null;
         String customerName = null;
         String customerImage = null;
+        String emailAddress = null;
         ParseQuery<Profile> query = ParseQuery.getQuery (Profile.class);
         query.whereEqualTo ("number", customerPhoneNum);
         List<Profile> profile = null;
@@ -33,7 +34,7 @@ public class UserDetailsMethod {
             e.printStackTrace ();
         }
         //all null
-        return new CustomerDetails (faceBookId, picUrl, customerImage, customerName);
+        return new CustomerDetails (faceBookId, picUrl, customerImage, customerName,emailAddress);
     }
 
     public static CustomerDetails getUserDetails(List<Profile> profiles) {
@@ -41,6 +42,7 @@ public class UserDetailsMethod {
         String customerPicFacebookUrl = null;
         String customerImage = null;
         String customerName = null;
+        String emailAddress = null;
         try {
             if (profiles.size() > 0) {
                 Profile profile = profiles.get(0);
@@ -48,13 +50,14 @@ public class UserDetailsMethod {
                 customerPicFacebookUrl = profile.getFbUrl();
                 customerName = profile.getName();
                 customerImage = profile.getPic().getUrl();
+                emailAddress = profile.getEmail().toString();
             }
         }
           catch (Exception ex)
             {
                 ex.printStackTrace();
             }
-        return new CustomerDetails (faceBookId, customerPicFacebookUrl, customerImage, customerName);
+        return new CustomerDetails (faceBookId, customerPicFacebookUrl, customerImage, customerName,emailAddress);
     }
 
     public static CustomerDetails getUserDetailsWithBitmap(List<Profile> numbers) {
@@ -62,11 +65,13 @@ public class UserDetailsMethod {
         String customerPicFacebookUrl = null;
         Bitmap customerImage = null;
         String customerName = null;
+        String emailAddress = null;
         if (numbers.size () > 0) {
             Profile number = numbers.get (0);
             faceBookId = number.getFbId ();
             customerPicFacebookUrl = number.getFbUrl ();
             customerName = number.getName ();
+            emailAddress = number.getEmail();
             ParseFile imageFile;
             byte[] data = null;
             imageFile = (ParseFile) number.getPic ();
@@ -82,7 +87,7 @@ public class UserDetailsMethod {
         CustomerDetails customerDetails = new CustomerDetails (faceBookId,
                                                                       customerPicFacebookUrl,
                                                                       null,
-                                                                      customerName);
+                                                                      customerName,emailAddress);
         customerDetails.setBitmap (customerImage);
         return customerDetails;
     }
@@ -92,6 +97,7 @@ public class UserDetailsMethod {
         String picUrl = null;
         String customerName = null;
         String customerImage = null;
+        String emailAddress = null;
         ParseQuery<Profile> query = ParseQuery.getQuery (Profile.class);
         query.whereEqualTo ("number", customerPhoneNum);
         List<Profile> numbers = null;
@@ -102,7 +108,7 @@ public class UserDetailsMethod {
             e.printStackTrace ();
         }
         //all null
-        return new CustomerDetails (faceBookId, picUrl, customerImage, customerName);
+        return new CustomerDetails (faceBookId, picUrl, customerImage, customerName,emailAddress);
     }
 
     public static void canclePush(EventInfo eventInfo) {

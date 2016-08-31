@@ -299,9 +299,9 @@
     <string name="description">Description*:</string>
     <string name="next">Next</string>
     <string name="user_name">Username:</string>
+    <string name="email_address">Email:</string>
     <string name="select_picture">Select Picture:</string>
-
-    <string name="image_upload">Event Image Upload</string>
+    <string name="image_upload">Your Profile Image Upload</string>
     <string name="submit">Submit</string>
     <string name="what_to_share">What would you like to share?</string>
     <string name="app_pafw">App Page</string>
@@ -315,7 +315,7 @@
     <string name="food_drink_convention">#Food Drink #Convention</string>vv
     v
     <string name="get_tickets">Get Tickets</string>
-    <string name="real_time">Real Time</string>
+    <string name="real_time">By Distance</string>
     <string name="events_stats">Events Stats</string>
     <string name="list_of_my_events_and_tickets">List of My Events and Tickets</string>
     <string name="enter_phone_number_hear">Enter Phone Number Hear</string>
@@ -336,20 +336,20 @@
     <string name="event_name">Event Name</string>
     <string name="date">Date</string>
     <string name="go_to_event">Go To Event</string>
-    <string name="fundigo">whoGo</string>
-    <string name="turn_on_gps_to_see_real_time_events">Turn On GPS To See Real Time Events</string>
-    <string name="big_fassion_event_real_time_chat">Big Fassion Event - Real Time Chat</string>
+    <string name="fundigo">All Cities</string>
+    <string name="turn_on_gps_to_see_real_time_events">No GPS connection, information that is location based could not be display</string>
+    <string name="big_fassion_event_real_time_chat">Big Fashion Event - Real Time Chat</string>
     <string name="history">History</string>
     <string name="clear_history">Clear History</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="finish_reistration">Register</string>
-    <string name="create_your_fundigo_account">create your whoGo account</string>
+    <string name="create_your_fundigo_account">create your WhoGo account</string>
     <string name="insert_image">Insert Image</string>
     <string name="signup">Signup</string>
     <string name="upload">Upload</string>
     <string name="optional">(optional)</string>
-    <string name="your_first_use">Dear user, since it\'s your first use of purchasing tickets through the app - You must pass a sample and short registration.</string>
+    <string name="your_first_use">Dear guest, please follow up this short wizard for register to WhoGO. First step is validate your Phone number,SMS message will be send to you with approval code</string>
     <string name="adir_miler">Adir Miler</string>
     <string name="sum_income">Sum Income:</string>
     <string name="sum_tickets">Sum Tickets:</string>
@@ -467,8 +467,8 @@
     <string name="not_have_history">Not have history</string>
     <string name="input_word_to_search">Input word to search</string>
     <string name="found">Found</string>
-    <string name="producer_login">Producer Login:</string>
-    <string name="customer_log_in">Customer Login:</string>
+    <string name="producer_login">Producer Login</string>
+    <string name="customer_log_in">Customer Login</string>
     <string name="money">\$</string>
 
 
@@ -507,6 +507,8 @@
     <string name="available_ticket">available</string>
     <string name="sold_ticket">sold</string>
     <string name="Registration_failure">Registration failed and not completed</string>
+    <string name="long_walk">more then 1 hour</string>
+
 
 
 </resources>

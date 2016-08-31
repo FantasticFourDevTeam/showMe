@@ -44,12 +44,14 @@ public class EventServiceActivity extends Activity {
         int walkValue = myintent.getIntExtra ("walkValue", -1);
         String walking;
 
-        if (walkValue == -1 || walkValue / 3600 > 1) {
+        if (walkValue == -1) {
             walking = null;
-        } else {
+        } else if(walkValue / 3600 > 1) {
+            walking = getResources().getString(R.string.long_walk);
+        }
+        else {
             walking = myintent.getStringExtra ("walking");
         }
-
         event_service_listView = (ListView) findViewById (R.id.event_service_listView);
         event_service_listView.setAdapter (new CostumeAdapter (this,
                                                                       driving,

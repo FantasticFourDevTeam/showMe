@@ -1,5 +1,6 @@
 package com.example.FundigoApp.Customer.CustomerMenu;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -27,19 +28,24 @@ public class CustomerProfileUpdate extends AppCompatActivity {
     String customer;
     EditText customerName;
     ImageView customerImg;
+    EditText emailAddressText;
+    String emailValue;
     boolean IMAGE_SELECTED = false;
+    ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate (savedInstanceState);
-        setContentView (R.layout.activity_customer_profile_update);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_customer_profile_update);
         customerName = (EditText) findViewById (R.id.userEdit);
         customerImg = (ImageView) findViewById (R.id.customerImage);
+        emailAddressText =  (EditText)findViewById(R.id.emailValue);
         getCurrentUserProfile ();
     }
 
     public void updateProfile(View view) {
         customer = customerName.getText ().toString ();
+        emailValue = emailAddressText.getText().toString();
         byte[] imageToUpdate;
         List<ParseObject> list;
         if (!customer.isEmpty () || IMAGE_SELECTED) {
@@ -51,17 +57,19 @@ public class CustomerProfileUpdate extends AppCompatActivity {
                     list = query.find ();
                     for (ParseObject obj : list) {
                         obj.put ("name", customer);
+                        obj.put("email",emailValue);
                         if (IMAGE_SELECTED) {
                             imageToUpdate = imageUpdate ();
                             ParseFile picFile = new ParseFile (imageToUpdate);
                             obj.put ("pic", picFile);
                         }
-                        obj.save ();
+                        obj.saveInBackground();
                         finish ();
                     }
                 } catch (Exception e) {
-                    Log.e ("Exception catch", e.toString ());
+                    e.printStackTrace();
                 }
+
             } else {
                 Toast.makeText (getApplicationContext (),
                                        R.string.user_may_not_registered_or_not_exist,
@@ -82,9 +90,19 @@ public class CustomerProfileUpdate extends AppCompatActivity {
     }
 
     public void imageUpload(View view) {
-        Intent i = new Intent (Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        if (i.resolveActivity (getPackageManager ()) != null) {
-            startActivityForResult (i, GlobalVariables.SELECT_PICTURE);
+
+        try {
+            Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            if (i.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(i, GlobalVariables.SELECT_PICTURE);
+            }
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        catch (OutOfMemoryError ex1)
+        {
+            ex1.printStackTrace();
         }
     }
 
@@ -98,7 +116,12 @@ public class CustomerProfileUpdate extends AppCompatActivity {
             image = stream.toByteArray ();
             return image;
         } catch (Exception e) {
-            Log.e ("Exceptpion in In Image", e.toString ());
+            e.printStackTrace();
+            return null;
+        }
+        catch (OutOfMemoryError ex)
+        {
+            ex.printStackTrace();
             return null;
         }
     }
@@ -117,9 +140,12 @@ public class CustomerProfileUpdate extends AppCompatActivity {
     }
 
     public void getCurrentUserProfile() {
+        dialog= new ProgressDialog(this);
+        dialog.setTitle("Loading..");
         String phoneNum = GlobalVariables.CUSTOMER_PHONE_NUM;
         CustomerDetails customerDetails = UserDetailsMethod.getUserDetailsFromParseInMainThreadWithBitmap (phoneNum);
-        String currentUserName = customerDetails.getCustomerName ();
+        String currentUserName = customerDetails.getCustomerName();
+        String emailAddress = customerDetails.getEmail();
         if(customerName.getText ().toString ().isEmpty ()){
             customerName.setText (currentUserName);
             customerName.setSelection (customerName.getText ().length ());
@@ -129,5 +155,10 @@ public class CustomerProfileUpdate extends AppCompatActivity {
             customerImg.setImageBitmap (userImage);
             customerImg.setVisibility (View.VISIBLE);
         }
+
+        if(customerDetails.getEmail() != null) {
+            emailAddressText.setText(emailAddress.toString());
+        }
+        dialog.dismiss();
     }
 }

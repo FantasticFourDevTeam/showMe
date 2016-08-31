@@ -31,13 +31,39 @@
             android:singleLine="true"
             android:layout_weight="2"
             android:layout_marginRight="20dp" />
+
+    </TableRow>
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/tableRow3"
+        android:id="@+id/tableRowEmail">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/email"
+            android:id="@+id/textEmail"
+            android:textSize="15dp"
+            android:layout_weight="2" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/emailValue"
+            android:maxWidth="150dp"
+            android:width="150dp"
+            android:singleLine="true"
+            android:layout_weight="2"
+            android:layout_marginRight="20dp" />
+
     </TableRow>
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/tableRow3"
+        android:layout_below="@+id/tableRowEmail"
         android:layout_marginTop="20dp">
 
         <ImageView
@@ -56,24 +82,15 @@
             android:onClick="imageUpload"
             android:layout_marginTop="10dp" />
 
-
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/submit"
+            android:id="@+id/submit"
+            android:textSize="20dp"
+            android:onClick="updateProfile"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="25dp" />
 
     </LinearLayout>
-
-
-
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/submit"
-        android:id="@+id/submit"
-        android:textSize="20dp"
-        android:onClick="updateProfile"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="246dp" />
-
-
-
-
 </RelativeLayout>

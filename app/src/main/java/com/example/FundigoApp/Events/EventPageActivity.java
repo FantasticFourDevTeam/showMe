@@ -177,15 +177,15 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
         even_addr = even_addr.replace (",", "");
         even_addr = even_addr.replace (" ", "+");
         if (GlobalVariables.MY_LOCATION != null && GPSMethods.isLocationEnabled (this)) {
-            new GetEventDis2 (EventPageActivity.this).execute (
-                                                                      "https://maps.googleapis.com/maps/api/distancematrix/json?origins=" +
-                                                                              getLocation2 ().getLatitude () +
-                                                                              "," +
-                                                                              getLocation2 ().getLongitude () +
-                                                                              "&destinations=" +
-                                                                              even_addr +
-                                                                              "+Israel&mode=driving&language=" + Locale.getDefault ().getLanguage () + "&key=AIzaSyAuwajpG7_lKGFWModvUIoMqn3vvr9CMyc");
-            new GetEventDis2 (EventPageActivity.this).execute (
+            new GetEventDis2 (EventPageActivity.this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
+                    "https://maps.googleapis.com/maps/api/distancematrix/json?origins=" +
+                            getLocation2().getLatitude() +
+                            "," +
+                            getLocation2().getLongitude() +
+                            "&destinations=" +
+                            even_addr +
+                            "+Israel&mode=driving&language=" + Locale.getDefault().getLanguage() + "&key=AIzaSyAuwajpG7_lKGFWModvUIoMqn3vvr9CMyc");
+            new GetEventDis2 (EventPageActivity.this).executeOnExecutor (AsyncTask.THREAD_POOL_EXECUTOR,
                                                                       "https://maps.googleapis.com/maps/api/distancematrix/json?origins=" +
                                                                               getLocation2 ().getLatitude () +
                                                                               "," +

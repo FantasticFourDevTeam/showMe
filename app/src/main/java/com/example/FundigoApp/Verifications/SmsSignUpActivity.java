@@ -1,6 +1,7 @@
 package com.example.FundigoApp.Verifications;
 
 import android.annotation.TargetApi;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -73,12 +74,17 @@ public class SmsSignUpActivity extends AppCompatActivity {
     ImageView customerImageView;
     TextView optionalTV;
     TextView expTV;
+    static private TextView emailAddressTitle;
+    static private EditText emailAddress;
+    private String emailAddressValue;
     boolean image_selected = false;
     Profile previousDataFound = null;
     private Locale locale = null;
     boolean imageSelected = false;
     boolean image_was_before = false;
     Bitmap image;
+    private Profile profileParseObject;
+    ProgressDialog smsDialog;
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void forceRTLIfSupported() {
@@ -90,8 +96,8 @@ public class SmsSignUpActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //forceRTLIfSupported ();
-        super.onCreate (savedInstanceState);
-        setContentView (R.layout.activity_sms_login);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_sms_login);
         Locale.getDefault ().getDisplayLanguage ();
         array_spinner = new String[6];
         array_spinner[0] = "050";
@@ -108,20 +114,25 @@ public class SmsSignUpActivity extends AppCompatActivity {
 
         usernameTV = (TextView) findViewById (R.id.usernameTV);
         usernameTE = (EditText) findViewById (R.id.usernameTE);
+        emailAddressTitle = (TextView) findViewById (R.id.emailAddressTitle);
+        emailAddress = (EditText) findViewById (R.id.emailAddress);
         phoneET = (EditText) findViewById (R.id.phoneET);
         phoneTV = (TextView) findViewById (R.id.phoneTV);
         customerImageView = (ImageView) findViewById (R.id.imageV);
 
         phoneET.setOnEditorActionListener (new TextView.OnEditorActionListener () {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                smsDialog = new ProgressDialog(SmsSignUpActivity.this);
+                smsDialog.setTitle("Verification is in progress...");
+                smsDialog.show();
                 if ((event != null &&
                              (event.getKeyCode () == KeyEvent.KEYCODE_ENTER)) ||
                             (actionId == EditorInfo.IME_ACTION_DONE)) {
-                    area = s.getSelectedItem ().toString ();
-                    username = usernameTE.getText ().toString ();
-                    phone_number_to_verify = getNumber (phoneET.getText ().toString (), area);
-                    getUserPreviousDetails (area + phoneET.getText ().toString ());
-                    smsVerify (area + phoneET.getText ().toString ());
+                    area = s.getSelectedItem().toString ();
+                    username = usernameTE.getText().toString();
+                    phone_number_to_verify = getNumber(phoneET.getText().toString(), area);
+                    getUserPreviousDetails(area + phoneET.getText().toString());
+                    smsVerify(area + phoneET.getText().toString());
                 }
                 return false;
             }
@@ -130,8 +141,23 @@ public class SmsSignUpActivity extends AppCompatActivity {
         usernameTE.setOnEditorActionListener (new TextView.OnEditorActionListener () {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if ((event != null && (event.getKeyCode () == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
+                    username = usernameTE.getText ().toString ();
                     usernameTE.setVisibility (View.INVISIBLE);
                     usernameTV.setVisibility (View.INVISIBLE);
+                    emailAddressTitle.setVisibility(View.VISIBLE);
+                    emailAddress.setVisibility(View.VISIBLE);
+
+                }
+                return false;
+            }
+        });
+
+        emailAddress.setOnEditorActionListener (new TextView.OnEditorActionListener () {
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if ((event != null && (event.getKeyCode () == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
+                    emailAddressValue = emailAddress.getText().toString();
+                    emailAddressTitle.setVisibility(View.INVISIBLE);
+                    emailAddress.setVisibility(View.INVISIBLE);
                     customerImageView = (ImageView) findViewById (R.id.imageV);
                     customerImageView.setVisibility (View.VISIBLE);
                     upload_button = (Button) findViewById (R.id.upload_button);
@@ -147,8 +173,6 @@ public class SmsSignUpActivity extends AppCompatActivity {
     }
 
     public void Signup(View view) {
-        username = usernameTE.getText ().toString ();
-        Profile profileParseObject;
         if (previousDataFound != null) {
             profileParseObject = previousDataFound;
             GlobalVariables.CUSTOMER_PHONE_NUM = previousDataFound.getNumber ();
@@ -182,6 +206,7 @@ public class SmsSignUpActivity extends AppCompatActivity {
             profileParseObject.setUser (user);
         }
         profileParseObject.setName (username);
+        profileParseObject.setEmail(emailAddressValue);
         if (imageSelected) {
             customerImageView.buildDrawingCache ();
             Bitmap bitmap = image;
@@ -197,7 +222,7 @@ public class SmsSignUpActivity extends AppCompatActivity {
             }
             ParseFile file = new ParseFile ("picturePath", image);
             try {
-                file.save ();
+                file.save();
             } catch (ParseException e) {
                 e.printStackTrace ();
             }
@@ -246,15 +271,15 @@ public class SmsSignUpActivity extends AppCompatActivity {
             profileParseObject.setLocation (parseGeoPoint);
         }
         try {
-            profileParseObject.save ();
+            profileParseObject.saveInBackground();
             Toast.makeText (getApplicationContext (), R.string.successfully_signed_up, Toast.LENGTH_SHORT).show ();
             saveToFile (area + phoneET.getText ().toString ());
             GlobalVariables.CUSTOMER_PHONE_NUM = area + phoneET.getText ().toString ();
             GlobalVariables.IS_CUSTOMER_REGISTERED_USER = true;
             GlobalVariables.IS_CUSTOMER_GUEST = false;
             finish ();
-        } catch (ParseException e) {
-            Toast.makeText (getApplicationContext (), " Error ): ", Toast.LENGTH_SHORT).show ();
+        } catch (Exception e) {
+            Toast.makeText (getApplicationContext (), "Error during registration ", Toast.LENGTH_SHORT).show ();
             e.printStackTrace ();
         }
     }
@@ -305,7 +330,8 @@ public class SmsSignUpActivity extends AppCompatActivity {
         String defaultRegion = PhoneNumberUtils.getDefaultCountryIso (this);
         String phoneNumberInE164 = PhoneNumberUtils.formatNumberToE164(phone_number, defaultRegion);
         Verification verification = SinchVerification.createSmsVerification(config, phoneNumberInE164, listener);
-        verification.initiate ();
+        verification.initiate();
+        //onVer(); //  //just for test, DON"T Expose THIS METHOD
     }
 
     class MyVerificationListener implements VerificationListener {
@@ -326,9 +352,10 @@ public class SmsSignUpActivity extends AppCompatActivity {
                 e.printStackTrace ();
             }
         }
-        @Override
+         @Override
         public void onVerified() {
-            // Verification successful
+          // Verification successful
+            smsDialog.dismiss();
             usernameTV.setVisibility (View.VISIBLE);
             usernameTE.setVisibility (View.VISIBLE);
             phoneET.setVisibility (View.INVISIBLE);
@@ -336,7 +363,7 @@ public class SmsSignUpActivity extends AppCompatActivity {
             expTV = (TextView) findViewById (R.id.explanationTV);
             expTV.setVisibility (View.INVISIBLE);
             s.setVisibility (View.INVISIBLE);
-        }
+       }
 
         @Override
         public void onVerificationFailed(Exception e) {
@@ -356,8 +383,22 @@ public class SmsSignUpActivity extends AppCompatActivity {
                 // Other system error, such as UnknownHostException in case of network error
                 e.printStackTrace ();
             }
+            smsDialog.dismiss();
+            Toast.makeText(SmsSignUpActivity.this,"Verification was failed please try later again",Toast.LENGTH_LONG).show();
         }
     }
+//    public void onVer () //just for test, DON"T Expose THIS METHOD
+//    {
+//        // Verification successful
+//        smsDialog.dismiss();
+//        usernameTV.setVisibility (View.VISIBLE);
+//        usernameTE.setVisibility (View.VISIBLE);
+//        phoneET.setVisibility (View.INVISIBLE);
+//        phoneTV.setVisibility (View.INVISIBLE);
+//        expTV = (TextView) findViewById (R.id.explanationTV);
+//        expTV.setVisibility (View.INVISIBLE);
+//        s.setVisibility (View.INVISIBLE);
+//    }
 
     void saveToFile(String phone_number) {
         phone_number = phone_number + " isFundigo";
@@ -392,6 +433,9 @@ public class SmsSignUpActivity extends AppCompatActivity {
                                 customerImageView.setImageBitmap (customerImage);
                                 image_was_before = true;
                             }
+                        }
+                        if(customerDetails.getEmail() != null) {
+                            emailAddress.setText(customerDetails.getEmail().toString());
                         }
                     }
                 } else {

@@ -8,16 +8,20 @@ public class CustomerDetails {
     String customerImage;
     String customerName;
     Bitmap bitmap;
+    String emailAddress;
 
 
     public CustomerDetails(String faceBookId,
                            String picUrl,
                            String customerImage,
-                           String customerName) {
+                           String customerName,
+                           String emailAddress)
+     {
         this.faceBookId = faceBookId;
         this.picUrl = picUrl;
         this.customerImage = customerImage;
         this.customerName = customerName;
+        this.emailAddress= emailAddress;
     }
 
     public String getFaceBookId() {
@@ -58,5 +62,10 @@ public class CustomerDetails {
 
     public void setBitmap(Bitmap bitmap) {
         this.bitmap = bitmap;
+    }
+
+    public String getEmail ()
+    {
+        return emailAddress;
     }
 }

@@ -1,5 +1,6 @@
 package com.example.FundigoApp.Customer.Social;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -27,22 +28,34 @@ public class MyNotificationsActivity extends AppCompatActivity implements Adapte
     ImageButton massage, mipo;
     List<ParseObject> pushObjectsList = new ArrayList<ParseObject> ();
     List<EventInfo> notificationsEventList = new ArrayList<EventInfo> ();
+    public static ProgressDialog notificationUploadDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate (savedInstanceState);
+
+        notificationUploadDialog = new ProgressDialog(this);
+        notificationUploadDialog.setMessage("Loading...");
+        notificationUploadDialog.show();
+
         setContentView (R.layout.activity_my_notification);
         notificationList = (ListView) findViewById (R.id.listViewNotification);
         massage = (ImageButton) findViewById (R.id.Message_itemPush);
         mipo = (ImageButton) findViewById (R.id.Mipo_Push);
 
-        getNotification ();
-        NotificationAdapter adapter = new NotificationAdapter (this, notificationsEventList, pushObjectsList);
+        try {
+            getNotification();
+            NotificationAdapter adapter = new NotificationAdapter(this, notificationsEventList, pushObjectsList);
 
-        notificationList.setAdapter (adapter);
-        notificationList.setSelector (new ColorDrawable (Color.TRANSPARENT));
-        notificationList.setOnItemClickListener (this);
+            notificationList.setAdapter(adapter);
+            notificationList.setSelector(new ColorDrawable(Color.TRANSPARENT));
+            notificationList.setOnItemClickListener(this);
+        }
 
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
         massage.setOnClickListener (this);
         mipo.setOnClickListener (this);
     }
@@ -66,20 +79,31 @@ public class MyNotificationsActivity extends AppCompatActivity implements Adapte
         } catch (ParseException e) {
             e.printStackTrace ();
         }
-        List<ParseObject> tempPushObjectsList = new ArrayList<ParseObject> ();
-        for (int i = 0; i < pushObjectsList.size (); i++) {
-            ParseObject parseObject = pushObjectsList.get (i);
-            EventInfo eventInfo = EventDataMethods.getEventFromObjID (parseObject.getString ("EvendId"),
-                                                                             GlobalVariables.ALL_EVENTS_DATA);
-            if(eventInfo == null){
-                continue;
-            } else {
-                notificationsEventList.add (eventInfo);
-                tempPushObjectsList.add(pushObjectsList.get (i));
+
+        try {
+
+            List<ParseObject> tempPushObjectsList = new ArrayList<ParseObject>();
+            for (int i = 0; i < pushObjectsList.size(); i++) {
+                ParseObject parseObject = pushObjectsList.get(i);
+                EventInfo eventInfo = EventDataMethods.getEventFromObjID(parseObject.getString("EvendId"),
+                        GlobalVariables.ALL_EVENTS_DATA);
+                if (eventInfo == null) {
+                    continue;
+                } else {
+                    notificationsEventList.add(eventInfo);
+                    tempPushObjectsList.add(pushObjectsList.get(i));
+                }
             }
+
+            pushObjectsList.clear();
+            pushObjectsList.addAll(tempPushObjectsList);
+            notificationUploadDialog.dismiss();
         }
-        pushObjectsList.clear ();
-        pushObjectsList.addAll (tempPushObjectsList);
+
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
     }
 
     @Override
