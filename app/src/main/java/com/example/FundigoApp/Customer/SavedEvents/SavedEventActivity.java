@@ -311,9 +311,11 @@ public class SavedEventActivity extends AppCompatActivity implements View.OnClic
                             GlobalVariables.CITY_GPS != null &&
                             !GlobalVariables.CITY_GPS.isEmpty () &&
                             GPSMethods.getCityIndexFromName (GlobalVariables.CITY_GPS) >= 0) {
-                    popup.getMenu ().getItem (i).setTitle (GlobalVariables.namesCity[i] + "(GPS)");
+                   // popup.getMenu ().getItem (i).setTitle (GlobalVariables.namesCity[i] + "(GPS)");
+                    popup.getMenu().add(Menu.NONE,i,Menu.NONE,GlobalVariables.namesCity[i] + "(GPS)"); // create menu items dynamically
                 } else {
-                    popup.getMenu ().getItem (i).setTitle (GlobalVariables.namesCity[i]);
+                    //popup.getMenu ().getItem (i).setTitle (GlobalVariables.namesCity[i]);
+                    popup.getMenu().add(Menu.NONE,i,Menu.NONE,GlobalVariables.namesCity[i]); // create menu items dynamically
                 }
                 GlobalVariables.popUpIDToCityIndex.put (popup.getMenu ().getItem (i).getItemId (), i);
                 if (!GlobalVariables.CURRENT_CITY_NAME.isEmpty () &&
