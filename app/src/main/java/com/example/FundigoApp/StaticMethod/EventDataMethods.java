@@ -55,6 +55,7 @@ public class EventDataMethods {
             query.whereEqualTo ("producerId", producerId);
         }
         query.orderByDescending ("createdAt");
+        query.setLimit(1000);
         List<Event> eventParse = null;
         try {
             eventParse = query.find();

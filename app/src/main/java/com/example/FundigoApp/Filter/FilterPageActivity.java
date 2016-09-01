@@ -1,15 +1,12 @@
 package com.example.FundigoApp.Filter;
 
 import android.app.DatePickerDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -35,13 +32,13 @@ public class FilterPageActivity extends AppCompatActivity implements AdapterView
                                R.drawable.ic_music
     };
     String sports;
-    String travel;
-    String drinks;
+    String tourism;
+    String party;
     String business;
-    String fashion;
-    String education;
-    String government;
-    String home_lifeStyle;
+    String comedy;
+    String workshop;
+    String kids;
+    String lifeStyle;
     String music;
     String[] num;
     private String[] Names = {};
@@ -67,25 +64,25 @@ public class FilterPageActivity extends AppCompatActivity implements AdapterView
         super.onCreate (savedInstanceState);
         setContentView (R.layout.activity_filter_page);
         sports = getApplicationContext ().getString (R.string.sports);
-        travel = getApplicationContext ().getString (R.string.travel);
-        drinks = getApplicationContext ().getString (R.string.drinks);
+        tourism = getApplicationContext ().getString (R.string.travel);
+        party = getApplicationContext ().getString (R.string.drinks);
         business = getApplicationContext ().getString (R.string.business);
-        fashion = getApplicationContext ().getString (R.string.fashion);
-        education = getApplicationContext ().getString (R.string.education);
-        government = getApplicationContext ().getString (R.string.government);
-        home_lifeStyle = getApplicationContext ().getString (R.string.home_lifeStyle);
+        comedy = getApplicationContext ().getString (R.string.fashion);
+        workshop = getApplicationContext ().getString (R.string.education);
+        kids = getApplicationContext ().getString (R.string.government);
+        lifeStyle = getApplicationContext ().getString (R.string.home_lifeStyle);
         music = getApplicationContext ().getString (R.string.music);
 
         num = new String[]{"Sports",
-                                  "Travel",
-                                  "Drink",
+                                  "Tourism",
+                                  "Party",
                                   "Business",
-                                  "Fashion",
-                                  "Education",
-                                  "Government",
-                                  "Home and LifeStyle",
+                                  "Comedy",
+                                  "Workshop",
+                                  "Kids",
+                                  "LifeStyle",
                                   "Music"};
-        Names = new String[]{sports, travel, drinks, business, fashion, education, government, home_lifeStyle, music};
+        Names = new String[]{sports, tourism, party, business, comedy, workshop, kids, lifeStyle, music};
         setTitle (getApplicationContext ().getString (R.string.filter_page));
 
         /** Create the Custom Grid View*/
@@ -203,7 +200,9 @@ public class FilterPageActivity extends AppCompatActivity implements AdapterView
             GlobalVariables.CURRENT_FILTER_NAME = filter;
             view.setBackgroundColor (Color.RED);
             saveInfo ();
-            AlertDialog.Builder _builder = new AlertDialog.Builder (this);
+
+            //31.08 This Dialog open the SubFilter page - for now it was remarked...
+            /*AlertDialog.Builder _builder = new AlertDialog.Builder (this);
             _builder.setPositiveButton (R.string.advanced_filter, new DialogInterface.OnClickListener () {
                 public void onClick(DialogInterface dialog, int id) {
                     try {
@@ -221,7 +220,7 @@ public class FilterPageActivity extends AppCompatActivity implements AdapterView
             })
                     .setCancelable (true);
             AlertDialog _alert = _builder.create ();
-            _alert.show ();
+            _alert.show ();*/
 
         } else {
             if (filter.equals (num[i])) { // cancel filter selection - reset mainFilter and subFilter
@@ -289,7 +288,7 @@ public class FilterPageActivity extends AppCompatActivity implements AdapterView
         return values;
     }
 
-    private void openSubCategory() {
+    private void openSubCategory() { // for open the Sub filter page. for now it was remarked
         Intent intent = new Intent (this, FilterPageActivity2.class);
         intent.putExtra ("mainFilter", filter);
         intent.putExtra ("date", dateFilterSelected);

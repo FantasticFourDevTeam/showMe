@@ -172,6 +172,7 @@ public class ChatToCustomersActivity extends Activity implements Comparator<Stri
 
     private void getAllMessagesFromParseInBackground(final String customer1, final String customer2) {
         ParseQuery<MessageToCustomer> query = ParseQuery.getQuery (MessageToCustomer.class);
+        query.setLimit(1000);
         query.whereEqualTo ("customer2", customer2);
         query.whereEqualTo ("customer1", customer1);
         query.whereEqualTo ("eventObjectId", eventInfo.getParseObjectId ());
@@ -191,6 +192,7 @@ public class ChatToCustomersActivity extends Activity implements Comparator<Stri
 
     private void getAllMessagesFromParseInMainThread(String customer1, String customer2) {
         ParseQuery<MessageToCustomer> query = ParseQuery.getQuery (MessageToCustomer.class);
+        query.setLimit(1000);
         query.whereEqualTo ("customer1", customer1);
         query.whereEqualTo ("customer2", customer2);
         query.whereEqualTo ("eventObjectId", eventInfo.getParseObjectId ());
@@ -312,6 +314,7 @@ public class ChatToCustomersActivity extends Activity implements Comparator<Stri
 
     private Room getRoomObject() { //01.08 - Assaf updated
         ParseQuery<Room> query = ParseQuery.getQuery ("Room");
+        query.setLimit(1000);
         query.whereEqualTo ("customer1", customer1);
         query.whereEqualTo ("customer2", customer2);
         //query.whereEqualTo ("customer_id", customerPhone);

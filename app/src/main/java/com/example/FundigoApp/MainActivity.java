@@ -211,6 +211,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
         pushViewText = (TextView) findViewById(R.id.pushView);// push notifications bar in the bottom of the page
         //dialog for Register to application - appears when it is a guest only
+
         if (GlobalVariables.CUSTOMER_PHONE_NUM == null || GlobalVariables.CUSTOMER_PHONE_NUM.equals("")) {
             //dialog that popup for Guest only for register to Application
             final Dialog dialog = new Dialog(this);
@@ -230,6 +231,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                         dialog.dismiss();
                     } else if (v.getId() == fBut.getId()) {
 
+
                     } else if (v.getId() == createBut.getId()) {
                         dialog.dismiss();
                         Intent intent = new Intent(context, SmsSignUpActivity.class);
@@ -243,6 +245,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
             dialog.show();
         }
+
+        // dialog that popup if NO gps after 2 minutes that user loogeed in for the first time
         builder = new AlertDialog.Builder (context);
         gpsMessageHandler = new Handler();
         gpsMessageHandler.postDelayed(gpsRunnable, 60000);// check each 5 minutes from the moment this page uploaded-- if no GPS location then show a message
@@ -303,8 +307,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 {
                     this.finish();
                 }
-                //display = new PushDisplay (); // Assaf :execute the the push notifications display in the Textview
-                //display.execute ();
                 if (GlobalVariables.USER_CHOSEN_CITY_MANUALLY) {
                     ArrayList<EventInfo> tempEventsList =
                             FilterMethods.filterByCityAndFilterName(
@@ -403,11 +405,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     public boolean onPrepareOptionsMenu(Menu menu) {
-        //Hide the Items in Menu XML which are empty since the length of menu is less then 11
+        //Hide the Items in Menu XML which are empty since the length of menu is less then Max length dfined.
+        //Less relevnat after we changed the menu to dislay all cities
         try {
             super.onPrepareOptionsMenu(menu);
-            int maxMenuLength = 51;
-            int numOfItemsToRemove = maxMenuLength - GlobalVariables.namesCity.length;
+            //int maxMenuLength = 51; //    //Was relevant when MENU_LENGTH supposed to display part of cities only. we changed it to display all cities sorted.
+            int maxMenuLength = GlobalVariables.namesCity.length+1;
+          //  int numOfItemsToRemove = maxMenuLength - GlobalVariables.namesCity.length;         //Was relevant when MENU_LENGTH supposed to display part of cities only. we changed it to display all cities sorted.
+            int numOfItemsToRemove = (maxMenuLength+1) - GlobalVariables.namesCity.length;
             while (numOfItemsToRemove > 0) {
                 menu.getItem(maxMenuLength - 1).setVisible(false);
                 numOfItemsToRemove--;
@@ -419,7 +424,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         return true;
     }
 
-    private void loadCityNamesToPopUp() {
+
+    private void loadCityNamesToPopUp() { //Assaf: popup_city.xml changed and now it is witout items, items prepared dynamiucally
         try {
             boolean foundCity = true;
             if (!GlobalVariables.CURRENT_CITY_NAME.isEmpty()) {
@@ -429,9 +435,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 if (i == GlobalVariables.indexCityGPS &&
                         GlobalVariables.CITY_GPS != null &&
                         GPSMethods.getCityIndexFromName(GlobalVariables.CITY_GPS) >= 0) {
-                    popup.getMenu().getItem(i).setTitle(GlobalVariables.namesCity[i] + "(GPS)");
+                   // popup.getMenu().getItem(i).setTitle(GlobalVariables.namesCity[i] + "(GPS)");
+                    popup.getMenu().add(Menu.NONE,i,Menu.NONE,GlobalVariables.namesCity[i] + "(GPS)"); // create menu items dynamically
                 } else {
-                    popup.getMenu().getItem(i).setTitle(GlobalVariables.namesCity[i]);
+                    //popup.getMenu().getItem(i).setTitle(GlobalVariables.namesCity[i]);
+                    popup.getMenu().add(Menu.NONE,i,Menu.NONE,GlobalVariables.namesCity[i]); // create menu items dynamically
                 }
                 GlobalVariables.popUpIDToCityIndex.put(popup.getMenu().getItem(i).getItemId(), i);
                 if (!GlobalVariables.CURRENT_CITY_NAME.isEmpty() &&
@@ -459,6 +467,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             onPrepareOptionsMenu(popup.getMenu());
         }
     }
+
 
     @Override
     public void onClick(View v) {
@@ -735,30 +744,27 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     Runnable gpsRunnable = new Runnable() { //Alert in case that NO GPS connection
         @Override
         public void run() {
-            try {
-                if ((GlobalVariables.MY_LOCATION == null || !GPSMethods.isLocationEnabled(context)) && GlobalVariables.IS_PRODUCER==false)
-                   //Toast.makeText(context, "No GPS Connection, Location based Information could not be display, please take care", Toast.LENGTH_LONG).show();
 
-                builder.setMessage("No GPS Connection, Location based Information could not be display, please take care");
-                builder.setCancelable(true);
-                builder.setPositiveButton(
-                        "Got It",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
-            } catch (Exception ex) {
-                ex.printStackTrace();
+                if ((GlobalVariables.MY_LOCATION == null || !GPSMethods.isLocationEnabled(context)) && GlobalVariables.IS_PRODUCER == false)
+                {
+                    try {
+                        builder.setMessage("No GPS Connection, Location based Information could not be display, please take care");
+                        builder.setCancelable(true);
+                        builder.setNeutralButton("Got It",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+
+                        AlertDialog alert = builder.create();
+                        alert.show();
+                    }
+                    catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                }
             }
-            AlertDialog alert= builder.create();
-            alert.show ();
-         }
-       };
-
-
-}
-
-
-
-
+          };
+       }

@@ -400,7 +400,18 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
                     }
                     catch (Exception ex)
                     {
-                        Log.e (ex.getMessage(),"save to calander excpetion");
+                        ex.printStackTrace();
+                    }
+                }
+            });
+            _builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    try {
+                         dialog.dismiss();
+                    }
+                    catch (Exception ex)
+                    {
+                        ex.printStackTrace();
                     }
                 }
             })

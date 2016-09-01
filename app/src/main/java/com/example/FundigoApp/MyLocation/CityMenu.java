@@ -29,7 +29,7 @@ public class CityMenu {
     private List<HashMap<String, String>> totalCityList = new ArrayList<> ();
     private String[] cityNames;
     private boolean GPS_ENABLE = false;
-    private int MENU_LENGTH = 51;
+    private int MENU_LENGTH;
     Context context;
 
     public CityMenu(List<EventInfo> _listOfEventsDetailes, Context context) {
@@ -144,10 +144,12 @@ public class CityMenu {
     }
 
     public String[] cityListAsMeunMaxLength(String[] cityList) {
-
-           if (cityList.length<MENU_LENGTH) {
-               MENU_LENGTH = cityList.length;// in case the actual number of cities  is smaller then 11;
-           }
+            // MENU_LENGTH=51; // not relavnt yet . we display all cities not only the 50 close cities
+             MENU_LENGTH = cityList.length;
+        //Was relevant when MENU_LENGTH supposed to display part of cities only. we changed it to display all cities sorted.
+//           if (cityList.length<MENU_LENGTH) {
+//               MENU_LENGTH = cityList.length;// in case the actual number of cities  is smaller then 11;
+//           }
           String[] tempCityList = new String[MENU_LENGTH];
         try {
             for (int i = 0; i < MENU_LENGTH; i++) {

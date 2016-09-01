@@ -50,6 +50,7 @@ public class MessagesRoomProducerActivity extends Activity implements AdapterVie
     private void getConversationsFromParseMainThread() {
         List<Room> roomsParsList;
         ParseQuery<Room> query = ParseQuery.getQuery (Room.class);
+        query.setLimit(1000);
         query.whereEqualTo ("producer_id", GlobalVariables.PRODUCER_PARSE_OBJECT_ID);
         query.whereEqualTo("eventObjId", GlobalVariables.ALL_EVENTS_DATA.get(event_index).getParseObjectId());
         query.orderByDescending("updatedAt");
@@ -70,6 +71,7 @@ public class MessagesRoomProducerActivity extends Activity implements AdapterVie
 
     private void getConversationsFromParseInBackground() {
         ParseQuery<Room> query = ParseQuery.getQuery (Room.class);
+        query.setLimit(1000);
         query.whereEqualTo ("producer_id", GlobalVariables.PRODUCER_PARSE_OBJECT_ID);
         query.whereEqualTo("eventObjId", GlobalVariables.ALL_EVENTS_DATA.get(event_index).getParseObjectId());
         query.orderByDescending("updatedAt");

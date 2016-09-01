@@ -128,6 +128,7 @@ public class RealTimeChatActivity extends AppCompatActivity {//implements Adapte
 
     private void getAllMessagesInMainThread() {
         ParseQuery<MsgRealTime> query = ParseQuery.getQuery (MsgRealTime.class);
+        query.setLimit(1000);
         query.whereEqualTo ("eventObjectId", eventObjectId);
         query.orderByAscending ("createdAt");
         List<MsgRealTime> messages = null;
@@ -141,6 +142,7 @@ public class RealTimeChatActivity extends AppCompatActivity {//implements Adapte
 
     private void getAllMessagesInBackground() {
         ParseQuery<MsgRealTime> query = ParseQuery.getQuery (MsgRealTime.class);
+        query.setLimit(1000);
         query.whereEqualTo ("eventObjectId", eventObjectId);
         query.orderByAscending ("createdAt");
         query.findInBackground (new FindCallback<MsgRealTime> () {

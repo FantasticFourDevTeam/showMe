@@ -58,6 +58,7 @@ public class MyEventsTicketsActivity extends AppCompatActivity {
 
         try {
             ParseQuery<EventsSeats> query = ParseQuery.getQuery ("EventsSeats");
+            query.setLimit(1000);
             query.whereEqualTo ("CustomerPhone", _userPhoneNumber).whereEqualTo ("sold", true).orderByDescending("updatedAt");
             query.findInBackground(new FindCallback<EventsSeats>() {
                 @Override

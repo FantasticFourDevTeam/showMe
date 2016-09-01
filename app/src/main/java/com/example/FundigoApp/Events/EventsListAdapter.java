@@ -102,8 +102,19 @@ public class EventsListAdapter extends BaseAdapter {
                             public void onClick(DialogInterface dialog, int id) {
                                 saveToCalendar (i);
                             }
+                        });
+                        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                try {
+                                    dialog.dismiss();
+                                }
+                                catch (Exception ex)
+                                {
+                                    ex.printStackTrace();
+                                }
+                            }
                         })
-                                .setCancelable (true);
+                        .setCancelable(true);
                         AlertDialog alert = builder.create ();
                         alert.show ();
                     }

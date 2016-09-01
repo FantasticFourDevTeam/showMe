@@ -59,6 +59,7 @@ public class GeneralStaticMethods {
         if (GlobalVariables.IS_CUSTOMER_REGISTERED_USER && GlobalVariables.userChanels.size () == 0) {
             ParseQuery<Profile> query = ParseQuery.getQuery ("Profile");
             query.whereEqualTo ("number", GlobalVariables.CUSTOMER_PHONE_NUM);
+            query.setLimit(1000);
             query.findInBackground (new FindCallback<Profile> () {
                 @Override
                 public void done(List<Profile> objects, ParseException e) {

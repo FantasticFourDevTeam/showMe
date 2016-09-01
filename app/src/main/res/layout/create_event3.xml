@@ -102,7 +102,7 @@
             app:ms_enableErrorLabel="false"
             app:ms_enableFloatingLabel="true"
             app:ms_errorColor="@color/Red"
-            app:ms_floatingLabelText="The selection is the first event tag, you are able to manually add more in Tags"
+            app:ms_floatingLabelText="Select tag, you are able to manually add more in 'Tags'"
             app:ms_hint="Pick a filter*"
             app:ms_hintColor="@color/DarkRed"
             app:ms_multiline="false"
@@ -145,6 +145,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
                 android:imeActionLabel="Done"
+                android:textSize="18sp"
                 android:singleLine="true"/>
         </LinearLayout>
 

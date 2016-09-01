@@ -156,6 +156,7 @@ public class ChatActivity extends Activity {
 
     private void getAllMessagesFromParseInBackground(final String producer, final String customer) {
         ParseQuery<Message> query = ParseQuery.getQuery (Message.class);
+        query.setLimit(1000);
         query.whereEqualTo ("producer", producer);
         query.whereEqualTo ("customer", customer);
         query.whereEqualTo ("eventObjectId", eventInfo.getParseObjectId ());
@@ -176,6 +177,7 @@ public class ChatActivity extends Activity {
 
     private void getAllMessagesFromParseInMainThread(String producer, String customer) {
         ParseQuery<Message> query = ParseQuery.getQuery (Message.class);
+        query.setLimit(1000);
         query.whereEqualTo ("producer", producer);
         query.whereEqualTo ("customer", customer);
         query.whereEqualTo ("eventObjectId", eventInfo.getParseObjectId ());
@@ -275,6 +277,7 @@ public class ChatActivity extends Activity {
 
     private Room getRoomObject() {
         ParseQuery<Room> query = ParseQuery.getQuery ("Room");
+        query.setLimit(1000);
         query.whereEqualTo ("producer_id", eventInfo.getProducerId ());
         query.whereEqualTo ("customer_id", customerPhone);
         query.whereEqualTo ("eventObjId", eventInfo.getParseObjectId ());

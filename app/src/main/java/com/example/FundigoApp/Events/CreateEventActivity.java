@@ -829,39 +829,39 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
                 switch (position) {
                     case 0:
                         filter = FILTERS[0];
-                        et_tags.setHint("Your first tag is #" + filter + " add more");
+                        et_tags.setHint("tag is " + filter + '\n' + " edit to add more");
                         break;
                     case 1:
                         filter = FILTERS[1];
-                        et_tags.setHint("Your first tag is #" + filter + " add more");
+                        et_tags.setHint("tag is " + filter + '\n' + " edit to add more");
                         break;
                     case 2:
                         filter = FILTERS[2];
-                        et_tags.setHint("Your first tag is #" + filter + " add more");
+                        et_tags.setHint("tag is " + filter + '\n' + " edit to add more");
                         break;
                     case 3:
                         filter = FILTERS[3];
-                        et_tags.setHint("Your first tag is #" + filter + " add more");
+                        et_tags.setHint("tag is " + filter + '\n' + " edit to add more");
                         break;
                     case 4:
                         filter = FILTERS[4];
-                        et_tags.setHint("Your first tag is #" + filter + " add more");
+                        et_tags.setHint("tag is " + filter + '\n' + " edit to add more");
                         break;
                     case 5:
                         filter = FILTERS[5];
-                        et_tags.setHint("Your first tag is #" + filter + " add more");
+                        et_tags.setHint("tag is " + filter + '\n' + " edit to add more");
                         break;
                     case 6:
                         filter = FILTERS[6];
-                        et_tags.setHint("Your first tag is #" + filter + " add more");
+                        et_tags.setHint("tag is " + filter + '\n' + " edit to add more");
                         break;
                     case 7:
                         filter = FILTERS[7];
-                        et_tags.setHint("Your first tag is #" + filter + " add more");
+                        et_tags.setHint("tag is " + filter + " edit to add more");
                         break;
                     case 8:
                         filter = FILTERS[8];
-                        et_tags.setHint("Your first tag is #" + filter + " add more");
+                        et_tags.setHint("tag is " + filter + " edit to add more");
                         break;
 
                 }

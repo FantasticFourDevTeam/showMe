@@ -5,7 +5,7 @@
 
     <string name="filterPageName">Filter</string>
 
-    <string name="facebook_app_id">815026728619467</string>
+    <string name="facebook_app_id">1081145241965966</string>
 
     <string name="title_activity_login">LoginActivity</string>
     <string name="title_activity_purchase">PurchaseActivity</string>
@@ -45,11 +45,11 @@
 
     <string-array name="autoComplateStrings">
         <item>Sport</item>
-        <item>Helth</item>
+        <item>Health</item>
         <item>Food</item>
-        <item>Drings</item>
+        <item>Drinks</item>
         <item>Event</item>
-        <item>StendUp</item>
+        <item>StandUp</item>
         <item>Music</item>
         <item>Party</item>
         <item>Schools</item>
@@ -125,13 +125,13 @@
 
     <string-array name="filters">
         <item>Sports</item>
-        <item>Travel</item>
-        <item>Drink</item>
+        <item>Tourism</item>
+        <item>Party</item>
         <item>Business</item>
-        <item>Fashion</item>
-        <item>Education</item>
-        <item>Government</item>
-        <item>Home and LifeStyle</item>
+        <item>Comedy</item>
+        <item>Workshop</item>
+        <item>Kids</item>
+        <item>LifeStyle</item>
         <item>Music</item>
     </string-array>
 
@@ -388,13 +388,13 @@
     <string name="user_may_not_registered_or_not_exist">User may not Registered or not Exist</string>
     <string name="user_updated_and_now_it_is">User updated</string>
     <string name="picture_updated">Picture updated</string>
-    <string name="nothing_selected_to_update">Nothing Selected to Update</string>
+    <string name="nothing_selected_to_update">one or more fields are empty</string>
     <string name="no_tickets_to_display">No Tickets To Display</string>
     <string name="you_logged_in_as">You logged in as </string>
     <string name="canceled_logging_facebook">Canceled logging facebook</string>
     <string name="error_logging_facebook">Error logging facebook</string>
     <string name="hey_come_to_see_events_near_you">Hey Come To See Events Near You </string>
-    <string name="loged_out_of_facebook">Loged Out of facebook</string>
+    <string name="loged_out_of_facebook">Logged out from facebook</string>
     <string name="km_away">km away</string>
     <string name="you_unsaved_this_event">You unSaved this event</string>
     <string name="you_saved_this_event">You Saved this event</string>
@@ -453,13 +453,13 @@
     <string name="successfully_signed_up">"Successfully Signed Up</string>
     <string name="invalid_phone_number_try_again">Invalid Phone Number Try Again.</string>
     <string name="sports">Sports</string>
-    <string name="travel">Travel</string>
-    <string name="drinks">Drinks</string>
+    <string name="travel">Tourism</string>
+    <string name="drinks">Party</string>
     <string name="business">Business</string>
-    <string name="fashion">Fashion</string>
-    <string name="education">Education</string>
-    <string name="government">Government</string>
-    <string name="home_lifeStyle">Home and LifeStyle</string>
+    <string name="fashion">Comedy</string>
+    <string name="education">Workshop</string>
+    <string name="government">Kids</string>
+    <string name="home_lifeStyle">LifeStyle</string>
     <string name="music">Music</string>
     <string name="filter_page">Filter Page</string>
     <string name="can_choice_one_category">Can Choice One Category</string>

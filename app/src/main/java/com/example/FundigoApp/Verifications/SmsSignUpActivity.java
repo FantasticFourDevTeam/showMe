@@ -122,18 +122,23 @@ public class SmsSignUpActivity extends AppCompatActivity {
 
         phoneET.setOnEditorActionListener (new TextView.OnEditorActionListener () {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                smsDialog = new ProgressDialog(SmsSignUpActivity.this);
-                smsDialog.setTitle("Verification is in progress...");
-                smsDialog.show();
-                if ((event != null &&
-                             (event.getKeyCode () == KeyEvent.KEYCODE_ENTER)) ||
-                            (actionId == EditorInfo.IME_ACTION_DONE)) {
-                    area = s.getSelectedItem().toString ();
-                    username = usernameTE.getText().toString();
-                    phone_number_to_verify = getNumber(phoneET.getText().toString(), area);
-                    getUserPreviousDetails(area + phoneET.getText().toString());
-                    smsVerify(area + phoneET.getText().toString());
-                }
+             if ((event != null &&
+                (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) ||
+                (actionId == EditorInfo.IME_ACTION_DONE)) {
+                 area = s.getSelectedItem().toString();
+                 phone_number_to_verify = getNumber(phoneET.getText().toString(), area);
+                 getUserPreviousDetails(area + phoneET.getText().toString());
+                 if (!phoneET.getText().toString().equals("") && phoneET.getText() != null) {
+                   username = usernameTE.getText().toString();
+                   smsDialog = new ProgressDialog(SmsSignUpActivity.this);
+                   smsDialog.setTitle("Verification is in progress...");
+                   smsDialog.show();
+                   smsVerify(area + phoneET.getText().toString());
+               } else {
+                   Toast.makeText(SmsSignUpActivity.this, "Please fill phone number", Toast.LENGTH_SHORT).show();
+               }
+
+              }
                 return false;
             }
         });
@@ -141,11 +146,17 @@ public class SmsSignUpActivity extends AppCompatActivity {
         usernameTE.setOnEditorActionListener (new TextView.OnEditorActionListener () {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if ((event != null && (event.getKeyCode () == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
-                    username = usernameTE.getText ().toString ();
-                    usernameTE.setVisibility (View.INVISIBLE);
-                    usernameTV.setVisibility (View.INVISIBLE);
-                    emailAddressTitle.setVisibility(View.VISIBLE);
-                    emailAddress.setVisibility(View.VISIBLE);
+                    username = usernameTE.getText().toString();
+                    if (!username.equals("") && username!=null) {
+                        usernameTE.setVisibility(View.INVISIBLE);
+                        usernameTV.setVisibility(View.INVISIBLE);
+                        emailAddressTitle.setVisibility(View.VISIBLE);
+                        emailAddress.setVisibility(View.VISIBLE);
+                    }
+                    else
+                    {
+                        Toast.makeText(SmsSignUpActivity.this,"Please fill user name",Toast.LENGTH_SHORT).show();
+                    }
 
                 }
                 return false;
@@ -156,16 +167,20 @@ public class SmsSignUpActivity extends AppCompatActivity {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if ((event != null && (event.getKeyCode () == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
                     emailAddressValue = emailAddress.getText().toString();
-                    emailAddressTitle.setVisibility(View.INVISIBLE);
-                    emailAddress.setVisibility(View.INVISIBLE);
-                    customerImageView = (ImageView) findViewById (R.id.imageV);
-                    customerImageView.setVisibility (View.VISIBLE);
-                    upload_button = (Button) findViewById (R.id.upload_button);
-                    upload_button.setVisibility (View.VISIBLE);
-                    signup = (Button) findViewById (R.id.button2);
-                    signup.setVisibility (View.VISIBLE);
-                    optionalTV = (TextView) findViewById (R.id.optionalTV);
-                    optionalTV.setVisibility (View.VISIBLE);
+                    if (!emailAddressValue.equals("") && emailAddress!=null) {
+                        emailAddressTitle.setVisibility(View.INVISIBLE);
+                        emailAddress.setVisibility(View.INVISIBLE);
+                        customerImageView = (ImageView) findViewById(R.id.imageV);
+                        customerImageView.setVisibility(View.VISIBLE);
+                        upload_button = (Button) findViewById(R.id.upload_button);
+                        upload_button.setVisibility(View.VISIBLE);
+                        signup = (Button) findViewById(R.id.button2);
+                        signup.setVisibility(View.VISIBLE);
+                        //optionalTV = (TextView) findViewById(R.id.optionalTV);
+                        //optionalTV.setVisibility(View.VISIBLE);
+                    }
+                    else
+                        Toast.makeText(SmsSignUpActivity.this,"Please fill email address",Toast.LENGTH_SHORT).show();
                 }
                 return false;
             }
@@ -304,6 +319,9 @@ public class SmsSignUpActivity extends AppCompatActivity {
             case "058":
                 number = "97258" + number;
                 break;
+            default:
+                number="";
+                break;
         }
         return number;
     }
@@ -331,7 +349,7 @@ public class SmsSignUpActivity extends AppCompatActivity {
         String phoneNumberInE164 = PhoneNumberUtils.formatNumberToE164(phone_number, defaultRegion);
         Verification verification = SinchVerification.createSmsVerification(config, phoneNumberInE164, listener);
         verification.initiate();
-        //onVer(); //  //just for test, DON"T Expose THIS METHOD
+     //   onVer(); //  //just for test, DON"T Expose THIS METHOD
     }
 
     class MyVerificationListener implements VerificationListener {

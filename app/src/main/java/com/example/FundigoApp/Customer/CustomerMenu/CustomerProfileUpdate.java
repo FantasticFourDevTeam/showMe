@@ -48,7 +48,7 @@ public class CustomerProfileUpdate extends AppCompatActivity {
         emailValue = emailAddressText.getText().toString();
         byte[] imageToUpdate;
         List<ParseObject> list;
-        if (!customer.isEmpty () || IMAGE_SELECTED) {
+        if ((!customer.equals("")&& !emailValue.equals("")) || IMAGE_SELECTED ) {
             String _userPhoneNumber = GlobalVariables.CUSTOMER_PHONE_NUM;
             if (!_userPhoneNumber.isEmpty ()) {
                 try {
