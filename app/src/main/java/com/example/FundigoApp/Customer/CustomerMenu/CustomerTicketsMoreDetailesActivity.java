@@ -38,10 +38,16 @@ public class CustomerTicketsMoreDetailesActivity extends AppCompatActivity {
 
     public void getIntentData() {
         //Get data from Intent sent by EventTickets
-        final int index = intent.getIntExtra ("index", -1);
-        eventsSeatsInfo = MyEventsTicketsActivity.my_tickets_list.get (index);
-        SimpleDateFormat dateFormat = new SimpleDateFormat ("dd/MM/yyyy hh:mm a");
-        purchaseTv.setText (dateFormat.format (eventsSeatsInfo.getPurchaseDate ()));
+
+        final int index = intent.getIntExtra("index", -1);
+        eventsSeatsInfo = MyEventsTicketsActivity.my_tickets_list.get(index);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+        if (eventsSeatsInfo.getSoldTickets() != null){
+            purchaseTv.setText(dateFormat.format(eventsSeatsInfo.getSoldTickets().getCreatedAt()));// actaully purchase ticket time
+           }
+        else {
+            purchaseTv.setText("No Information");
+        }
         qrImg.setImageBitmap (eventsSeatsInfo.getQR ());
         //Intent for Presnet the Event when click the link
         eventLinkTv.setOnClickListener (new View.OnClickListener () {

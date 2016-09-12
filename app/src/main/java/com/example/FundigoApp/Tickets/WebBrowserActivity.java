@@ -6,10 +6,10 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 import com.example.FundigoApp.GlobalVariables;
+import com.example.FundigoApp.StaticMethod.GeneralStaticMethods;
 import com.parse.ParseException;
 
 public class WebBrowserActivity extends AppCompatActivity {
@@ -33,7 +33,7 @@ public class WebBrowserActivity extends AppCompatActivity {
             }
             else{
                 eventsSeats.put("price", 0);
-                eventsSeats.setIsSold(true);
+                eventsSeats.setIsSold(false);
             }
             eventsSeats.put("eventObjectId", eventObjectId);
             eventsSeats.setCustomerPhone(GlobalVariables.CUSTOMER_PHONE_NUM);
@@ -46,22 +46,22 @@ public class WebBrowserActivity extends AppCompatActivity {
         } else {
             orderId = i.getStringExtra("seatParseObjId");
         }
+        GeneralStaticMethods.url(orderId,GlobalVariables.CUSTOMER_PHONE_NUM,"","","");
+        //if (!amount.equals("FREE")) {
 
-        if (!amount.equals("FREE")) {
-
-            MyWebView view = new MyWebView(this);
-            view.getSettings().setJavaScriptEnabled(true);
-            view.getSettings().setDomStorageEnabled(true);
-            view.getSettings().setLoadWithOverviewMode(true);
-            view.getSettings().setUseWideViewPort(true);
+        //    MyWebView view = new MyWebView(this);
+        //    view.getSettings().setJavaScriptEnabled(true);
+        //    view.getSettings().setDomStorageEnabled(true);
+        //    view.getSettings().setLoadWithOverviewMode(true);
+        ///    view.getSettings().setUseWideViewPort(true);
             //view.loadUrl ("https://akimbotest.parseapp.com/");
-            view.loadUrl("https://www.pelepay.co.il/pay/paypage.aspx?description=fundigo&business=nesizagury@gmail.com?orderid=" + orderId + "&amount=" + amount);
+        //    view.loadUrl("https://www.pelepay.co.il/pay/paypage.aspx?description=fundigo&business=nesizagury@gmail.com?orderid=" + orderId + "&amount=" + amount);
 
-            view.setWebViewClient(new WebViewClient() {
-                @Override
-                public boolean shouldOverrideUrlLoading(WebView v, String url) {
-                    return false;
-                }
+//            view.setWebViewClient(new WebViewClient() {
+//                @Override
+//                public boolean shouldOverrideUrlLoading(WebView v, String url) {
+//                    return false;
+//                }
 
 //            @Override
 //            public void onPageFinished(WebView v, String url) {
@@ -70,14 +70,14 @@ public class WebBrowserActivity extends AppCompatActivity {
 //                                   "var x = document.getElementsByName('orderid')[0].value='" + orderId + "';");
 //
 //            }
-            });
-            setContentView(view);
-        }
-        else
-        {
+        //    });
+          //  setContentView(view);
+      //  }
+    //    else
+  //      {
             Toast.makeText(this,"You are successfully registered to the Event",Toast.LENGTH_SHORT).show();
             finish();
-        }
+      //  }
     }
 
     class MyWebView extends WebView {

@@ -18,31 +18,40 @@ import io.branch.referral.util.ShareSheetStyle;
 public class DeepLinkActivity extends Activity {
     Intent intent;
 
+    //Assaf:option currently was marked and the option to share open directly a deep link dialog
+    //Once we will add more options to share it will be back
+    //Also in manifest file the style Holo.Dialog - was changed to no Display
+    //android:theme="@android:style/Theme.NoDisplay"
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate (savedInstanceState);
-        setContentView(R.layout.activity_deeplink);
-        intent = getIntent ();
+         protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         //requestWindowFeature(Window.FEATURE_NO_TITLE);
+         //setContentView(R.layout.activity_deeplink);
+         this.AppPage();
     }
 
-    public void AppPage(View v) {
+  //  public void AppPage(View v) {
+    public void AppPage()
+    {
         final BranchUniversalObject branchUniversalObject = new BranchUniversalObject ()
                                                               .setCanonicalIdentifier ("item/1234")
-                                                              .setTitle (""+R.string.my_content_title)
-                                                              .setContentDescription (""+R.string.my_content_description)
-                                                              .setContentIndexingMode (BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
-                                                              .addContentMetadata ("objectId", getIntent ().getStringExtra ("objectId"));
+                                                              .setTitle(getIntent().getStringExtra("name") + " is amazing event, one of your friends shared it through WhoGO App")
+                                                              .setContentDescription("" + R.string.my_content_description)
+                                                              .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
+                                                              .setContentImageUrl(getIntent().getStringExtra("eventPic"))
+                                                              .addContentMetadata("objectId", getIntent().getStringExtra("objectId"));
 
         final LinkProperties linkProperties = new LinkProperties ()
                                                 .setChannel ("My Application")
                                                 .setFeature ("sharing");
 
-        final ShareSheetStyle shareSheetStyle = new ShareSheetStyle (this, "Check this out!", "This stuff is awesome: ")
-                                                  .setCopyUrlStyle (getResources ().getDrawable (android.R.drawable.ic_menu_send), "Copy", "Added to clipboard")
-                                                  .setMoreOptionStyle (getResources ().getDrawable (android.R.drawable.ic_menu_search), "Show more")
-                                                  .addPreferredSharingOption (SharingHelper.SHARE_WITH.FACEBOOK)
+        final ShareSheetStyle shareSheetStyle = new ShareSheetStyle (this, "", getIntent().getStringExtra("name") + " is amazing event join it by using WhoGO App")
+                                                  .setCopyUrlStyle (getResources ().getDrawable (android.R.drawable.ic_menu_send), "Copy Link", "Copied to clipboard")
+                                                  .setMoreOptionStyle(getResources().getDrawable(android.R.drawable.ic_menu_search), "Show more")
+                                                  .addPreferredSharingOption(SharingHelper.SHARE_WITH.FACEBOOK)
                                                   .addPreferredSharingOption (SharingHelper.SHARE_WITH.EMAIL)
-                                                  .addPreferredSharingOption (SharingHelper.SHARE_WITH.WHATS_APP);
+                                                  .addPreferredSharingOption(SharingHelper.SHARE_WITH.WHATS_APP);
         branchUniversalObject.showShareSheet (this,
                                                      linkProperties,
                                                      shareSheetStyle,
@@ -53,6 +62,7 @@ public class DeepLinkActivity extends Activity {
 
                                                          @Override
                                                          public void onShareLinkDialogDismissed() {
+                                                             finish();
                                                          }
 
                                                          @Override
@@ -68,6 +78,7 @@ public class DeepLinkActivity extends Activity {
 //                                                                 sendIntent.setType("text/plain");
 //                                                                 startActivity(sendIntent);
 //                                                                 finish();
+                                                                    finish(); // Activity finish();
 //                                                             }
                                                          }
                                                      });
@@ -75,7 +86,7 @@ public class DeepLinkActivity extends Activity {
             @Override
             public void onLinkCreate(String url, BranchError error) {
                 if (error == null) {
-                    Toast.makeText (getApplicationContext (), url, Toast.LENGTH_LONG).show ();
+                   // Toast.makeText (getApplicationContext (), url, Toast.LENGTH_LONG).show ();
                 } else
                     Toast.makeText (getApplication (), error.getMessage () + "", Toast.LENGTH_SHORT).show ();
 
@@ -94,7 +105,7 @@ public class DeepLinkActivity extends Activity {
                 webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("fb://facewebmodal/f?href=" + faceBookUrl));
                 startActivity(webIntent);
             } catch (Exception e) {
-                Log.e (e.toString (), "Open link to FaceBook App is fail, sending to Browser");
+                Log.e(e.toString(), "Open link to FaceBook App is fail, sending to Browser");
                 try {
                     webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(faceBookUrl));
                     startActivity(webIntent);

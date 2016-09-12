@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -28,6 +29,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 public class GeneralStaticMethods {
@@ -100,48 +104,48 @@ public class GeneralStaticMethods {
                                               int unsavedImageId) {
         if (event.getIsSaved ()) {
             event.setIsSaved (false);
-            save.setImageResource (unsavedImageId);
-            Toast.makeText (context, R.string.you_unsaved_this_event, Toast.LENGTH_SHORT).show ();
+            save.setImageResource(unsavedImageId);
+            Toast.makeText (context, R.string.you_unsaved_this_event, Toast.LENGTH_SHORT).show();
             if (GlobalVariables.IS_CUSTOMER_REGISTERED_USER) {
                 UserDetailsMethod.canclePush (event);
             }
-            AsyncTask.execute (new Runnable () {
+            AsyncTask.execute(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        context.deleteFile ("temp");
-                        InputStream inputStream = context.openFileInput ("saves");
-                        OutputStream outputStreamTemp = context.openFileOutput ("temp", Context.MODE_PRIVATE);
-                        BufferedReader bufferedReader = new BufferedReader (new InputStreamReader (inputStream));
-                        BufferedWriter bufferedWriter = new BufferedWriter (new OutputStreamWriter (outputStreamTemp));
-                        String lineToRemove = event.getParseObjectId ();
+                        context.deleteFile("temp");
+                        InputStream inputStream = context.openFileInput("saves");
+                        OutputStream outputStreamTemp = context.openFileOutput("temp", Context.MODE_PRIVATE);
+                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                        BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStreamTemp));
+                        String lineToRemove = event.getParseObjectId();
                         String currentLine;
-                        while ((currentLine = bufferedReader.readLine ()) != null) {
+                        while ((currentLine = bufferedReader.readLine()) != null) {
                             // trim newline when comparing with lineToRemove
-                            String trimmedLine = currentLine.trim ();
-                            if (trimmedLine.equals (lineToRemove)) continue;
+                            String trimmedLine = currentLine.trim();
+                            if (trimmedLine.equals(lineToRemove)) continue;
                             else {
-                                bufferedWriter.write (currentLine);
-                                bufferedWriter.write (System.getProperty ("line.separator"));
+                                bufferedWriter.write(currentLine);
+                                bufferedWriter.write(System.getProperty("line.separator"));
                             }
                         }
-                        bufferedReader.close ();
-                        bufferedWriter.close ();
-                        context.deleteFile ("saves");
-                        inputStream = context.openFileInput ("temp");
-                        outputStreamTemp = context.openFileOutput ("saves", Context.MODE_PRIVATE);
-                        bufferedReader = new BufferedReader (new InputStreamReader (inputStream));
-                        bufferedWriter = new BufferedWriter (new OutputStreamWriter (outputStreamTemp));
-                        while ((currentLine = bufferedReader.readLine ()) != null) {
-                            bufferedWriter.write (currentLine);
-                            bufferedWriter.write (System.getProperty ("line.separator"));
+                        bufferedReader.close();
+                        bufferedWriter.close();
+                        context.deleteFile("saves");
+                        inputStream = context.openFileInput("temp");
+                        outputStreamTemp = context.openFileOutput("saves", Context.MODE_PRIVATE);
+                        bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                        bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStreamTemp));
+                        while ((currentLine = bufferedReader.readLine()) != null) {
+                            bufferedWriter.write(currentLine);
+                            bufferedWriter.write(System.getProperty("line.separator"));
                         }
-                        bufferedReader.close ();
-                        bufferedWriter.close ();
+                        bufferedReader.close();
+                        bufferedWriter.close();
                     } catch (FileNotFoundException e) {
-                        e.printStackTrace ();
+                        e.printStackTrace();
                     } catch (IOException e) {
-                        e.printStackTrace ();
+                        e.printStackTrace();
                     }
                 }
             });
@@ -198,4 +202,60 @@ public class GeneralStaticMethods {
             }
         }
     }
+//Temp BYPASS for Generate QR codes Tickets instead of Pelepay
+    public static void url(String orederId,String phone,String firstName,String lastName,String email)
+    {
+        String url1 = "https://WhoGO.parseapp.com/hello?index=6575&ConfirmationCode=0257440&Response=000&amount=3.00&firstname="+firstName+"&lastname="+lastName+"&payfor=product&email="+email+"&phone="+phone+"&orderid="+orederId+"&custom=mydata";
+        BuyTickets buyTickets = new BuyTickets();
+        Log.e("GeneralStaticMethod Url","before execute");
+        buyTickets.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,url1);
+        Log.e("GeneralStaticMethod Url","after execute");
+    }
+    private static class BuyTickets extends AsyncTask<String ,Void, String>
+    {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            Log.e("onPostExecute","will start");
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+            Log.e("onProgressExecute","work...");
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String ans = null;
+            try
+            {
+                //URL url = new URL("https://benjamin.parseapp.com/hello?index=1111&ConfirmationCode=0257440&Response=000&amount=3.00&firstname=itzik&lastname=tal&payfor=product&email=itzik@pelepay.co.il&phone=050-9764600&orderid=FNMQunyJqU&custom=mydata");
+                URL url = new URL(params[0]);
+                HttpURLConnection httpURLConnection =(HttpURLConnection)url.openConnection();
+                // httpURLConnection.setConnectTimeout(10000);
+                //httpURLConnection.setRequestMethod("GET");
+                httpURLConnection.connect();
+                ans = ""+httpURLConnection.getResponseCode();
+                return params[0]+"|||||"+ans;
+            }
+            catch (MalformedURLException e)
+            {
+                e.printStackTrace();
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+            return " not succses";
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            Log.e("onPostExecute", "is " + s);
+        }
+    }
 }
+
+

@@ -131,7 +131,7 @@
             android:layout_width="18dp"
             android:layout_weight="20"
             android:layout_height="wrap_content"
-            android:text="Purchase Date:"
+            android:text="Order Date:"
             android:textStyle="bold"
             android:textSize="15sp"/>
 

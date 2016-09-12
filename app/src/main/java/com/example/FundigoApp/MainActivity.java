@@ -22,6 +22,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -215,8 +216,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         if (GlobalVariables.CUSTOMER_PHONE_NUM == null || GlobalVariables.CUSTOMER_PHONE_NUM.equals("")) {
             //dialog that popup for Guest only for register to Application
             final Dialog dialog = new Dialog(this);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setContentView(R.layout.login_dialog);
-            dialog.setTitle("Register");
             dialog.setCancelable(false);
             dialog.getWindow().setLayout(350, 380);
             final Button sBut = (Button) dialog.findViewById(R.id.skipButton);
@@ -425,7 +426,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
 
-    private void loadCityNamesToPopUp() { //Assaf: popup_city.xml changed and now it is witout items, items prepared dynamiucally
+    private void loadCityNamesToPopUp() { //Assaf: popup_city.xml changed and now it is without "items", items prepared dynamically
         try {
             boolean foundCity = true;
             if (!GlobalVariables.CURRENT_CITY_NAME.isEmpty()) {
@@ -462,10 +463,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         } catch (Exception e) {
             throw e;
         }
-        if (GlobalVariables.namesCity.length < 50) // Assaf in case number of cities is smaller then 10. remove Menu items
-        {
-            onPrepareOptionsMenu(popup.getMenu());
-        }
+//        if (GlobalVariables.namesCity.length < 50) // Assaf in case number of cities is smaller then 50.
+//                                                     //remove Menu items, this was remarked for now as we presnet full list of cities in fcity filter
+//        {
+//            onPrepareOptionsMenu(popup.getMenu());
+//        }
     }
 
 

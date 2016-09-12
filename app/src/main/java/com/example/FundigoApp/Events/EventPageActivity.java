@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -250,39 +249,43 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
     public void onClick(View v) {
         switch (v.getId ()) {
             case R.id.imageEvenetPageView2:
-                AlertDialog.Builder builder = new AlertDialog.Builder (this);
-              //  builder.setMessage ("Share:")
-                     builder.setCancelable(false)
-                        .setPositiveButton (this.getString (R.string.share_app_page), new DialogInterface.OnClickListener () {
-                            public void onClick(DialogInterface dialog, int id) {
-                                shareDeepLink ();
-                            }
-                        })
-                        .setNegativeButton (this.getString (R.string.share_web_page), new DialogInterface.OnClickListener () {
-                            public void onClick(DialogInterface dialog, int id) {
+                //Assaf: Dialog option currently was marked and the option to share open directly a deep link dialog
+                //Once we wil add more options to share it will be back
+
+              //  AlertDialog.Builder builder = new AlertDialog.Builder (this);
+                //       builder.setCancelable(false)
+                  //      .setPositiveButton (this.getString (R.string.share_app_page), new DialogInterface.OnClickListener () {
+                    //        public void onClick(DialogInterface dialog, int id) {
+                               shareDeepLink ();
+                        //    }
+                       // })
+                    //    .setNegativeButton (this.getString (R.string.share_web_page), new DialogInterface.OnClickListener () {
+                  //          public void onClick(DialogInterface dialog, int id) {
                                 // Assaf: OPEN THE EVENT FACEBBOK PAGE IF EXIST . THE PAGE STORED IN PARSE
-                                Intent webIntent;
-                                if (faceBookUrl != "" && faceBookUrl != null) {
-                                    try {
-                                        getPackageManager ().getPackageInfo ("com.facebook.katana", 0);
-                                        webIntent = new Intent (Intent.ACTION_VIEW, Uri.parse("fb://facewebmodal/f?href=" + faceBookUrl));
-                                        startActivity (webIntent);
-                                    } catch (Exception e) {
-                                        Log.e (e.toString (), "Open link to FaceBook App is fail, sending to Browser");
-                                        try {
-                                            webIntent = new Intent (Intent.ACTION_VIEW, Uri.parse (faceBookUrl));
-                                            startActivity (webIntent);
-                                        } catch (Exception e1) {
-                                            Log.e (e1.toString (), "Open link to FaceBook Browser is fail");
-                                        }
-                                    }
-                                } else
-                                    Toast.makeText (EventPageActivity.this, "No FaceBook Page to Present", Toast.LENGTH_SHORT).show ();
-                            }
-                        })
-                        .setCancelable (true);
-                AlertDialog alert = builder.create ();
-                alert.show ();
+                                //THISD OPTION NEED TO be replaced by Open the Event Web Page and not Facebook
+
+//                                Intent webIntent;
+//                                if (faceBookUrl != "" && faceBookUrl != null) {
+//                                    try {
+//                                        getPackageManager ().getPackageInfo ("com.facebook.katana", 0);
+//                                        webIntent = new Intent (Intent.ACTION_VIEW, Uri.parse("fb://facewebmodal/f?href=" + faceBookUrl));
+//                                        startActivity (webIntent);
+//                                    } catch (Exception e) {
+//                                        Log.e (e.toString (), "Open link to FaceBook App is fail, sending to Browser");
+//                                        try {
+//                                            webIntent = new Intent (Intent.ACTION_VIEW, Uri.parse (faceBookUrl));
+//                                            startActivity (webIntent);
+//                                        } catch (Exception e1) {
+//                                            Log.e (e1.toString (), "Open link to FaceBook Browser is fail");
+//                                        }
+//                                    }
+//                                } else
+//                                    Toast.makeText (EventPageActivity.this, "No FaceBook Page to Present", Toast.LENGTH_SHORT).show ();
+//                            }
+//                        })
+//                        .setCancelable (true);
+//                AlertDialog alert = builder.create ();
+//                alert.show ();
                 break;
             case R.id.imageEvenetPageView3:
                 if (GlobalVariables.IS_PRODUCER) {
@@ -531,7 +534,7 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
 
         final BranchUniversalObject branchUniversalObject = new BranchUniversalObject ()
                                                               .setCanonicalIdentifier ("item/1234")
-                                                              .setTitle(eventInfo.getName() + " is amazing event join it by using Fundigo App")
+                                                              .setTitle(eventInfo.getName() + " is amazing event, one of your friends shared it through WhoGO App")
                                                               .setContentDescription(this.getString(R.string.my_content_description))
                                                               .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
                                                               .setContentImageUrl(eventInfo.getPicUrl())
@@ -543,13 +546,14 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
 
 
 
-        ShareSheetStyle shareSheetStyle = new ShareSheetStyle (EventPageActivity.this, "Check this out!", "This stuff is awesome: ")
-                                                  .setCopyUrlStyle(getResources().getDrawable(android.R.drawable.ic_menu_send), "Copy", "Added to clipboard")
-                                                  .setMoreOptionStyle(getResources().getDrawable(android.R.drawable.ic_menu_search), "Show more")
-                                                  .addPreferredSharingOption(SharingHelper.SHARE_WITH.FACEBOOK)
-                                                  .addPreferredSharingOption(SharingHelper.SHARE_WITH.WHATS_APP);
+        ShareSheetStyle shareSheetStyle = new ShareSheetStyle (EventPageActivity.this, "", eventInfo.getName() + " is amazing event join it by using WhoGO App")
+                .setCopyUrlStyle(getResources().getDrawable(android.R.drawable.ic_menu_send), "Copy Link", "Copied to clipboard")
+                .setMoreOptionStyle(getResources().getDrawable(android.R.drawable.ic_menu_search), "Show more")
+                .addPreferredSharingOption(SharingHelper.SHARE_WITH.FACEBOOK)
+                .addPreferredSharingOption(SharingHelper.SHARE_WITH.TWITTER)
+                .addPreferredSharingOption(SharingHelper.SHARE_WITH.WHATS_APP);
 
-           branchUniversalObject.showShareSheet(this,
+        branchUniversalObject.showShareSheet(this,
                    linkProperties,
                    shareSheetStyle,
                    new Branch.BranchLinkShareListener() {
@@ -576,7 +580,7 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
             @Override
             public void onLinkCreate(String url, BranchError error) {
                 if (error == null) {
-                    Toast.makeText(getApplicationContext(), url, Toast.LENGTH_LONG).show();
+                   // Toast.makeText(getApplicationContext(), url, Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(getApplicationContext(), error.getMessage() + "", Toast.LENGTH_SHORT).show();
                 }

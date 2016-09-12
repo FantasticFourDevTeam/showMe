@@ -857,11 +857,11 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
                         break;
                     case 7:
                         filter = FILTERS[7];
-                        et_tags.setHint("tag is " + filter + " edit to add more");
+                        et_tags.setHint("tag is " + filter + '\n' + " edit to add more");
                         break;
                     case 8:
                         filter = FILTERS[8];
-                        et_tags.setHint("tag is " + filter + " edit to add more");
+                        et_tags.setHint("tag is " + filter + '\n' + " edit to add more");
                         break;
 
                 }

@@ -44,12 +44,12 @@ public class EventsListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return eventList.size ();
+        return eventList.size();
     }
 
     @Override
     public Object getItem(int i) {
-        return eventList.get (i);
+        return eventList.get(i);
     }
 
     @Override
@@ -128,14 +128,16 @@ public class EventsListAdapter extends BaseAdapter {
             public void onClick(View v) {
                 switch (v.getId ()) {
                     case R.id.imageView2:
+
                         Intent intent = new Intent (context, DeepLinkActivity.class);
                         intent.putExtra ("name", eventListHolder.name.getText ().toString ());
                         intent.putExtra ("date", eventListHolder.date.getText ().toString ());
                         intent.putExtra ("place", eventListHolder.place.getText ().toString ());
-                        intent.putExtra ("objectId", event.getParseObjectId ());
-                        intent.putExtra ("fbUrl", event.getFbUrl ());
-                        intent.setFlags (Intent.FLAG_ACTIVITY_NEW_TASK);
-                        context.startActivity (intent);
+                        intent.putExtra ("objectId", event.getParseObjectId());
+                        intent.putExtra ("fbUrl", event.getFbUrl());
+                        intent.putExtra("eventPic" ,event.getPicUrl());
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(intent);
                         break;
                 }
             }

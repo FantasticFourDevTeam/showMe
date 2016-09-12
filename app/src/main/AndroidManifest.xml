@@ -30,7 +30,7 @@
         android:name="com.example.FundigoApp.Fundigo"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="Fundigo"
+        android:label="WhoGO"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
@@ -83,7 +83,7 @@
         </activity>
         <activity
             android:name=".DeepLinkActivity"
-            android:theme="@android:style/Theme.Holo.Dialog">
+            android:theme="@android:style/Theme.NoDisplay">
         </activity>
         <activity android:name=".Customer.SavedEvents.SavedEventActivity">
         </activity>
@@ -116,10 +116,10 @@
 
         <meta-data
             android:name="com.parse.APPLICATION_ID"
-            android:value="b5Mz60x6YArzWHJfk0uVLNvPyV44s59dNC8TMkOx"/>
+            android:value="gmmXjFV5aZf4BlIepRBfFRxj6PhdCmwX3F4KC84I"/>
         <meta-data
             android:name="com.parse.CLIENT_KEY"
-            android:value="DYuxDXOKR2ZAO29Wc3jq29gxM7kpGkeNQ1r1fMY1"/>
+            android:value="xQR9WWoE7igtemCeiP9FJEW0BPrGJMdpjxwUF28m"/>
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
@@ -150,7 +150,7 @@
 
         <provider
             android:name="com.facebook.FacebookContentProvider"
-            android:authorities="com.facebook.app.FacebookContentProvider815026728619467"
+            android:authorities="com.facebook.app.FacebookContentProvider1081145241965966"
             android:exported="true"/>
 
         <service android:name="com.parse.PushService"/>

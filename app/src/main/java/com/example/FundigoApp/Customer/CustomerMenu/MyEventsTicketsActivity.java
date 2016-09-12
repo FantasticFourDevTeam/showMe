@@ -88,14 +88,13 @@ public class MyEventsTicketsActivity extends AppCompatActivity {
                                 eventInfo.setIsFutureEvent(event_date.after(current_date));
 
                                     try {
+                                        ParseObject soldTickets = eventsSeats.getSoldTicketsPointer().fetch();
                                         if (!eventInfo.getPrice().equals("FREE")) { //11.08 - Assaf added to support Free events also
-                                            ParseObject soldTickets = eventsSeats.getSoldTicketsPointer().fetch();
-
                                             my_tickets_events_list.add(eventInfo);
                                             my_tickets_list.add(new EventsSeatsInfo(eventsSeats.getSeatNumber(),
                                                     qrCode,
                                                     //soldTickets.getCreatedAt(),
-                                                    eventsSeats.getPurchaseDate(),
+                                                    eventsSeats.getCreatedAt(),// The time that the Seat Order made
                                                     eventsSeats.getIntPrice(),
                                                     eventInfo,
                                                     soldTickets));
@@ -106,10 +105,10 @@ public class MyEventsTicketsActivity extends AppCompatActivity {
                                             my_tickets_events_list.add(eventInfo);
                                             my_tickets_list.add(new EventsSeatsInfo(eventsSeats.getSeatNumber(),
                                                     qrCode,
-                                                    eventsSeats.getCreatedAt(),
+                                                    eventsSeats.getCreatedAt(), //the time that the Seat Order made
                                                     eventsSeats.getIntPrice(),
                                                     eventInfo,
-                                                    null));
+                                                    soldTickets));
                                         }
 
                                     } catch (ParseException exception) {
