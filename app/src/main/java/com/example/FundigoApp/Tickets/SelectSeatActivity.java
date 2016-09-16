@@ -42,7 +42,8 @@ public class SelectSeatActivity extends AppCompatActivity {
         eventObjectId = intentHere1.getStringExtra ("eventObjectId");
         customerPhone = intentHere1.getStringExtra ("phone");
         ParseQuery<EventsSeats> query = new ParseQuery ("EventsSeats");
-        query.whereMatches ("eventObjectId", eventObjectId).whereNotEqualTo ("CustomerPhone", null);
+        query.whereEqualTo ("eventObjectId", eventObjectId);
+        query.whereEqualTo ("sold", false);
         seatsArray.clear ();
         try {
             List<EventsSeats> tempSeatsList = query.find ();
@@ -62,6 +63,7 @@ public class SelectSeatActivity extends AppCompatActivity {
                     eventsSeats.put ("eventObjectId", eventObjectId);
                     eventsSeats.put ("seatNumber", "Orange " + i);
                     eventsSeats.setIsSold (false);
+
                     eventsSeats.save ();
                 }
                 for (int i = 101; i <= 117; i++) {
@@ -115,6 +117,7 @@ public class SelectSeatActivity extends AppCompatActivity {
                 tempSeatsList = query.find ();
             }
             seatsArray.addAll (tempSeatsList);
+            seatsList.setAdapter (new SelectSeatAdapter (this, seatsArray));
         } catch (ParseException e) {
             e.printStackTrace ();
         }

@@ -104,15 +104,19 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         /**
          * only one if condition, not like before
          */
+		 /*
         if (GlobalVariables.IS_PRODUCER) {
             createProducerMainPage();
         } else {
             customerLogin();
             createCustomerMainPage();
             EXIT = false;
-        }
+        }*/
+		customerLogin();
+        createCustomerMainPage();
+        EXIT = false;
     }
-
+/*
     public void createProducerMainPage() {
         setContentView(R.layout.producer_avtivity_main);
 
@@ -166,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         });
     }
-
+*/
     public void createCustomerMainPage() {
         setContentView(R.layout.activity_main);
 
@@ -756,7 +760,22 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public void onBackPressed() {//prevent the back Button to the Activities that sent intents to the Main Activity
         super.onBackPressed();
         EXIT = true; //a flag close all activities that opened in the stack
-        this.finish();
+		AlertDialog.Builder builder = new AlertDialog.Builder (this);
+            builder.setMessage (R.string.are_you_sure_you_want_to_exit)
+                    .setCancelable (false)
+                    .setPositiveButton ("Yes", new DialogInterface.OnClickListener () {
+                        public void onClick(DialogInterface dialog, int id) {
+                            MainActivity.this.finish ();
+                        }
+                    })
+                    .setNegativeButton ("No", new DialogInterface.OnClickListener () {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel ();
+                        }
+                    });
+            AlertDialog alert = builder.create ();
+            alert.show ();
+        //this.finish(); //assaf check please
     }
 
 
