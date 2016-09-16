@@ -49,7 +49,7 @@ public class ChatToCustomersActivity extends Activity implements Comparator<Stri
     private Room room;
     ImageLoader loader;
     private String recieverCustomerPhone;
-
+    private String recieverCustomerName;
     private String customer1;
     private String customer2;
     MessageToCustomer message;
@@ -69,12 +69,16 @@ public class ChatToCustomersActivity extends Activity implements Comparator<Stri
         int eventIndex = intent.getIntExtra ("index", 0);
         customerPhone = intent.getStringExtra ("customer_phone");
         recieverCustomerPhone = intent.getStringExtra("senderCustomer").substring("Customer # ".length());
+        recieverCustomerName = intent.getStringExtra("senderUserName");
 
         eventInfo = GlobalVariables.ALL_EVENTS_DATA.get(eventIndex);
         eventName = eventInfo.getName ();
 
         if (GlobalVariables.IS_CUSTOMER_REGISTERED_USER) {
-            profileName.setText(recieverCustomerPhone);
+            if(recieverCustomerName!=null && !recieverCustomerName.isEmpty()){
+                   profileName.setText(recieverCustomerName);}// presnt user name
+            else{
+                profileName.setText(recieverCustomerPhone);}
             updateUserDetailsFromParse (recieverCustomerPhone);//Present user picture
          // recieverCustomerDetailes = UserDetailsMethod.getUserDetailsFromParseInMainThread(recieverCustomerPhone);
          // setEventInfo(recieverCustomerDetailes.getCustomerImage());
@@ -164,7 +168,7 @@ public class ChatToCustomersActivity extends Activity implements Comparator<Stri
             }
             editTextMessage.setText("");
             getAllMessagesFromParseInMainThread(customer1, customer2);
-            updateMessageRoomItemInBackGround(message); //01.08 - Assaf Unmarked
+            updateMessageRoomItemInBackGround(message);
         } else {
             Toast.makeText(this, "No Message to Send", Toast.LENGTH_SHORT).show();
         }
@@ -195,8 +199,8 @@ public class ChatToCustomersActivity extends Activity implements Comparator<Stri
         query.setLimit(1000);
         query.whereEqualTo ("customer1", customer1);
         query.whereEqualTo ("customer2", customer2);
-        query.whereEqualTo ("eventObjectId", eventInfo.getParseObjectId ());
-        query.orderByAscending ("createdAt");
+        query.whereEqualTo("eventObjectId", eventInfo.getParseObjectId());
+        query.orderByAscending("createdAt");
         List<MessageToCustomer> messages = null;
         try {
             messages = query.find ();
@@ -227,7 +231,7 @@ public class ChatToCustomersActivity extends Activity implements Comparator<Stri
                         msg.getBody(),
                         isMe,
                         true,
-                        msg.getCreatedAt()));
+                        msg.getCreatedAt(),""));
             }
             mAdapter.notifyDataSetChanged(); // update adapter
             // Scroll to the bottom of the eventList on initial load
@@ -238,16 +242,26 @@ public class ChatToCustomersActivity extends Activity implements Comparator<Stri
         }
 
     //01.08 - Assaf updated
-    public void updateMessageRoomItemInBackGround(final MessageToCustomer message) {
+    public void updateMessageRoomItemInBackGround(final MessageToCustomer message) { // presnet the name and if empty prsent phone number
 
         if (GlobalVariables.IS_CUSTOMER_REGISTERED_USER) {
+           String senderName = UserDetailsMethod.getUserDetailsFromParseInMainThread(message.getSenderId()).getCustomerName();
+           String recieverName = UserDetailsMethod.getUserDetailsFromParseInMainThread(recieverCustomerPhone).getCustomerName();
+
+           if (senderName==null || senderName.isEmpty())
+           {
+               senderName = message.getSenderId();
+           }
+            if (recieverName==null || recieverName.isEmpty())
+            {
+                recieverName = recieverCustomerPhone;
+            }
             // senderType = "Customer " +  message.getSenderId()+" : ";
-              senderType = message.getSenderId()+ " to " + recieverCustomerPhone + ":" + '\n';
+             // senderType = message.getSenderId()+ " to " + recieverCustomerPhone + ":" + '\n';
+            senderType = senderName+
+                    " to " + recieverName + ":" + '\n';
 
         }
-        //else if (GlobalVariables.IS_PRODUCER) {
-          //  senderType = "Producer : ";
-        //}
         final String senderTypeFinal = senderType;
         saveRoomData (room, senderTypeFinal, message);
     }

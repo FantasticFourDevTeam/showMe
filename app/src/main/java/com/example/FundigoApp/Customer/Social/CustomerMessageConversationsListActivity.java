@@ -19,6 +19,7 @@ import com.example.FundigoApp.Events.EventInfo;
 import com.example.FundigoApp.GlobalVariables;
 import com.example.FundigoApp.R;
 import com.example.FundigoApp.StaticMethod.EventDataMethods;
+import com.example.FundigoApp.StaticMethod.UserDetailsMethod;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
@@ -163,6 +164,7 @@ public class CustomerMessageConversationsListActivity extends AppCompatActivity 
         intent = new Intent (this,ChatToCustomersActivity.class);
         intent.putExtra("customer_phone",GlobalVariables.CUSTOMER_PHONE_NUM);
         intent.putExtra("senderCustomer", "Customer # "+recieverCustomerIdForChat);
+        intent.putExtra("senderUserName", UserDetailsMethod.getUserDetailsFromParseInMainThread(recieverCustomerIdForChat).getCustomerName());
         intent.putExtra("index", event_info_list.get(i).getIndexInFullList());// event index in All Events List
         startActivity(intent);
         }

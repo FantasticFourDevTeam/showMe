@@ -129,6 +129,10 @@ public class MessagesRoomProducerActivity extends Activity implements AdapterVie
         } else if (customerDetails.getCustomerImage () != null) {
             messageRoomBean.setCustomerImage (customerDetails.getCustomerImage ());
         }
+
+        String customerName= customerDetails.getCustomerName();
+        if (customerName!=null && !customerName.isEmpty())
+              messageRoomBean.setCustomerName(customerName);
     }
 
     @Override

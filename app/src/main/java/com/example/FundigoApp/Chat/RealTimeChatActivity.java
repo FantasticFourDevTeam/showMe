@@ -14,11 +14,13 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.FundigoApp.Customer.CustomerDetails;
 import com.example.FundigoApp.Events.EventInfo;
 import com.example.FundigoApp.GlobalVariables;
 import com.example.FundigoApp.R;
 import com.example.FundigoApp.StaticMethod.EventDataMethods;
 import com.example.FundigoApp.StaticMethod.FileAndImageMethods;
+import com.example.FundigoApp.StaticMethod.UserDetailsMethod;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -91,16 +93,27 @@ public class RealTimeChatActivity extends AppCompatActivity {//implements Adapte
                     String fb_id = sp.getString(GlobalVariables.FB_ID, null);
                     MsgRealTime message = new MsgRealTime();
                     message.setUserId(current_user_id);
+                    CustomerDetails customerDetails = UserDetailsMethod.getUserDetailsFromParseInMainThread(current_user_id);
+                    String userName = customerDetails.getCustomerName();
                     if (GlobalVariables.IS_PRODUCER) {
                         message.setIsProducer(true);
+                        message.setSenderName("Producer #");
                     } else if (GlobalVariables.IS_CUSTOMER_REGISTERED_USER) {
                         message.setIsProducer(false);
+                        if (name != null) {
+                            message.setSenderName(name);
+                        }
+                        else if (userName!=null){
+                            message.setSenderName(userName);
+                        }
                     }
                     message.setBody(body);
                     message.setEventObjectId(eventObjectId);
-                    if (name != null && pic_url != null && fb_id != null) {
-                        message.setSenderName(name);
+
+                    if (pic_url != null) {
                         message.setPicUrl(pic_url);
+                    }
+                    if (fb_id != null) {
                         message.setFbId(fb_id);
                     }
                     try {
@@ -162,7 +175,8 @@ public class RealTimeChatActivity extends AppCompatActivity {//implements Adapte
         messagesRealTimeList.addAll (messages);
         for (int i = 0; i < messages.size (); i++) {
             MsgRealTime msg = messages.get (i);
-            String id = msg.getUserId ();
+            String id = msg.getUserId();
+            String userName = msg.getSenderName();
             StringBuilder idStringBuilder = new StringBuilder ();
             boolean isMe = false;
             if (!GlobalVariables.IS_PRODUCER) {
@@ -188,7 +202,7 @@ public class RealTimeChatActivity extends AppCompatActivity {//implements Adapte
                                                           msg.getBody (),
                                                           isMe,
                                                           true,
-                                                          msg.getCreatedAt ()));
+                                                          msg.getCreatedAt (),userName));
         }
         mAdapter.notifyDataSetChanged (); // update adapter
         // Scroll to the bottom of the eventList on initial load
@@ -254,15 +268,18 @@ public class RealTimeChatActivity extends AppCompatActivity {//implements Adapte
         final Intent chatintent;
         String result = "";
         String producerSign = "Producer #";
+        String userName="";
 
         try {
             int position = listViewChat.getPositionForView(view); //text view postion in the list view
             String senderCustomer = chatMessagesList.get(position).getFromUserName(); // get the sender name of the chat message
 
-            if (GlobalVariables.CUSTOMER_PHONE_NUM != null) {
+            if (GlobalVariables.IS_CUSTOMER_REGISTERED_USER) { //Producer can't open new private chat with customer
                 if (!senderCustomer.equals(producerSign)) {
                     StringBuilder senderBuilder = new StringBuilder(senderCustomer);
                     result = senderBuilder.substring(senderBuilder.indexOf("#") + 1, senderCustomer.length()).trim();
+                    CustomerDetails customerDetails = UserDetailsMethod.getUserDetailsFromParseInMainThread(result);//pull the sender name from phne number
+                    userName = customerDetails.getCustomerName();
                 } else {
                     result = senderCustomer;
                 }
@@ -271,6 +288,7 @@ public class RealTimeChatActivity extends AppCompatActivity {//implements Adapte
                     chatintent = new Intent(this, ChatToCustomersActivity.class);
                     chatintent.putExtra("customer_phone", current_user_id);
                     chatintent.putExtra("senderCustomer", senderCustomer);
+                    chatintent.putExtra("senderUserName" , userName);
                     chatintent.putExtra("index", intent.getIntExtra("index", 0));// event index in All Events Liost
                     startActivity(chatintent);
                 } else if (result.equals(producerSign)) {

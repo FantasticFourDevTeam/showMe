@@ -15,9 +15,10 @@ public class MessageChat {
     private Boolean isSend;
     private Boolean sendSucces;
     private Date time;
+    private String fromUser;
 
     public MessageChat(Integer type, Integer state, String fromUserName,
-                       String content, Boolean isSend, Boolean sendSucces, Date time) {
+                       String content, Boolean isSend, Boolean sendSucces, Date time,String fromUser) {
         super ();
         this.type = type;
         this.state = state;
@@ -26,6 +27,7 @@ public class MessageChat {
         this.isSend = isSend;
         this.sendSucces = sendSucces;
         this.time = time;
+        this.fromUser=fromUser;
     }
 
     public Long getId() {
@@ -50,6 +52,10 @@ public class MessageChat {
 
     public void setState(Integer state) {
         this.state = state;
+    }
+
+    public String getFromUser() {
+        return fromUser;
     }
 
     public String getFromUserName() {

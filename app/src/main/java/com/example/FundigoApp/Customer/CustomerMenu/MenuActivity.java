@@ -48,7 +48,7 @@ public class MenuActivity extends AppCompatActivity {
     CallbackManager callbackManager;
     Button sms_login_button;
     Button user_profile_button;
-    LoginButton facebook_logout_button;
+    Button facebook_logout_button;
     String currentUserName;
     String phoneNum;
     String userImage;
@@ -80,7 +80,7 @@ public class MenuActivity extends AppCompatActivity {
         user_profile_button = (Button) findViewById (R.id.buttonUserProfile);
         user_profile_update_button = (Button) findViewById (R.id.buttonUserProfileUpdate);
         user_evnets_tickets_button = (Button) findViewById (R.id.eventsTicketsButton);
-        facebook_logout_button = (LoginButton) findViewById (R.id.logout_button11);
+        facebook_logout_button = (Button) findViewById (R.id.logout_button11);
         producerPage_button = (Button) findViewById (R.id.producerPage_button);
         save_credit_card_button = (Button) findViewById (R.id.save_credit_card);
         delete_credit_card_button = (Button) findViewById (R.id.delete_credit_card);
@@ -123,7 +123,7 @@ public class MenuActivity extends AppCompatActivity {
                                                                    Arrays.asList
                                                                                   ("public_profile",
                                                                                           "user_friends",
-                                                                                          "email"));
+                                                                                          "email","user_events"));
             }
         });
         // Callback registration

@@ -27,7 +27,7 @@
         android:layout_marginTop="4dp"
         />
 
-    <com.facebook.login.widget.LoginButton
+    <Button
         android:id="@+id/logout_button11"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -35,7 +35,8 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="4dp"
         android:onClick="logOutFacebook"
-        facebook:com_facebook_login_text="Log Out"/>
+        android:text="Logout from Facebook"
+        />
 
     <TextView
         android:id="@+id/profileUserName"

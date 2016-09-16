@@ -10,6 +10,7 @@ public class MessageRoomBean implements Serializable {
     String producer_id;
     String customer1;
     String customer2;
+    String customerName;
 
     public MessageRoomBean(String lastMessage, String customer_id, String producer_id,String customer1, String customer2) {
         this.lastMessage = lastMessage;
@@ -66,5 +67,14 @@ public class MessageRoomBean implements Serializable {
     public String getCustomer2_id ()
     {
         return customer2;
+    }
+
+    public void setCustomerName (String name)
+    {
+        this.customerName = name;
+    }
+    public String getCustomerName ()
+    {
+        return customerName;
     }
 }

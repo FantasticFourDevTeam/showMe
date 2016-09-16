@@ -9,7 +9,7 @@
             android:id="@+id/pushView"
             android:layout_height="wrap_content"
             style="@style/AppTheme"
-            android:text="push messages bar"
+            android:text=""
             android:textSize="18sp"
             android:textColor="#594bf5"
             android:background="#f9e7e7" />

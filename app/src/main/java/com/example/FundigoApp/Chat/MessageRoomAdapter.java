@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import com.example.FundigoApp.Customer.CustomerDetails;
+import com.example.FundigoApp.GlobalVariables;
 import com.example.FundigoApp.R;
 import com.example.FundigoApp.StaticMethod.FileAndImageMethods;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -21,6 +23,7 @@ public class MessageRoomAdapter extends BaseAdapter {
     Context context;
     Boolean isCustomer = false;
     ImageLoader loader;
+    CustomerDetails customerDetails;
 
     public MessageRoomAdapter(Context c, List listOfConversations) {
         this.context = c;
@@ -60,7 +63,7 @@ public class MessageRoomAdapter extends BaseAdapter {
             LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService (Context.LAYOUT_INFLATER_SERVICE);
             row = layoutInflater.inflate (R.layout.messages_room_item, viewGroup, false);
             holder = new MessageRoomItemHolder (row);
-            row.setTag (holder);
+            row.setTag(holder);
 
         } else {
             holder = (MessageRoomItemHolder) row.getTag ();
@@ -78,8 +81,22 @@ public class MessageRoomAdapter extends BaseAdapter {
             loader.displayImage ("", holder.customerOrEventImage);
         }
 
-        holder.messageBody.setText (message_bean.getLastMessage ());
-        holder.customerOrEventName.setText (message_bean.getCustomer_id ());
+        holder.messageBody.setText (message_bean.getLastMessage());
+       // customerDetails = UserDetailsMethod.getUserDetailsFromParseInMainThread(message_bean.getCustomer_id ());
+       // holder.customerOrEventName.setText (customerDetails.getCustomerName());
+      //  holder.customerOrEventName.setText (message_bean.getCustomer_id ());
+        if (GlobalVariables.IS_PRODUCER && !isCustomer)
+        {
+            String customerName = message_bean.getCustomerName();
+            if(customerName!=null && !customerName.isEmpty()) {
+                holder.customerOrEventName.setText(message_bean.getCustomerName());
+            }
+            else{
+                holder.customerOrEventName.setText(message_bean.getCustomer_id());
+            }
+        } else {
+            holder.customerOrEventName.setText(message_bean.getCustomer_id());
+        }
         holder.customerOrEventImage.setTag(message_bean);
         holder.customerOrEventName.setTag (message_bean);
         holder.messageBody.setTag (message_bean);

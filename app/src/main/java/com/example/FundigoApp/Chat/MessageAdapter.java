@@ -11,6 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
+import com.example.FundigoApp.GlobalVariables;
 import com.example.FundigoApp.R;
 
 import java.util.Calendar;
@@ -116,7 +117,13 @@ public class MessageAdapter extends BaseAdapter {
                     sendTimeTextViewLayoutParams.addRule (RelativeLayout.ALIGN_RIGHT, R.id.textTextView);
                     viewHolder.sendTimeTextView.setLayoutParams (sendTimeTextViewLayoutParams);
                     if (isRealTime) {
-                        viewHolder.sendTimeTextView.setText (messageChat.getFromUserName ());
+                        if (GlobalVariables.CUSTOMER_PHONE_NUM !=null) {
+                            if (messageChat.getFromUser() != null && !messageChat.getFromUser().isEmpty())
+                                viewHolder.sendTimeTextView.setText(messageChat.getFromUser());//user name or Prodcuer#
+                            else {
+                                viewHolder.sendTimeTextView.setText(messageChat.getFromUserName());
+                            }
+                        }
                     }
                 }
                 break;

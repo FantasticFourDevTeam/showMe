@@ -49,6 +49,8 @@ public class ChatActivity extends Activity {
     EventInfo eventInfo;
     private Room room;
     ImageLoader loader;
+    String customerName;
+    String customerFromProducerName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +64,8 @@ public class ChatActivity extends Activity {
         Intent intent = getIntent ();
         int eventIndex = intent.getIntExtra ("index", 0);
         customerPhone = intent.getStringExtra ("customer_phone");
+        customerFromProducerName = UserDetailsMethod.getUserDetailsFromParseInMainThread(customerPhone).getCustomerName();
+        customerName = UserDetailsMethod.getUserDetailsFromParseInMainThread(GlobalVariables.CUSTOMER_PHONE_NUM).getCustomerName();
 
         eventInfo = GlobalVariables.ALL_EVENTS_DATA.get (eventIndex);
         if(room == null) {
@@ -69,10 +73,15 @@ public class ChatActivity extends Activity {
         }        
 		eventName = eventInfo.getName ();
         if (GlobalVariables.IS_PRODUCER) {
-            profileName.setText (customerPhone);
-            updateUserDetailsFromParse ();
+            if (customerFromProducerName!=null && !customerFromProducerName.isEmpty()){
+                profileName.setText(customerFromProducerName);
+            }
+            else{
+                profileName.setText(customerPhone);
+            }
+            updateUserDetailsFromParse();
         } else if (GlobalVariables.IS_CUSTOMER_REGISTERED_USER) {
-            profileName.setText (eventName + getResources ().getString (R.string.chat_with_producer));
+            profileName.setText (eventName + " " +  getResources ().getString (R.string.chat_with_producer));
             setEventInfo (eventInfo.getPicUrl());
         }
         editTextMessage = (EditText) findViewById (R.id.etMessageChat);
@@ -180,8 +189,8 @@ public class ChatActivity extends Activity {
         query.setLimit(1000);
         query.whereEqualTo ("producer", producer);
         query.whereEqualTo ("customer", customer);
-        query.whereEqualTo ("eventObjectId", eventInfo.getParseObjectId ());
-        query.orderByAscending ("createdAt");
+        query.whereEqualTo("eventObjectId", eventInfo.getParseObjectId());
+        query.orderByAscending("createdAt");
         List<Message> messages = null;
         try {
             messages = query.find ();
@@ -196,20 +205,24 @@ public class ChatActivity extends Activity {
     private void updateMessagesList(List<Message> messages) {
         mMessageChatsList.clear();
         for (int i = 0; i < messages.size (); i++) {
-            Message msg = messages.get (i);
-            String id = msg.getUserId ();
+            Message msg = messages.get(i);
+            String id = msg.getUserId();
+            String userName = "";
             boolean isMe = false;
             if (!GlobalVariables.IS_PRODUCER) {
                 if (id.equals (customerPhone)) {
                     isMe = true;
+                    userName = customerName;
                 } else {
                     id = "Producer # " + id;
-                }
+               }
+
             } else {
                 if (id.equals (eventInfo.getProducerId ())) {
                     isMe = true;
                 } else {
                     id = "Customer " + id;
+                    userName = customerName;
                 }
             }
             mMessageChatsList.add (new MessageChat (
@@ -219,7 +232,7 @@ public class ChatActivity extends Activity {
                                                            msg.getBody (),
                                                            isMe,
                                                            true,
-                                                           msg.getCreatedAt ()));
+                                                           msg.getCreatedAt (),userName));
         }
         mAdapter.notifyDataSetChanged(); // update adapter
         // Scroll to the bottom of the eventList on initial load
@@ -232,9 +245,18 @@ public class ChatActivity extends Activity {
     public void updateMessageRoomItemInBackGround(final Message message) {
         String senderType = "";
         if (GlobalVariables.IS_CUSTOMER_REGISTERED_USER) {
-            senderType = GlobalVariables.CUSTOMER_PHONE_NUM + " to Producer: "+ '\n';
+            if (customerName!=null && !customerName.isEmpty())
+                senderType = customerName + " to Producer: "+ '\n';
+            else {
+                senderType = GlobalVariables.CUSTOMER_PHONE_NUM + " to Producer: " + '\n';
+            }
         } else if (GlobalVariables.IS_PRODUCER) {
-            senderType = "Producer to " +customerPhone + ":" + '\n';
+            if (customerName!=null && !customerName.isEmpty())
+                 senderType = "Producer to " + customerName + ":" + '\n';
+            else {
+                 senderType = "Producer to " +customerPhone + ":" + '\n';
+            }
+
         }
         final String senderTypeFinal = senderType;
         saveRoomData (room, senderTypeFinal, message);
