@@ -102,18 +102,22 @@ public class GPSMethods {
 
         @Override
         public void onLocationChanged(Location location) {
+
             if (location != null) {
                 String cityGPS = findCurrentCityGPS (location);
                 GlobalVariables.MY_LOCATION = location;
-                if (!cityGPS.isEmpty ()) {
+               // if (!cityGPS.isEmpty ()) {
                     GlobalVariables.CITY_GPS = cityGPS;
-                    ic.gpsCallback ();
-                }
+                    ic.gpsCallback();
+               // }
             }
         }
 
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
+//            if (status == LocationProvider.OUT_OF_SERVICE || status == LocationProvider.TEMPORARILY_UNAVAILABLE) {
+//                GlobalVariables.MY_LOCATION=null;
+//                ic.gpsCallback(); // call gps when there is a disconnection or out of GPS is out service//            }
         }
 
         @Override
@@ -122,6 +126,7 @@ public class GPSMethods {
 
         @Override
         public void onProviderDisabled(String provider) {
+            ic.gpsCallback(); // call gps when there is a disconnection
         }
 
         public String findCurrentCityGPS(Location loc) {
@@ -134,7 +139,9 @@ public class GPSMethods {
                     e.printStackTrace ();
                 }
                 if (addresses != null && addresses.size () > 0) {
+
                     return addresses.get (0).getLocality ();
+
                 }
             }
             return "";

@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     static Button currentCityButton;
     ImageView search, notification;
     private static TextView pushViewText;
-    static PopupMenu popup;
+    private static PopupMenu popup;
     Context context;
     private static SharedPreferences _sharedPref;
     private static TextView filterTextView;
@@ -175,7 +175,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         savedEvent = (Button) findViewById(R.id.BarSavedEvent_button);
         realTime = (Button) findViewById(R.id.BarRealTime_button);
         notification = (ImageView) findViewById(R.id.notification_item);
-        //Clayout = (CoordinatorLayout)findViewById(R.id.loginSnackBar);
 
         notification.setOnClickListener(this);
         context = this;
@@ -247,10 +246,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             dialog.show();
         }
 
-        // dialog that popup if NO gps after 2 minutes that user loogeed in for the first time
+        // dialog that popup if NO gps after 2 minutes that user logged
         builder = new AlertDialog.Builder (context);
         gpsMessageHandler = new Handler();
-        gpsMessageHandler.postDelayed(gpsRunnable, 60000);// check each 5 minutes from the moment this page uploaded-- if no GPS location then show a message
+        gpsMessageHandler.postDelayed(gpsRunnable, 90000);// check each 1.5 minutes from the moment this page uploaded-- if no GPS location then show a message
     }
 
     @Override
@@ -270,14 +269,18 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     public void gpsCallback() {
-        if (GlobalVariables.CITY_GPS != null &&
-                !GlobalVariables.CITY_GPS.isEmpty()) {
-            GlobalVariables.cityMenuInstance = new CityMenu(GlobalVariables.ALL_EVENTS_DATA, this);
-            GlobalVariables.namesCity = GlobalVariables.cityMenuInstance.getCityNames();
+        if ((GlobalVariables.MY_LOCATION == null|| !GPSMethods.isLocationEnabled(context)) && GlobalVariables.IS_PRODUCER == false) {
+            gpsMessageHandler.postDelayed(gpsRunnable, 5);// check after 1 minutes from the moment GPS updates method  called-- if no GPS location then show a message
+        }
+
+        if (GlobalVariables.CITY_GPS != null &&!GlobalVariables.CITY_GPS.isEmpty()&& GlobalVariables.MY_LOCATION!=null) {
+              GlobalVariables.cityMenuInstance = new CityMenu(GlobalVariables.ALL_EVENTS_DATA, this);
+              GlobalVariables.namesCity = GlobalVariables.cityMenuInstance.getCityNames();
             inflateCityMenu();
             int indexCityGps = GPSMethods.getCityIndexFromName(GlobalVariables.CITY_GPS);
+
             if (indexCityGps >= 0) {
-                popup.getMenu().getItem(GlobalVariables.indexCityGPS).setTitle(GlobalVariables.namesCity[GlobalVariables.indexCityGPS]);
+               // popup.getMenu().getItem(GlobalVariables.indexCityGPS).setTitle(GlobalVariables.namesCity[GlobalVariables.indexCityGPS]);
                 GlobalVariables.indexCityGPS = indexCityGps;
                 popup.getMenu().getItem(GlobalVariables.indexCityGPS).setTitle(GlobalVariables.CITY_GPS + "(GPS)");
                 if (!GlobalVariables.USER_CHOSEN_CITY_MANUALLY) {
@@ -294,6 +297,42 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     eventsListAdapter.notifyDataSetChanged();
                     currentCityButton.setText(GlobalVariables.CITY_GPS + "(GPS)");
                 }
+
+             }
+            else { // ASSAF :08/09 to support a case that GPS location updated but not found in the list of Cities
+                if (!GlobalVariables.USER_CHOSEN_CITY_MANUALLY) {
+                    ArrayList<EventInfo> tempEventsList =
+                            FilterMethods.filterByCityAndFilterName(
+                                    GlobalVariables.namesCity[GlobalVariables.indexCityChosen],
+                                    GlobalVariables.CURRENT_FILTER_NAME,
+                                    GlobalVariables.CURRENT_SUB_FILTER,
+                                    GlobalVariables.CURRENT_DATE_FILTER,
+                                    GlobalVariables.CURRENT_PRICE_FILTER,
+                                    GlobalVariables.ALL_EVENTS_DATA);
+                    filtered_events_data.clear();
+                    filtered_events_data.addAll(tempEventsList);
+                    eventsListAdapter.notifyDataSetChanged();
+                }
+            }
+        }
+        if (GlobalVariables.USER_CHOSEN_CITY_MANUALLY) { // 08/09 Assaf- case of manual selection
+            ArrayList<EventInfo> tempEventsList =
+                    FilterMethods.filterByCityAndFilterName(
+                            GlobalVariables.namesCity[GlobalVariables.indexCityChosen],
+                            GlobalVariables.CURRENT_FILTER_NAME,
+                            GlobalVariables.CURRENT_SUB_FILTER,
+                            GlobalVariables.CURRENT_DATE_FILTER,
+                            GlobalVariables.CURRENT_PRICE_FILTER,
+                            GlobalVariables.ALL_EVENTS_DATA);
+            filtered_events_data.clear();
+            filtered_events_data.addAll(tempEventsList);
+            eventsListAdapter.notifyDataSetChanged();
+            if (GlobalVariables.CITY_GPS != null &&
+                    GlobalVariables.namesCity[GlobalVariables.indexCityChosen].equals(GlobalVariables.CITY_GPS) &&
+                    GPSMethods.getCityIndexFromName(GlobalVariables.CITY_GPS) >= 0) {
+                currentCityButton.setText(GlobalVariables.namesCity[GlobalVariables.indexCityChosen] + "(GPS)");
+            } else {
+                currentCityButton.setText(GlobalVariables.namesCity[GlobalVariables.indexCityChosen]);
             }
         }
     }
@@ -374,16 +413,20 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             @Override
             public void onClick(View v) {
                 //registering popup with OnMenuItemClickListener
+                currentCityButton.setClickable(false);
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     public boolean onMenuItemClick(MenuItem item) {
+
                         GlobalVariables.indexCityChosen = GlobalVariables.popUpIDToCityIndex.get(item.getItemId());
-                        GlobalVariables.CURRENT_CITY_NAME = item.getTitle().toString();
+                        GlobalVariables.CURRENT_CITY_NAME = GlobalVariables.namesCity[GlobalVariables.indexCityChosen];
+
                         if (GlobalVariables.CITY_GPS != null &&
-                                item.getTitle().equals(GlobalVariables.CITY_GPS) &&
-                                GPSMethods.getCityIndexFromName(GlobalVariables.CITY_GPS) >= 0) {
-                            currentCityButton.setText(item.getTitle() + "(GPS)");
+                                GlobalVariables.namesCity[GlobalVariables.indexCityChosen].equals(GlobalVariables.CITY_GPS) &&
+                                GPSMethods.getCityIndexFromName(GlobalVariables.CITY_GPS) >= 0)
+                        {
+                            currentCityButton.setText(GlobalVariables.namesCity[GlobalVariables.indexCityChosen] + "(GPS)");
                         } else {
-                            currentCityButton.setText(item.getTitle());
+                            currentCityButton.setText(GlobalVariables.namesCity[GlobalVariables.indexCityChosen]);
                         }
                         ArrayList<EventInfo> tempEventsList =
                                 FilterMethods.filterByCityAndFilterName(
@@ -401,6 +444,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     }
                 });
                 popup.show();//showing popup menu
+                currentCityButton.setClickable(true);
             }
         });
     }
@@ -432,6 +476,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             if (!GlobalVariables.CURRENT_CITY_NAME.isEmpty()) {
                 foundCity = false;
             }
+
             for (int i = 0; i < GlobalVariables.namesCity.length; i++) {
                 if (i == GlobalVariables.indexCityGPS &&
                         GlobalVariables.CITY_GPS != null &&
@@ -750,7 +795,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 if ((GlobalVariables.MY_LOCATION == null || !GPSMethods.isLocationEnabled(context)) && GlobalVariables.IS_PRODUCER == false)
                 {
                     try {
-                        builder.setMessage("No GPS Connection, Location based Information could not be display, please take care");
+                        builder.setMessage("WhoGO best service is based on GPS , a problem with GPS connection was found");
                         builder.setCancelable(true);
                         builder.setNeutralButton("Got It",
                                 new DialogInterface.OnClickListener() {
@@ -769,4 +814,4 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 }
             }
           };
-       }
+      }

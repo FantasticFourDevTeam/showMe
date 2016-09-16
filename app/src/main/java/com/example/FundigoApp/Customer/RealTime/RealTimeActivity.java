@@ -78,8 +78,6 @@ public class RealTimeActivity extends AppCompatActivity implements View.OnClickL
             turnOnGps ();
         }
 
-
-
         if (GlobalVariables.ALL_EVENTS_DATA.size () == 0) {
             Intent intent = new Intent (this, EventPageActivity.class);
             EventDataMethods.downloadEventsData (this, null, this.getApplicationContext (), intent);
@@ -92,15 +90,16 @@ public class RealTimeActivity extends AppCompatActivity implements View.OnClickL
                 events_data_filtered.clear ();
                 events_data_filtered.addAll (tempFilteredList);
             } else {
-                GPSMethods.updateDeviceLocationGPS (this.getApplicationContext (), this);
+                GPSMethods.updateDeviceLocationGPS(this.getApplicationContext(), this);
+
             }
         }
 
         gridView = (GridView) findViewById (R.id.gridview);
         eventsGridAdapter = new EventsGridAdapter (this, events_data_filtered);
-        gridView.setAdapter (eventsGridAdapter);
-        gridView.setSelector (new ColorDrawable (Color.TRANSPARENT));
-        gridView.setOnItemClickListener (this);
+        gridView.setAdapter(eventsGridAdapter);
+        gridView.setSelector(new ColorDrawable(Color.TRANSPARENT));
+        gridView.setOnItemClickListener(this);
     }
 
     private void turnOnGps() {
@@ -110,6 +109,7 @@ public class RealTimeActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void gpsCallback() {
         if (GlobalVariables.ALL_EVENTS_DATA.size () > 0) {
+            events_sorted_by_dist_data.clear();
             events_sorted_by_dist_data = getSortedListByDist ();
             List<EventInfo> tempFilteredList =
                     FilterMethods.filterByFilterName (GlobalVariables.CURRENT_FILTER_NAME,
@@ -117,11 +117,12 @@ public class RealTimeActivity extends AppCompatActivity implements View.OnClickL
                                                              GlobalVariables.CURRENT_DATE_FILTER,
                                                              GlobalVariables.CURRENT_PRICE_FILTER,
                                                              events_sorted_by_dist_data);
-            events_data_filtered.clear ();
-            events_data_filtered.addAll (tempFilteredList);
-            eventsGridAdapter.notifyDataSetChanged ();
+            events_data_filtered.clear();
+            events_data_filtered.addAll(tempFilteredList);
+            eventsGridAdapter.notifyDataSetChanged();
         }
-        turnOnGPS.setVisibility (View.GONE);
+
+        turnOnGPS.setVisibility(View.GONE);
     }
 
     @Override
@@ -139,7 +140,7 @@ public class RealTimeActivity extends AppCompatActivity implements View.OnClickL
             eventsGridAdapter.notifyDataSetChanged ();
             turnOnGPS.setVisibility (View.GONE);
         } else {
-            GPSMethods.updateDeviceLocationGPS (this.getApplicationContext (), this);
+            GPSMethods.updateDeviceLocationGPS(this.getApplicationContext(), this);
         }
     }
 
@@ -160,14 +161,16 @@ public class RealTimeActivity extends AppCompatActivity implements View.OnClickL
             event.setDist (distance);
             arr.add (event);
         }
-        Collections.sort (arr, new Comparator<EventInfo> () {
+        Collections.sort(arr, new Comparator<EventInfo>() {
             @Override
             public int compare(EventInfo a, EventInfo b) {
-                if (a.getDist () < b.getDist ()) return -1;
-                if (a.getDist () >= b.getDist ()) return 1;
+                if (a.getDist() < b.getDist()) return -1;
+                if (a.getDist() >= b.getDist()) return 1;
                 return 0;
             }
         });
+         //Log.i("TAG", "sort" + Double.toString(GlobalVariables.MY_LOCATION.getLongitude()));///check
+         //Log.i("TAG", "sort" + arr.get(0).getAddress() + arr.get(1).getAddress());///check
         return arr;
     }
 
@@ -222,18 +225,18 @@ public class RealTimeActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     protected void onResume() {
-        super.onResume ();
+        super.onResume();
         List<EventInfo> tempFilteredList =
                 FilterMethods.filterByFilterName (GlobalVariables.CURRENT_FILTER_NAME,
                                                          GlobalVariables.CURRENT_SUB_FILTER,
                                                          GlobalVariables.CURRENT_DATE_FILTER,
                                                          GlobalVariables.CURRENT_PRICE_FILTER,
                                                          events_sorted_by_dist_data);
-        events_data_filtered.clear ();
-        events_data_filtered.addAll (tempFilteredList);
-        eventsGridAdapter.notifyDataSetChanged ();
-        if (GlobalVariables.MY_LOCATION != null && GPSMethods.isLocationEnabled (this))
-            displayFilterBanner (); // to display filter selected by user only if GPS enabled and list is display
+        events_data_filtered.clear();
+        events_data_filtered.addAll(tempFilteredList);
+        eventsGridAdapter.notifyDataSetChanged();
+       // if (GlobalVariables.MY_LOCATION != null && GPSMethods.isLocationEnabled (this))
+        displayFilterBanner (); // to display filter selected by user
     }
 
     @Override

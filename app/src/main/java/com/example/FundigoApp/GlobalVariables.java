@@ -48,7 +48,7 @@ public class GlobalVariables {
     public static boolean SAVED_ACTIVITY_RUNNING = false;
     public static boolean USER_CHOSEN_CITY_MANUALLY = false;
 
-    public static CityMenu cityMenuInstance;
+    public static CityMenu cityMenuInstance = null;
     public static String[] namesCity;
     public static int indexCityGPS = 0;
     public static HashMap<Integer, Integer> popUpIDToCityIndex = new HashMap<Integer, Integer> ();
@@ -59,5 +59,5 @@ public class GlobalVariables {
     public static boolean refreshArtistsList = false;
     public static ArrayList<String> userChanels = new ArrayList<> ();
     //in millis
-    public static final int GPS_UPDATE_TIME_INTERVAL = 10000;
+    public static final int GPS_UPDATE_TIME_INTERVAL = 20000;
 }

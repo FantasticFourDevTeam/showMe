@@ -10,7 +10,7 @@
     <LinearLayout
         android:id="@+id/toolbar_up"
         android:layout_width="fill_parent"
-        android:layout_height="30dp"
+        android:layout_height="35dp"
         android:background="#71B7E6"
         android:orientation="horizontal"
         android:weightSum="700.0">
@@ -40,7 +40,7 @@
             android:layout_weight="300"
             android:background="#71B7E6"
             android:onClick=""
-            android:text="FUNDIGO"
+            android:text="WhoGO"
             android:textColor="#ffffff"/>
 
         <ImageView

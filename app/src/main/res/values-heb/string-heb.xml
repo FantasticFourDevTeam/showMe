@@ -213,7 +213,7 @@
     v
     <string name="edit_event">ערוך אירוע</string>
     <string name="food_drink_convention">#אוכל #שתייה #שיחות</string>
-    <string name="fundigo">כל הערים</string>
+    <string name="fundigo">כל הערים (ללא פילטר)</string>
     <string name="get_tickets">קנה כרטיס</string>
     <string name="real_time">לפי מרחק</string>
     <string name="events_stats">מצב אירוע</string>

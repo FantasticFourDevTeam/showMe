@@ -6,7 +6,7 @@
     <LinearLayout
         android:id="@+id/toolbar_up"
         android:layout_width="fill_parent"
-        android:layout_height="30dp"
+        android:layout_height="35dp"
         android:orientation="horizontal"
         android:weightSum="700.0"
         android:background="#71B7E6"
@@ -40,7 +40,7 @@
             android:text="@string/fundigo"
             android:background="#71B7E6"
             android:textColor="#ffffff"
-            android:textSize="13sp"
+            android:textSize="14sp"
             android:textStyle="normal"/>
 
         <ImageView

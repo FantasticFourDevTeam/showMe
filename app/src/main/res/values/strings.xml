@@ -5,7 +5,7 @@
 
     <string name="filterPageName">Filter</string>
 
-    <string name="facebook_app_id">1081145241965966</string>
+    <string name="facebook_app_id">250727555326472</string>
 
     <string name="title_activity_login">LoginActivity</string>
     <string name="title_activity_purchase">PurchaseActivity</string>
@@ -336,7 +336,7 @@
     <string name="event_name">Event Name</string>
     <string name="date">Date</string>
     <string name="go_to_event">Go To Event</string>
-    <string name="fundigo">All Cities</string>
+    <string name="fundigo">All Cities (No Filter)</string>
     <string name="turn_on_gps_to_see_real_time_events">No GPS connection, information that is location based could not be display</string>
     <string name="big_fassion_event_real_time_chat">Big Fashion Event - Real Time Chat</string>
     <string name="history">History</string>
