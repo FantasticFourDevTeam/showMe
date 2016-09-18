@@ -510,5 +510,7 @@
     <string name="long_walk">more then 1 hour</string>
 
 
+    <string name="save_credit_card">Save Credit Card</string>
+    <string name="delete_credit_card">Delete Credit Card</string>
 
 </resources>
