@@ -114,6 +114,11 @@
         <activity android:name=".Chat.RealTimeChatActivity">
         </activity>
 
+		<activity android:name="com.example.events.ProducerActivity">
+		</activity>
+		<activity android:name="com.example.events.ActivityFacebook">
+		</activity>
+		
         <meta-data
             android:name="com.parse.APPLICATION_ID"
             android:value="gmmXjFV5aZf4BlIepRBfFRxj6PhdCmwX3F4KC84I"/>

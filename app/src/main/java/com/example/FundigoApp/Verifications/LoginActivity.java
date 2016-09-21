@@ -96,7 +96,7 @@ public class LoginActivity extends Activity {
                                 GlobalVariables.IS_CUSTOMER_GUEST = false;
                                 GlobalVariables.CUSTOMER_PHONE_NUM = null;
                                 GlobalVariables.PRODUCER_PARSE_OBJECT_ID = ParseUser.getCurrentUser().getObjectId();
-                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                Intent intent = new Intent(LoginActivity.this, ProducerActivity.class);
                                 GlobalVariables.ALL_EVENTS_DATA.clear();
                                 startActivity(intent);
                                 finish();
