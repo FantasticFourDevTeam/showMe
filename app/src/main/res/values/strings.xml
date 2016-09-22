@@ -9,7 +9,7 @@
 
     <string name="title_activity_login">LoginActivity</string>
     <string name="title_activity_purchase">PurchaseActivity</string>
-    <string name="title_activity_facebook_login">FacebookLogin</string>
+    <string name="title_activity_facebook_login">Facebook Login</string>
 
     <string name="profile_me">My Profile Pic</string>
     <string name="profile_other">Other profile pic</string>
@@ -395,6 +395,7 @@
     <string name="error_logging_facebook">Error logging facebook</string>
     <string name="hey_come_to_see_events_near_you">Hey Come To See Events Near You </string>
     <string name="loged_out_of_facebook">Logged out from facebook</string>
+    <string name="log_out_from_facebook">Logout from facebook</string>
     <string name="km_away">km away</string>
     <string name="you_unsaved_this_event">You unSaved this event</string>
     <string name="you_saved_this_event">You Saved this event</string>
@@ -405,6 +406,7 @@
     <string name="event_hasnot_created_successfully">Event creation was failed please try again</string>
     <string name="please_fill_empty_fields">"Please Fill The  Empty Fields</string>
     <string name="are_you_sure_you_want_to_exit">Are you sure you want to exit?</string>
+    <string name="producer_are_you_sure_you_want_to_exit">Are you sure you want to exit from Producer area?</string>
     <string name="validating">Validating...</string>
     <string name="something_went_wrong_plese_try_again">Something went wrong, plese try again</string>
     <string name="problem_is">The address is not valid, the problem is </string>
@@ -508,9 +510,9 @@
     <string name="sold_ticket">sold</string>
     <string name="Registration_failure">Registration failed and not completed</string>
     <string name="long_walk">more then 1 hour</string>
-
-
     <string name="save_credit_card">Save Credit Card</string>
     <string name="delete_credit_card">Delete Credit Card</string>
+    <string name="guest">Guest</string>
+
 
 </resources>

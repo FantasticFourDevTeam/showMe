@@ -16,6 +16,7 @@ import com.example.FundigoApp.GlobalVariables;
 import com.example.FundigoApp.MainActivity;
 import com.example.FundigoApp.R;
 import com.example.FundigoApp.StaticMethod.FileAndImageMethods;
+import com.example.events.ProducerActivity;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;

@@ -379,8 +379,11 @@
     <string name="available_ticket">זמין</string>
     <string name="sold_ticket">נמכר</string>
     <string name="long_walk">למעלה משעה</string>
-	
-	<string name="save_credit_card">שמור כרטיס אשראי</string>
+    <string name="save_credit_card">שמור כרטיס אשראי</string>
     <string name="title_activity_facebook_login">התחבר לפייסבוק</string>
     <string name="delete_credit_card">מחק כרטיס אשראי</string>
+    <string name="log_out_from_facebook">התנתק מפייסבוק</string>
+    <string name="guest">אורח</string>
+    <string name="producer_are_you_sure_you_want_to_exit">האם ברצונך לצאת מאיזור המפיק?</string>
 </resources>
+

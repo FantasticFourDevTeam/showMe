@@ -69,6 +69,10 @@ public class CustomerProfileUpdate extends AppCompatActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                catch (OutOfMemoryError ex)
+                {
+                    ex.printStackTrace();
+                }
 
             } else {
                 Toast.makeText (getApplicationContext (),
@@ -137,28 +141,43 @@ public class CustomerProfileUpdate extends AppCompatActivity {
         } catch (Exception e) {
             Log.e ("On ActivityResult Error", e.toString ());
         }
+        catch (OutOfMemoryError ex)
+        {
+            ex.printStackTrace();
+        }
     }
 
     public void getCurrentUserProfile() {
-        dialog= new ProgressDialog(this);
+        dialog = new ProgressDialog(this);
         dialog.setTitle("Loading..");
-        String phoneNum = GlobalVariables.CUSTOMER_PHONE_NUM;
-        CustomerDetails customerDetails = UserDetailsMethod.getUserDetailsFromParseInMainThreadWithBitmap (phoneNum);
-        String currentUserName = customerDetails.getCustomerName();
-        String emailAddress = customerDetails.getEmail();
-        if(customerName.getText ().toString ().isEmpty ()){
-            customerName.setText (currentUserName);
-            customerName.setSelection (customerName.getText ().length ());
+        try {
+            String phoneNum = GlobalVariables.CUSTOMER_PHONE_NUM;
+            CustomerDetails customerDetails = UserDetailsMethod.getUserDetailsFromParseInMainThreadWithBitmap(phoneNum);
+            String currentUserName = customerDetails.getCustomerName();
+            String emailAddress = customerDetails.getEmail();
+            if (customerName.getText().toString().isEmpty()) {
+                customerName.setText(currentUserName);
+                customerName.setSelection(customerName.getText().length());
+            }
+            Bitmap userImage = customerDetails.getBitmap();
+            if (userImage != null && !IMAGE_SELECTED) {
+                customerImg.setImageBitmap(userImage);
+                customerImg.setVisibility(View.VISIBLE);
+            }
+
+            if (customerDetails.getEmail() != null) {
+                emailAddressText.setText(emailAddress.toString());
+            }
         }
-        Bitmap userImage = customerDetails.getBitmap ();
-        if(userImage != null && !IMAGE_SELECTED){
-            customerImg.setImageBitmap (userImage);
-            customerImg.setVisibility (View.VISIBLE);
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        catch (OutOfMemoryError ex)
+        {
+            ex.printStackTrace();
         }
 
-        if(customerDetails.getEmail() != null) {
-            emailAddressText.setText(emailAddress.toString());
-        }
         dialog.dismiss();
     }
 }

@@ -3,7 +3,6 @@ package com.example.FundigoApp;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,8 +13,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
@@ -42,8 +39,6 @@ import com.example.FundigoApp.Events.EventPageActivity;
 import com.example.FundigoApp.Events.EventsListAdapter;
 import com.example.FundigoApp.Filter.FilterPageActivity;
 import com.example.FundigoApp.MyLocation.CityMenu;
-import com.example.FundigoApp.Producer.Artists.QR_producer;
-import com.example.FundigoApp.Producer.TabPagerAdapter;
 import com.example.FundigoApp.StaticMethod.EventDataMethods;
 import com.example.FundigoApp.StaticMethod.EventDataMethods.GetEventsDataCallback;
 import com.example.FundigoApp.StaticMethod.FileAndImageMethods;
@@ -52,6 +47,7 @@ import com.example.FundigoApp.StaticMethod.GPSMethods;
 import com.example.FundigoApp.StaticMethod.GPSMethods.GpsICallback;
 import com.example.FundigoApp.StaticMethod.GeneralStaticMethods;
 import com.example.FundigoApp.Verifications.SmsSignUpActivity;
+import com.example.events.ActivityFacebook;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
@@ -68,7 +64,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 
 import io.branch.referral.Branch;
 import io.branch.referral.BranchError;
@@ -92,8 +87,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     PushDisplay display;
     private static Boolean EXIT;// a flag to close main activities that in stack when press back
     private static ImageView qr_scan_icon;
-    public static ProgressDialog dialog;
-    public static int dialogCounter; //for present the progress dialog only once when statiscics page loaded
+    //public static ProgressDialog dialog;
+    //public static int dialogCounter; //for present the progress dialog only once when statiscics page loaded
     Handler gpsMessageHandler;
     AlertDialog.Builder builder;
 
@@ -234,7 +229,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     if (v.getId() == sBut.getId()) {
                         dialog.dismiss();
                     } else if (v.getId() == fBut.getId()) {
-
+                        Intent intent = new Intent(MainActivity.this, ActivityFacebook.class);
+                        startActivity(intent);
 
                     } else if (v.getId() == createBut.getId()) {
                         dialog.dismiss();
@@ -758,13 +754,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     public void onBackPressed() {//prevent the back Button to the Activities that sent intents to the Main Activity
-        super.onBackPressed();
-        EXIT = true; //a flag close all activities that opened in the stack
+        //super.onBackPressed();
 		AlertDialog.Builder builder = new AlertDialog.Builder (this);
             builder.setMessage (R.string.are_you_sure_you_want_to_exit)
                     .setCancelable (false)
                     .setPositiveButton ("Yes", new DialogInterface.OnClickListener () {
                         public void onClick(DialogInterface dialog, int id) {
+                            EXIT = true; //a flag close all activities that opened in the stack
                             MainActivity.this.finish ();
                         }
                     })

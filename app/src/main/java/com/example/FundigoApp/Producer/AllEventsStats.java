@@ -13,13 +13,13 @@ import android.widget.TextView;
 import com.example.FundigoApp.Events.EventInfo;
 import com.example.FundigoApp.Events.EventPageActivity;
 import com.example.FundigoApp.GlobalVariables;
-import com.example.FundigoApp.MainActivity;
 import com.example.FundigoApp.Producer.Artists.Artist;
 import com.example.FundigoApp.R;
 import com.example.FundigoApp.StaticMethod.EventDataMethods;
 import com.example.FundigoApp.StaticMethod.EventDataMethods.GetEventsDataCallback;
 import com.example.FundigoApp.StaticMethod.FilterMethods;
 import com.example.FundigoApp.Tickets.EventsSeats;
+import com.example.events.ProducerActivity;
 import com.parse.ParseQuery;
 
 import java.text.DecimalFormat;
@@ -97,10 +97,10 @@ public class AllEventsStats extends Fragment implements GetEventsDataCallback {
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            MainActivity.dialogCounter++;
+            ProducerActivity.dialogCounter++;
             showResults(result);
-            if (MainActivity.dialog !=null) {
-                MainActivity.dialog.dismiss();
+            if (ProducerActivity.dialog !=null) {
+                ProducerActivity.dialog.dismiss();
             }
         }
     }
