@@ -513,6 +513,6 @@
     <string name="save_credit_card">Save Credit Card</string>
     <string name="delete_credit_card">Delete Credit Card</string>
     <string name="guest">Guest</string>
-
+  <string name="gps_error">WhoGO best service is based on GPS , a problem with GPS connection was found</string>
 
 </resources>

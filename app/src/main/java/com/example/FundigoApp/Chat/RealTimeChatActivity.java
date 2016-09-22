@@ -88,13 +88,13 @@ public class RealTimeChatActivity extends AppCompatActivity {//implements Adapte
 
                 if (!body.isEmpty()) {
                     SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(RealTimeChatActivity.this);
-                    String name = sp.getString(GlobalVariables.FB_NAME, null);
+                    String name = sp.getString(GlobalVariables.FB_NAME, null); //FB nAMe
                     String pic_url = sp.getString(GlobalVariables.FB_PIC_URL, null);
                     String fb_id = sp.getString(GlobalVariables.FB_ID, null);
                     MsgRealTime message = new MsgRealTime();
                     message.setUserId(current_user_id);
                     CustomerDetails customerDetails = UserDetailsMethod.getUserDetailsFromParseInMainThread(current_user_id);
-                    String userName = customerDetails.getCustomerName();
+                    String userName = customerDetails.getCustomerName();//Local profile User name
                     if (GlobalVariables.IS_PRODUCER) {
                         message.setIsProducer(true);
                         message.setSenderName("Producer #");
@@ -102,6 +102,12 @@ public class RealTimeChatActivity extends AppCompatActivity {//implements Adapte
                         message.setIsProducer(false);
                         if (name != null) {
                             message.setSenderName(name);
+                        if (pic_url != null) {
+                                message.setPicUrl(pic_url);
+                            }
+                        if (fb_id != null) {
+                                message.setFbId(fb_id);
+                            }
                         }
                         else if (userName!=null){
                             message.setSenderName(userName);
@@ -109,13 +115,6 @@ public class RealTimeChatActivity extends AppCompatActivity {//implements Adapte
                     }
                     message.setBody(body);
                     message.setEventObjectId(eventObjectId);
-
-                    if (pic_url != null) {
-                        message.setPicUrl(pic_url);
-                    }
-                    if (fb_id != null) {
-                        message.setFbId(fb_id);
-                    }
                     try {
                         message.save();
                     } catch (ParseException e) {

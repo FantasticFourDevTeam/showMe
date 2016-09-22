@@ -81,7 +81,7 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
     EventInfo eventInfo;
     String i = "";
 
-
+	long mLastClickTime=0;
     private String faceBookUrl;
     ImageLoader loader;
 
@@ -196,6 +196,14 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
     }
 
     public void openTicketsPage(View view) {
+		if (SystemClock.elapsedRealtime() - mLastClickTime < 12000) {// prevent double clicks on ticket buy
+            Log.i("TAG" , "no click");
+            Toast.makeText(EventPageActivity.this,"Last Registration request is still in process, please wait few seconds",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        else {
+            mLastClickTime = SystemClock.elapsedRealtime();
+		
         if (!GlobalVariables.IS_PRODUCER) {
             if (GlobalVariables.IS_CUSTOMER_GUEST) {
                 dialogForGuestToRegister (); // in case of Guest
@@ -237,6 +245,7 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
             intent.putExtra ("eventObjectId", eventInfo.getParseObjectId ());
             startActivity (intent);
         }
+	}
     }
 
     private void loadMessagesPageProducer() {

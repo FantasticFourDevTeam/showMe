@@ -145,7 +145,8 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
     private CheckBox checkBoxPrice;
     SharedPreferences sp;
     Boolean ISOpened = false; // prevent timepicker open twice
-
+	long mLastClickTime=0;
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -420,6 +421,11 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
         event.setName(et_name.getText().toString());
         event.setDescription(et_description.getText().toString());
 
+		if (SystemClock.elapsedRealtime() - mLastClickTime < 10000) {// prevent double clicks on save event
+            return;
+        }
+        else {
+            mLastClickTime = SystemClock.elapsedRealtime();
         if (freeEvent) {
             event.setPrice("FREE");
             event.setNumOfTickets(Integer.parseInt(et_quantity.getText().toString()));
@@ -591,6 +597,7 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
         }catch (Exception e) {
             e.printStackTrace();
         }
+	}
     }
 
     public void deleteEvent(final String objectId) {
