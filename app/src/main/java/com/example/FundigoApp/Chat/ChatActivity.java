@@ -71,6 +71,7 @@ public class ChatActivity extends Activity {
         if(room == null) {
             room = getRoomObject ();
         }        
+		MyServices.updateDataForUnreadMessage("unreadMessageFromProducer","unreadMessageFromCustomer",getApplicationContext(),eventInfo);//add benjamin -for count down read message
 		eventName = eventInfo.getName ();
         if (GlobalVariables.IS_PRODUCER) {
             if (customerFromProducerName!=null && !customerFromProducerName.isEmpty()){

@@ -153,6 +153,12 @@
             android:theme="@style/AppTheme">
         </activity>
 
+		   <service
+            android:name="com.example.FundigoApp.Chat.checkMessageUnreadChats"
+            android:exported="false"
+            />
+
+		
         <provider
             android:name="com.facebook.FacebookContentProvider"
             android:authorities="com.facebook.app.FacebookContentProvider1081145241965966"

@@ -24,22 +24,60 @@
             android:padding="2dp"
             android:src="@drawable/menu4"/>-->
 
-        <ImageView
-            android:id="@+id/notification_MassageProducer"
+           <LinearLayout
             android:layout_width="0dip"
             android:layout_height="match_parent"
-            android:layout_weight="100"
-            android:background="#71B7E6"
-            android:padding="2dp"
-            android:src="@drawable/notification_icon"/>
-        <ImageButton
-            android:id="@+id/message_MassageProducer"
-            android:layout_width="0dip"
-            android:layout_height="match_parent"
-            android:layout_weight="100"
-            android:background="#71B7E6"
-            android:padding="2dp"
-            android:src="@drawable/messenger_bubble_large_white"/>
+            android:layout_weight="200"
+            android:weightSum="400"
+            >
+
+            <ImageView
+                android:id="@+id/notification_MassageProducer"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="180"
+                android:background="#71B7E6"
+                android:padding="2dp"
+                android:src="@drawable/notification_icon"/>
+
+            <EditText
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_weight="10"
+                android:id="@+id/Push_Message_unread_CustomerMessageConversationsListActivity"
+                android:background="@drawable/circle"
+                android:gravity="center"
+                android:layout_gravity="top|right"
+                android:editable="false"
+                android:textColor="@color/White"
+                android:textSize="15dp"
+                android:visibility="invisible"
+                />
+
+            <ImageButton
+                android:id="@+id/message_MassageProducer"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="180"
+                android:background="#71B7E6"
+                android:padding="2dp"
+                android:src="@drawable/messenger_bubble_large_white"/>
+
+            <EditText
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_weight="10"
+                android:id="@+id/Message_unread_CustomerMessageConversationsListActivity"
+                android:background="@drawable/circle"
+                android:gravity="center"
+                android:layout_gravity="top|right"
+                android:editable="false"
+                android:textColor="@color/White"
+                android:textSize="15dp"
+                android:visibility="invisible"
+                />
+        </LinearLayout>
+    
 
         <ImageButton
             android:id="@+id/mipo_MassageProducer"

@@ -107,6 +107,7 @@ public class ChatToCustomersActivity extends Activity implements Comparator<Stri
         if(room == null) { //01.08 Assaf updated
             room = getRoomObject ();
         }
+		MyServices.updateDataForUnreadMessage("unreadMessageFromCustomer","unreadMessageFromProducer",getApplicationContext(),eventInfo);
     }
 
     private void updateUserDetailsFromParse(String recieverPhone) {

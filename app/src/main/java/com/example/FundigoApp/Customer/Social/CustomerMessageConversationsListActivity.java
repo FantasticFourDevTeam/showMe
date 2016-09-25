@@ -37,7 +37,8 @@ public class CustomerMessageConversationsListActivity extends AppCompatActivity 
     List<EventInfo> event_info_list = new ArrayList<EventInfo> ();
     private Handler handler = new Handler ();
     MessageRoomAdapter messageRoomAdapter;
-
+	EditText unreadPushMessage,unreadMessage;
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate (savedInstanceState);
@@ -46,6 +47,10 @@ public class CustomerMessageConversationsListActivity extends AppCompatActivity 
 
         mipo = (ImageButton) findViewById (R.id.mipo_MassageProducer);
         notification = (ImageView) findViewById (R.id.notification_MassageProducer);
+		unreadPushMessage = (EditText)findViewById(R.id.Push_Message_unread_CustomerMessageConversationsListActivity);
+        unreadMessage = (EditText)findViewById(R.id.Message_unread_CustomerMessageConversationsListActivity);
+
+		
         if (GlobalVariables.IS_CUSTOMER_REGISTERED_USER) {
             customer_id = GlobalVariables.CUSTOMER_PHONE_NUM;
             messageRoomAdapter = new MessageRoomAdapter (this, listOfConversationsBeans, eventsImageList);
@@ -188,5 +193,14 @@ public class CustomerMessageConversationsListActivity extends AppCompatActivity 
     public void onRestart() {
         super.onRestart ();
         handler.postDelayed (runnable, 500);
+    }
+	
+	
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        MyServices.checkVisibilityForUnreadCustomerAndProducerMessage(this.unreadMessage,getApplicationContext());
+        MyServices.checkVisibilityForUnreadPushMessage(this.unreadPushMessage,getApplicationContext());
     }
 }

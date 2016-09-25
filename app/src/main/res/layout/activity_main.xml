@@ -24,14 +24,35 @@
             android:padding="2dp"
             android:src="@drawable/menu4"/>
 
-        <ImageView
-            android:id="@+id/notification_item"
-            android:layout_width="0dip"
-            android:layout_height="match_parent"
+        
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_weight="100"
-            android:background="#71B7E6"
-            android:padding="2dp"
-            android:src="@drawable/notification_icon"/>
+            android:weightSum="200"
+            >
+            <ImageView
+                android:id="@+id/notification_item"
+                android:layout_width="20dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="150"
+                android:background="#71B7E6"
+                android:padding="2dp"
+                android:src="@drawable/notification_icon"/>
+            <EditText
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_weight="10"
+                android:id="@+id/Message_unread"
+                android:background="@drawable/circle"
+                android:gravity="center"
+                android:layout_gravity="top|right"
+                android:editable="false"
+                android:textColor="@color/White"
+                android:textSize="15dp"
+                android:visibility="invisible"
+                />
+        </LinearLayout>
 
         <Button
             android:id="@+id/city_item"

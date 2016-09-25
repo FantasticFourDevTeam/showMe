@@ -29,7 +29,7 @@ public class MyNotificationsActivity extends AppCompatActivity implements Adapte
     List<ParseObject> pushObjectsList = new ArrayList<ParseObject> ();
     List<EventInfo> notificationsEventList = new ArrayList<EventInfo> ();
     public static ProgressDialog notificationUploadDialog;
-
+	EditText unreadPushMessage,unreadMessage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate (savedInstanceState);
@@ -42,6 +42,8 @@ public class MyNotificationsActivity extends AppCompatActivity implements Adapte
         notificationList = (ListView) findViewById (R.id.listViewNotification);
         massage = (ImageButton) findViewById (R.id.Message_itemPush);
         mipo = (ImageButton) findViewById (R.id.Mipo_Push);
+        unreadMessage = (EditText)findViewById(R.id.Message_unread_MyNotificationActivity);
+        unreadPushMessage = (EditText)findViewById(R.id.Push_Message_unread_MyNotificationActivity);
 
         try {
             getNotification();
@@ -117,5 +119,13 @@ public class MyNotificationsActivity extends AppCompatActivity implements Adapte
     public List<ParseObject> getNotificationsList ()// Assaf added: for get the list of notifications and display
     {
        return pushObjectsList;
+    }
+	
+	@Override
+    protected void onResume()
+    {
+        super.onResume();
+        MyServices.checkVisibilityForUnreadPushMessage(this.unreadPushMessage,getApplicationContext());
+        MyServices.checkVisibilityForUnreadCustomerAndProducerMessage(this.unreadMessage,getApplicationContext());
     }
 }

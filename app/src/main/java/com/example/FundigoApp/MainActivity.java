@@ -91,7 +91,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     //public static int dialogCounter; //for present the progress dialog only once when statiscics page loaded
     Handler gpsMessageHandler;
     AlertDialog.Builder builder;
-
+    public static EditText unreadMessage;
+    int unreadMessageAndPushNumber;
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 		customerLogin();
         createCustomerMainPage();
         EXIT = false;
+		startService( new Intent(this,checkMessageUnreadChats.class));
     }
 /*
     public void createProducerMainPage() {
@@ -340,6 +343,19 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     protected void onResume() {
         super.onResume();
+		unreadMessageAndPushNumber = Integer.parseInt(MyServices.getFromSharedPreferences("push",getApplicationContext()) + MyServices.getFromSharedPreferences("unreadMessageFromCustomer",getApplicationContext()) + MyServices.getFromSharedPreferences("unreadMessageFromProducer",getApplicationContext()));
+        if(unreadMessageAndPushNumber > 0) {
+            if (unreadMessage.getVisibility() != View.VISIBLE)
+            {
+                unreadMessage.setVisibility(View.VISIBLE);
+                unreadMessage.setText(""+unreadMessageAndPushNumber);
+            }
+        }
+        else
+        {
+            unreadMessage.setVisibility(View.INVISIBLE);
+        }
+
         try {
             if (!GlobalVariables.IS_PRODUCER) {
 
