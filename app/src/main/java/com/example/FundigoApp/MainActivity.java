@@ -177,6 +177,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         savedEvent = (Button) findViewById(R.id.BarSavedEvent_button);
         realTime = (Button) findViewById(R.id.BarRealTime_button);
         notification = (ImageView) findViewById(R.id.notification_item);
+		unreadMessage = (EditText)findViewById(R.id.Message_unread);
 
         notification.setOnClickListener(this);
         context = this;
