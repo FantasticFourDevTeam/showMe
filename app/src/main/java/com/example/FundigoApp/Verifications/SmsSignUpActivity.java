@@ -98,14 +98,16 @@ public class SmsSignUpActivity extends AppCompatActivity {
         //forceRTLIfSupported ();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sms_login);
-        Locale.getDefault ().getDisplayLanguage ();
-        array_spinner = new String[6];
+        Locale.getDefault ().getDisplayLanguage();
+        array_spinner = new String[8];
         array_spinner[0] = "050";
         array_spinner[1] = "052";
         array_spinner[2] = "053";
         array_spinner[3] = "054";
         array_spinner[4] = "055";
-        array_spinner[5] = "058";
+        array_spinner[5] = "056";
+        array_spinner[6] = "058";
+        array_spinner[7] = "059";
         s = (Spinner) findViewById (R.id.spinner);
         ArrayAdapter<String> adapter = new ArrayAdapter<String> (this,
                                                                         android.R.layout.simple_spinner_item,
@@ -349,7 +351,7 @@ public class SmsSignUpActivity extends AppCompatActivity {
         String phoneNumberInE164 = PhoneNumberUtils.formatNumberToE164(phone_number, defaultRegion);
         Verification verification = SinchVerification.createSmsVerification(config, phoneNumberInE164, listener);
         verification.initiate();
-     //   onVer(); //  //just for test, DON"T Expose THIS METHOD
+       // onVer(); //  //just for test, DON"T Expose THIS METHOD
     }
 
     class MyVerificationListener implements VerificationListener {

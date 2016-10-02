@@ -22,12 +22,14 @@ import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.FundigoApp.Chat.checkMessageUnreadChats;
 import com.example.FundigoApp.Customer.CustomerMenu.MenuActivity;
 import com.example.FundigoApp.Customer.RealTime.RealTimeActivity;
 import com.example.FundigoApp.Customer.SavedEvents.SavedEventActivity;
@@ -59,7 +61,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
-import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -177,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         savedEvent = (Button) findViewById(R.id.BarSavedEvent_button);
         realTime = (Button) findViewById(R.id.BarRealTime_button);
         notification = (ImageView) findViewById(R.id.notification_item);
-		unreadMessage = (EditText)findViewById(R.id.Message_unread);
+        unreadMessage = (EditText)findViewById(R.id.Message_unread);
 
         notification.setOnClickListener(this);
         context = this;
@@ -233,6 +234,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     if (v.getId() == sBut.getId()) {
                         dialog.dismiss();
                     } else if (v.getId() == fBut.getId()) {
+                        dialog.dismiss();//26.09 assaf fixed t close when login to FB
                         Intent intent = new Intent(MainActivity.this, ActivityFacebook.class);
                         startActivity(intent);
 
@@ -253,7 +255,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         // dialog that popup if NO gps after 2 minutes that user logged
         builder = new AlertDialog.Builder (context);
         gpsMessageHandler = new Handler();
-        gpsMessageHandler.postDelayed(gpsRunnable, 90000);// check each 1.5 minutes from the moment this page uploaded-- if no GPS location then show a message
+        gpsMessageHandler.postDelayed(gpsRunnable, 300000);// 26.09 assaf - check each 5 minutes from the moment this page uploaded-- if no GPS location then show a message
     }
 
     @Override
@@ -411,7 +413,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     filtered_events_data.addAll(tempEventsList);
                     eventsListAdapter.notifyDataSetChanged();
                 }
-                displayFilterBanner();  // display the filter Banner
+                displayFilterBannerAndSaveFilter();  // display the filter Banner
                 // display the filter line
                 PushDisplay display = new PushDisplay(); // Assaf :execute the the push notifications display in the Textview
                 display.execute();
@@ -667,8 +669,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     protected void onDestroy() {
         try {
             super.onDestroy();
-            _sharedPref = getSharedPreferences("filterInfo", MODE_PRIVATE);
-            _sharedPref.edit().clear().commit();
+            _sharedPref = getSharedPreferences("filterInfo", MODE_PRIVATE); // 24.09- assaf: to Edit the Shared P. and delete the price and date form filter
+            _sharedPref.edit().putString("date","").commit();// 24.09- assaf:
+            _sharedPref.edit().putString("price", "").commit();// 24.09- assaf:
+            //    _sharedPref.edit().clear().commit(); //// 24.-9 Assaf: this is destroy the filter banner selected by a user. was marked so filter will be save
             System.exit(0);     // for kill  background Threads that operate the Endless loop of present the push messages
         } catch (Exception ex) {
             Log.e(ex.getMessage(), "onDestroy exception");
@@ -676,15 +680,18 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     private String[] getData()
-    // display the filter info selected by the user.
+    // display the filter info selected by the user. 24-09 - assaf
     {
         _sharedPref = getSharedPreferences("filterInfo", MODE_PRIVATE);
         String _date = _sharedPref.getString("date", "");
         String _price = _sharedPref.getString("price", "");
         String _mainfilter = _sharedPref.getString("mainFilter", "");
         String _subfilter = _sharedPref.getString("subFilter", "");
-
-        String[] _results = {_mainfilter, _subfilter, _date, _price};
+        String _mainFilterForFilter = _sharedPref.getString("mainFilterForFilter","");//24.09
+        String _subFilterForFilter = _sharedPref.getString("subFilterForFilter",""); //24.09
+        Integer _priceForFilter = _sharedPref.getInt("priceFilterForFilter", -2); //24.09
+        String _dateForFilter = _sharedPref.getString("dateFilterForFilter", "");
+        String[] _results = {_mainfilter, _subfilter, _date, _price,_mainFilterForFilter,_subFilterForFilter,Integer.toString(_priceForFilter),_dateForFilter};//24.09
 
         return _results;
     }
@@ -788,15 +795,17 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     });
             AlertDialog alert = builder.create ();
             alert.show ();
-        //this.finish(); //assaf check please
     }
 
 
-    private void displayFilterBanner() {
+    private void displayFilterBannerAndSaveFilter() {//24.09 display filter banner and initial Filters from Shared.P.
         try {
             String[] results = getData();
             String[] priceValues = getResources().getStringArray(R.array.eventPriceFilter);
             String[] dateValues = getResources().getStringArray(R.array.eventDateFilter);
+            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");//assaf 24.-09
+
+
             if (!results[0].equals("") || !results[1].equals("") || !results[2].equals("") || !results[3].equals("")) {
                 for (int i = 0; i < results.length; i++) {
                     if (results[i].equals(priceValues[0])) //if the result is "No Filter" , we remove it from presenting it in the filter view
@@ -804,7 +813,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                         results[i] = "";
                     }
                     if (results[i].equals(dateValues[5]) && GlobalVariables.CURRENT_DATE_FILTER != null) {
-                        Format dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
                         results[i] = dateFormatter.format(GlobalVariables.CURRENT_DATE_FILTER);// if Select from calendar then present real Date
                     } else if (results[i].equals(dateValues[5]) && GlobalVariables.CURRENT_DATE_FILTER == null) {
                         results[i] = ""; // if select from calendar filter selected but a date not set in Date picker
@@ -812,12 +820,25 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 }
                 filterTextView.setVisibility(View.VISIBLE);
                 filterTextView.setText(results[0] + " " + results[1] + " " + results[2] + " " + results[3]);
+
+                ///intial filters 24.09 - keep main Filter and sub filter - so after relogin filter will save
+                GlobalVariables.CURRENT_FILTER_NAME = results[4]; // 24.09 assaf
+                GlobalVariables.CURRENT_SUB_FILTER = results[5]; // 24.09 assaf
+              //   GlobalVariables.CURRENT_PRICE_FILTER=Integer.parseInt(results[6]);// 24.09 assaf not present price after exit
+
+                //24.09 assaf marked it not present date after exit
+                //   if(results[7]!=null){
+                //     GlobalVariables.CURRENT_DATE_FILTER = dateFormatter.parse(results[7]);
+                //   }
+                //   else {
+                //      GlobalVariables.CURRENT_DATE_FILTER = null;
+                //  }
+                /////////
             }
         } catch (Exception ex) {
-            Log.e("TAG", ex.getMessage());
+            ex.printStackTrace();
         }
     }
-
 
 
     Runnable gpsRunnable = new Runnable() { //Alert in case that NO GPS connection

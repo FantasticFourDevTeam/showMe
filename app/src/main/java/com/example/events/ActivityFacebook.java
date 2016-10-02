@@ -39,80 +39,77 @@ public class ActivityFacebook extends AppCompatActivity {
     ImageView profileFacebookPictureView;
     Context context;
 
-    // from Menu get directly to Facebook login - this page changed and also activity faceebok.xml
-    // so the flow will be better to open facebook directly from Menu and get back to Menu was done
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_facebook); // from Menu get directly to Facebook login
+        setContentView(R.layout.activity_facebook);
         context = this;
-       // facebook_login_button = (LoginButton) findViewById (R.id.login_button11);
-       // facebook_logout_button = (LoginButton) findViewById (R.id.logout_button11);
-       // facebookUserNameView = (TextView) findViewById (R.id.profileUserName);
-       // profileFacebookPictureView = (ImageView) findViewById (R.id.faebook_profile);
+      //  facebook_login_button = (LoginButton) findViewById (R.id.login_button11);
+     //   facebook_logout_button = (LoginButton) findViewById (R.id.logout_button11);
+      //  facebookUserNameView = (TextView) findViewById (R.id.profileUserName);
+      //  profileFacebookPictureView = (ImageView) findViewById (R.id.faebook_profile);
 
         final AccessToken accessToken = AccessToken.getCurrentAccessToken ();
         if (accessToken != null) {
-          //  facebook_login_button.setVisibility (View.GONE);
-          //  profileFacebookPictureView.setVisibility (View.VISIBLE);
-          //  facebookUserNameView.setVisibility (View.VISIBLE);
-          //  facebook_logout_button.setVisibility (View.VISIBLE);
+//            facebook_login_button.setVisibility (View.GONE);
+//            profileFacebookPictureView.setVisibility (View.VISIBLE);
+//            facebookUserNameView.setVisibility (View.VISIBLE);
+//            facebook_logout_button.setVisibility (View.VISIBLE);
             SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences (ActivityFacebook.this);
             String name = sp.getString (GlobalVariables.FB_NAME, null);
             String pic_url = sp.getString (GlobalVariables.FB_PIC_URL, null);
-        //    Picasso.with (context).load (pic_url).into (profileFacebookPictureView);
-          //  facebookUserNameView.setText (name);
+//            Picasso.with (context).load (pic_url).into (profileFacebookPictureView);
+//            facebookUserNameView.setText (name);
         } else {
-           // facebook_login_button.setVisibility (View.VISIBLE);
-            //facebook_logout_button.setVisibility (View.GONE);
-          //  profileFacebookPictureView.setVisibility (View.GONE);
-          //  facebookUserNameView.setVisibility (View.GONE);
+//            facebook_login_button.setVisibility (View.VISIBLE);
+//            facebook_logout_button.setVisibility (View.GONE);
+//            profileFacebookPictureView.setVisibility (View.GONE);
+//            facebookUserNameView.setVisibility (View.GONE);
         }
 
         callbackManager = CallbackManager.Factory.create ();
-      //  facebook_login_button.setOnClickListener (new View.OnClickListener () {
-        //    @Override
-          //  public void onClick(View v) {
-                LoginManager.getInstance ().logInWithReadPermissions
+//        facebook_login_button.setOnClickListener (new View.OnClickListener () {
+//            @Override
+//            public void onClick(View v) {
+                LoginManager.getInstance ().
+                        logInWithReadPermissions
                                 (ActivityFacebook.this,
                                         Arrays.asList
                                                 ("public_profile",
                                                         "user_friends",
-                                                        "email","user_events"));
-            //}
-       // });
+                                                        "email"));
+        ///    }
+    //    });
         // Callback registration
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(final LoginResult loginResult) {
-                accessToken.setCurrentAccessToken(loginResult.getAccessToken());
-                getUserDetailsFromFB();
-                Intent databack = new Intent();
-                databack.putExtra("Login Success",true);
-                setResult(Activity.RESULT_OK, databack); // send data back to Menu as Login is OK
-                //facebook_login_button.setVisibility (View.GONE);
-                //facebook_logout_button.setVisibility (View.VISIBLE);
-                //profileFacebookPictureView.setVisibility (View.VISIBLE);
-                //facebookUserNameView.setVisibility (View.VISIBLE);
-                finish();
-            }
+              @Override
+              public void onSuccess(final LoginResult loginResult) {
+                  accessToken.setCurrentAccessToken(loginResult.getAccessToken());
+                  getUserDetailsFromFB();
+                  Intent databack = new Intent();
+                  databack.putExtra("Login Success", true);
+                  setResult(Activity.RESULT_OK, databack); // send data back to Menu as Login is OK
+                  finish();
+//                facebook_login_button.setVisibility (View.GONE);
+//                facebook_logout_button.setVisibility (View.VISIBLE);
+//                profileFacebookPictureView.setVisibility (View.VISIBLE);
+//                facebookUserNameView.setVisibility (View.VISIBLE);
+              }
 
-            @Override
-            public void onCancel() {
-                Toast.makeText(context, R.string.canceled_logging_facebook, Toast.LENGTH_SHORT).show();
-                finish();
+              @Override
+              public void onCancel() {
+                  Toast.makeText(context, R.string.canceled_logging_facebook, Toast.LENGTH_SHORT).show();
+                  finish();
+              }
 
-            }
-
-            @Override
-            public void onError(FacebookException exception) {
-                Toast.makeText(context, R.string.error_logging_facebook, Toast.LENGTH_SHORT).show();
-                Log.e("error_logging_facebook", exception.getMessage());
-                exception.printStackTrace();
-                finish();
-            }
-        });
+              @Override
+              public void onError(FacebookException exception) {
+                  Toast.makeText(context, R.string.error_logging_facebook, Toast.LENGTH_SHORT).show();
+                  Log.e("error_logging_facebook", exception.getMessage());
+                  exception.printStackTrace();
+                  finish();
+              }
+          });
 
     }
 
@@ -132,8 +129,8 @@ public class ActivityFacebook extends AppCompatActivity {
                             SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences (ActivityFacebook.this);
                             SharedPreferences.Editor editor = sp.edit ();
                             editor.putString (GlobalVariables.FB_NAME, response.getJSONObject ().getString ("name"));
-                            editor.putString(GlobalVariables.FB_PIC_URL, data.getString ("url"));
-                            editor.putString(GlobalVariables.FB_ID, response.getJSONObject ().getString ("id"));
+                            editor.putString (GlobalVariables.FB_PIC_URL, data.getString ("url"));
+                            editor.putString (GlobalVariables.FB_ID, response.getJSONObject ().getString ("id"));
                             editor.apply ();
                             //Picasso.with (context).load (data.getString ("url")).into (profileFacebookPictureView);
                             //facebookUserNameView.setText (response.getJSONObject ().getString ("name"));
@@ -144,6 +141,7 @@ public class ActivityFacebook extends AppCompatActivity {
                 }
         ).executeAsync ();
     }
+
 
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {

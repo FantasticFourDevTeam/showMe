@@ -120,6 +120,7 @@ public class MyEventsTicketsActivity extends AppCompatActivity {
 
                             dialog.dismiss();
                         } else {
+                            dialog.dismiss();//24.09 assaf fixed
                             noTickets.setText(R.string.no_tickets_to_display);
                             noTickets.setVisibility(View.VISIBLE);
                         }

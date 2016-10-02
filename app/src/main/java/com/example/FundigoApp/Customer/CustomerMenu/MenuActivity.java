@@ -168,6 +168,7 @@ public class MenuActivity extends AppCompatActivity {
             GlobalVariables.IS_CUSTOMER_REGISTERED_USER = false;
             GlobalVariables.IS_CUSTOMER_GUEST = true;
             GlobalVariables.CUSTOMER_PHONE_NUM = "";
+            GlobalVariables.IS_PRODUCER = false;//26.09 assaf fixed
         } else {
             GlobalVariables.IS_CUSTOMER_GUEST = false;
             GlobalVariables.IS_PRODUCER = false;

@@ -336,7 +336,7 @@
     <string name="event_name">Event Name</string>
     <string name="date">Date</string>
     <string name="go_to_event">Go To Event</string>
-    <string name="fundigo">All Cities (No Filter)</string>
+    <string name="fundigo">Current Location</string>
     <string name="turn_on_gps_to_see_real_time_events">No GPS connection, information that is location based could not be display</string>
     <string name="big_fassion_event_real_time_chat">Big Fashion Event - Real Time Chat</string>
     <string name="history">History</string>
@@ -463,6 +463,34 @@
     <string name="government">Kids</string>
     <string name="home_lifeStyle">LifeStyle</string>
     <string name="music">Music</string>
+    <string name="art">Art</string>
+    <string name="book">Book</string>
+    <string name="movie">Movie</string>
+    <string name="fundraiser">Fundraiser</string>
+    <string name="volunteering">Volunteering</string>
+    <string name="family">Family</string>
+    <string name="festival">Festival</string>
+    <string name="neighborhood">Neighborhood</string>
+    <string name="religious">Religious</string>
+    <string name="shopping">Shopping</string>
+    <string name="nightLife">NightLife</string>
+    <string name="theater">Theater</string>
+    <string name="dining">Dining</string>
+    <string name="food">Food</string>
+    <string name="fitness">Fitness</string>
+    <string name="dance">Dance</string>
+    <string name="conference">Conference</string>
+    <string name="meetup">Meetup</string>
+    <string name="class_event">Class</string>
+    <string name="lecture">Lecture</string>
+    <string name="other">Other</string>
+
+
+
+
+
+
+
     <string name="filter_page">Filter Page</string>
     <string name="can_choice_one_category">Can Choice One Category</string>
     <string name="stats">Stats</string>
@@ -513,6 +541,6 @@
     <string name="save_credit_card">Save Credit Card</string>
     <string name="delete_credit_card">Delete Credit Card</string>
     <string name="guest">Guest</string>
-  <string name="gps_error">WhoGO best service is based on GPS , a problem with GPS connection was found</string>
+
 
 </resources>

@@ -117,11 +117,11 @@ public class MessageAdapter extends BaseAdapter {
                     sendTimeTextViewLayoutParams.addRule (RelativeLayout.ALIGN_RIGHT, R.id.textTextView);
                     viewHolder.sendTimeTextView.setLayoutParams (sendTimeTextViewLayoutParams);
                     if (isRealTime) {
-                        if (GlobalVariables.CUSTOMER_PHONE_NUM !=null) {
+                        if (GlobalVariables.CUSTOMER_PHONE_NUM !=null || GlobalVariables.IS_PRODUCER==true) { //26.09 asaf fixed to presnet user names in messages
                             if (messageChat.getFromUser() != null && !messageChat.getFromUser().isEmpty())
                                 viewHolder.sendTimeTextView.setText(messageChat.getFromUser());//user name or Prodcuer#
                             else {
-                                viewHolder.sendTimeTextView.setText(messageChat.getFromUserName());
+                                viewHolder.sendTimeTextView.setText(messageChat.getFromUserName());//user phone
                             }
                         }
                     }

@@ -213,7 +213,7 @@
     v
     <string name="edit_event">ערוך אירוע</string>
     <string name="food_drink_convention">#אוכל #שתייה #שיחות</string>
-    <string name="fundigo">כל הערים (ללא פילטר)</string>
+    <string name="fundigo">מיקום נוכחי</string>
     <string name="get_tickets">קנה כרטיס</string>
     <string name="real_time">לפי מרחק</string>
     <string name="events_stats">מצב אירוע</string>
@@ -360,6 +360,31 @@
     <string name="government">ילדים</string>
     <string name="home_lifeStyle">סגנון חיים</string>
     <string name="music">מוסיקה</string>
+    <string name="art">אומנות</string>
+    <string name="book">ספרים</string>
+    <string name="movie">סרטים</string>
+    <string name="fundraiser">התרמה</string>
+    <string name="volunteering">התנדבות</string>
+    <string name="family">משפחה</string>
+    <string name="festival">פסטיבל</string>
+    <string name="neighborhood">בקרבת מקום</string>
+    <string name="religious">דת</string>
+    <string name="shopping">קניות</string>
+    <string name="nightLife">בילויים</string>
+    <string name="theater">הצגות ומופעים</string>
+    <string name="dining">מסעדות</string>
+    <string name="food">אוכל</string>
+    <string name="fitness">כושר</string>
+    <string name="dance">הרקדה</string>
+    <string name="conference">כנסים</string>
+    <string name="meetup">פגישות</string>
+    <string name="class_event">קלאסיקה</string>
+    <string name="lecture">הרצאות</string>
+    <string name="other">אחר</string>
+
+
+
+
     <string name="filter_page">סנן עמודים</string>
     <string name="can_choice_one_category">אפשר לבחור קטגוריה אחת</string>
     <string name="stats">מצב</string>
@@ -393,8 +418,7 @@
     <string name="log_out_from_facebook">התנתק מפייסבוק</string>
     <string name="guest">אורח</string>
     <string name="producer_are_you_sure_you_want_to_exit">האם ברצונך לצאת מאיזור המפיק?</string>
-	  <string name="gps_error">שירות WhoGO מבוסס GPS, זוהתה בעיית תקשורת</string>
-	
+
 </resources>
 
 

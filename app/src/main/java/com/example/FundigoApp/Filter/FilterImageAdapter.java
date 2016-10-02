@@ -45,19 +45,20 @@ public class FilterImageAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         View grid;
 
-        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService (Context.LAYOUT_INFLATER_SERVICE);
         if (convertView == null) {
+            LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             grid = inflater.inflate (R.layout.grid_layout, null);
-            TextView textView = (TextView) grid.findViewById (R.id.grid_text);
-            ImageView imgView = (ImageView) grid.findViewById (R.id.grid_image);
-            textView.setText (this.mNames[position]);
-            imgView.setImageResource (this.mImages[position]);
+
         } else {
             grid = (View) convertView;
         }
-      //   if (!GlobalVariables.CURRENT_FILTER_NAME.isEmpty () && this.mNames[position].equals (GlobalVariables.CURRENT_FILTER_NAME)) {
-       //     grid.setBackgroundColor (Color.RED);
-           if(mFilter!=null) {
+        //24.09 - Assaf updated
+        TextView textView = (TextView) grid.findViewById (R.id.grid_text);
+        ImageView imgView = (ImageView) grid.findViewById (R.id.grid_image);
+        textView.setText (this.mNames[position]);
+        imgView.setImageResource (this.mImages[position]);
+        ////////
+        if(mFilter!=null) {
                if (!GlobalVariables.CURRENT_FILTER_NAME.isEmpty() && this.mFilter[position].equals(GlobalVariables.CURRENT_FILTER_NAME)) {
                    grid.setBackgroundColor(Color.RED);
                }

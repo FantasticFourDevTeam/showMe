@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.example.FundigoApp.Customer.CustomerDetails;
 import com.example.FundigoApp.Events.EventInfo;
 import com.example.FundigoApp.GlobalVariables;
+import com.example.FundigoApp.MyServices;
 import com.example.FundigoApp.R;
 import com.example.FundigoApp.StaticMethod.FileAndImageMethods;
 import com.example.FundigoApp.StaticMethod.UserDetailsMethod;
@@ -71,7 +72,7 @@ public class ChatActivity extends Activity {
         if(room == null) {
             room = getRoomObject ();
         }        
-		MyServices.updateDataForUnreadMessage("unreadMessageFromProducer","unreadMessageFromCustomer",getApplicationContext(),eventInfo);//add benjamin -for count down read message
+		MyServices.updateDataForUnreadMessage("unreadMessageFromProducer", "unreadMessageFromCustomer", getApplicationContext(), eventInfo);//add benjamin -for count down read message
 		eventName = eventInfo.getName ();
         if (GlobalVariables.IS_PRODUCER) {
             if (customerFromProducerName!=null && !customerFromProducerName.isEmpty()){
@@ -252,10 +253,10 @@ public class ChatActivity extends Activity {
                 senderType = GlobalVariables.CUSTOMER_PHONE_NUM + " to Producer: " + '\n';
             }
         } else if (GlobalVariables.IS_PRODUCER) {
-            if (customerName!=null && !customerName.isEmpty())
-                 senderType = "Producer to " + customerName + ":" + '\n';
+            if (customerFromProducerName!=null && !customerFromProducerName.isEmpty()) //assaf - 26.09 fixed to present user name
+                 senderType = "Producer to " + customerFromProducerName + ":" + '\n';
             else {
-                 senderType = "Producer to " +customerPhone + ":" + '\n';
+                 senderType = "Producer to " +customerFromProducerName + ":" + '\n';
             }
 
         }
