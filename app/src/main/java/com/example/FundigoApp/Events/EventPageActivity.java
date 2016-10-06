@@ -10,6 +10,7 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.provider.CalendarContract;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
@@ -99,28 +100,42 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
         Date eventDate = eventInfo.getDate ();
         eventInfo.setIsFutureEvent (eventDate.after (currentDate));
         saveOrPushBotton = (ImageView) findViewById (R.id.imageEvenetPageView3);
-        if (eventInfo.getPrice ().equals ("FREE")) {
-            //getTicketsButton.setText("Free Event");
-            getTicketsButton.setText("Register"); //09.08 - Assaf changed for the option to register also fr Free events
-            getTicketsButton.setClickable(true);
-            //getTicketsButton.setClickable (false);
-        }
-        if (!GlobalVariables.IS_PRODUCER && !eventInfo.isFutureEvent ()) {
-            getTicketsButton.setText ("Event Expired");
-            getTicketsButton.setClickable (false);
-        }
-        if (GlobalVariables.IS_PRODUCER) {
 
-                getTicketsButton.setText (this.getString (R.string.tickets_status));//09.08 - Assaf changed for the option to register also for Free events
+        if (!GlobalVariables.IS_PRODUCER) //29.09 - support free and fix logic
+        {
+            if(eventInfo.getNumOfTickets()==0)// in case by mistake someone filled 0 mainly in case of Free events
+            {
+                getTicketsButton.setText("No Tickets Left");
+                getTicketsButton.setClickable(false);
+            }
+            else if (eventInfo.getPrice().equals("FREE") && eventInfo.getNumOfTickets() > 0 && eventInfo.isFutureEvent()) { //29.09 - assaf to suport free events
+                //getTicketsButton.setText("Free Event");
+                 getTicketsButton.setText("Register"); //09.08 - Assaf changed for the option to register also fr Free events
+                getTicketsButton.setClickable(true);
+                checkIfTicketsLeft();
+                //getTicketsButton.setClickable (false);
+            } else if (eventInfo.getPrice().equals("FREE") && eventInfo.getNumOfTickets() < 0 && eventInfo.isFutureEvent()) {
+                //getTicketsButton.setText("Free Event");
+                getTicketsButton.setText("Schedule"); //29.09 - Assaf changed for the option to register also fr Free events
+                getTicketsButton.setClickable(true);
+                //getTicketsButton.setClickable (false);
+            } else if (!GlobalVariables.IS_PRODUCER && !eventInfo.isFutureEvent()) {
+                getTicketsButton.setText("Event Expired");
+                getTicketsButton.setClickable(false);
+            } else {
+                if (eventInfo.isFutureEvent()&& !(eventInfo.getPrice().equals("FREE") && eventInfo.getNumOfTickets() < 0)) {
+                    //29.09 -assaf - check if tickets left excpet case that Free event and no limited place
+                    checkIfTicketsLeft();
+                }
+            }
+        }
 
+        else if (GlobalVariables.IS_PRODUCER) {
+
+            getTicketsButton.setText (this.getString (R.string.tickets_status));//09.08 - Assaf changed for the option to register also for Free events
             saveOrPushBotton.setImageResource (R.drawable.ic_micro_send_push_frame);
-        } else {
-              if (eventInfo.isFutureEvent ())
-                {
-                checkIfTicketsLeft ();
-              }
-           }
 
+           }
         faceBookUrl = intent.getStringExtra ("fbUrl");//get link from the Intent
         GlobalVariables.deepLinkEventObjID = "";
         GlobalVariables.deepLink_params = "";
@@ -196,15 +211,17 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
     }
 
     public void openTicketsPage(View view) {
-		if (SystemClock.elapsedRealtime() - mLastClickTime < 12000) {// prevent double clicks on ticket buy
-            Log.i("TAG" , "no click");
-            Toast.makeText(EventPageActivity.this,"Last Registration request is still in process, please wait few seconds",Toast.LENGTH_SHORT).show();
-            return;
-        }
-        else {
-            mLastClickTime = SystemClock.elapsedRealtime();
 		
         if (!GlobalVariables.IS_PRODUCER) {
+
+            if (SystemClock.elapsedRealtime() - mLastClickTime < 12000) {// prevent double clicks on ticket buy
+                Toast.makeText(EventPageActivity.this,"Last operation is still in process, please wait",Toast.LENGTH_SHORT).show();
+                return;
+            }
+            else {
+                mLastClickTime = SystemClock.elapsedRealtime();
+            }
+
             if (GlobalVariables.IS_CUSTOMER_GUEST) {
                 dialogForGuestToRegister (); // in case of Guest
             } else {
@@ -235,10 +252,41 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
                     Intent intentPelePay = new Intent (EventPageActivity.this, WebBrowserActivity.class);
                     intentPelePay.putExtra ("eventObjectId", eventInfo.getParseObjectId ());
                     intentPelePay.putExtra ("isChoose", "no");
-                    intentPelePay.putExtra ("eventPrice", eventInfo.getPrice ());
-                    startActivity (intentPelePay);
+                    intentPelePay.putExtra("eventPrice", eventInfo.getPrice());
+                    intentPelePay.putExtra("eventNumOfTickets", eventInfo.getNumOfTickets());
+                    startActivity(intentPelePay);
                 }
-            }
+
+                //29.09 - assaf Sceduel The event date
+                AlertDialog.Builder _builder = new AlertDialog.Builder(this);
+                final int i = this.intent.getIntExtra ("index", 0);
+                _builder.setPositiveButton(R.string.save_to_calander, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        try {
+                            saveToCalendar (i);
+                        }
+                        catch (Exception ex)
+                        {
+                            ex.printStackTrace();
+                        }
+                    }
+                });
+                _builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        try {
+                            dialog.dismiss();
+                        }
+                        catch (Exception ex)
+                        {
+                            ex.printStackTrace();
+                        }
+                    }
+                })
+                        .setCancelable(true);
+                AlertDialog _alert = _builder.create();
+                _alert.show();
+                ////
+           }
         } else {
             Intent intent = new Intent (EventPageActivity.this, EventStatusActivity.class);
             intent.putExtra ("name", getIntent ().getStringExtra ("eventName"));
@@ -246,7 +294,6 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
             startActivity (intent);
         }
 	}
-    }
 
     private void loadMessagesPageProducer() {
         Intent intent = new Intent (this, MessagesRoomProducerActivity.class);
@@ -613,7 +660,7 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
             public void done(List<EventsSeats> eventsSeatsList, ParseException e) {
                 if (e == null) {
                     if (eventsSeatsList.size () >= eventInfo.getNumOfTickets ()) {
-                        getTicketsButton.setText ("No Ticket Left");
+                        getTicketsButton.setText ("No Tickets Left");
                         getTicketsButton.setClickable (false);
                     }
                 } else {

@@ -17,6 +17,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ParcelFileDescriptor;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
@@ -146,12 +147,19 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
     SharedPreferences sp;
     Boolean ISOpened = false; // prevent timepicker open twice
 	long mLastClickTime=0;
-	
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_event);
         sp = PreferenceManager.getDefaultSharedPreferences(this);
+
+        //29.09 - Assaf remove seates price from shared P.
+        sp.edit().putInt(GlobalVariables.YELLOW, -1).commit();
+        sp.edit().putInt(GlobalVariables.PINK, -1).commit();
+        sp.edit().putInt(GlobalVariables.BLUE, -1).commit();
+        sp.edit().putInt(GlobalVariables.GREEN, -1).commit();
+        sp.edit().putInt(GlobalVariables.ORANGE,-1).commit();
         componentInit();
     }
 
@@ -159,6 +167,7 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
     protected void onResume() {
         super.onResume();
         seats = sp.getBoolean(GlobalVariables.SEATS, false);
+
     }
 
     @Override
@@ -172,11 +181,13 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
                 }
                 break;
             case R.id.btn_next1:
-
-                if (freeEvent) {
-                    if (!validateQuantity()) {
-                        Toast.makeText(CreateEventActivity.this, "Please enter valid quantity", Toast.LENGTH_SHORT).show();
-                    }else if (address_ok) {
+                if (freeEvent) { //29.09 -Assaf - quantity is not mandatory for Free event
+                  //  if (!validateQuantity()) {
+                   //     Toast.makeText(CreateEventActivity.this, "Please enter valid quantity", Toast.LENGTH_SHORT).show();
+                  //  }
+                    //else if (address_ok) {
+                    if (address_ok && et_place.length()!= 0)
+                    {
                         showThirdStage();
                     } else {
                         Toast.makeText(CreateEventActivity.this, R.string.please_enter_valid_address, Toast.LENGTH_SHORT).show();
@@ -331,19 +342,27 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            Matrix matrix = new Matrix();
-            int angleToRotate = getOrientation(selectedImage);
-            matrix.postRotate(angleToRotate);
-            Bitmap rotatedBitmap = Bitmap.createBitmap(image,
-                    0,
-                    0,
-                    image.getWidth(),
-                    image.getHeight(),
-                    matrix,
-                    true);
-            pic.setImageBitmap(rotatedBitmap);
-            pic.setVisibility(View.VISIBLE);
-            pictureSelected = true;
+
+            try //29.09 add try catch
+            {
+                Matrix matrix = new Matrix();
+                int angleToRotate = getOrientation(selectedImage);
+                matrix.postRotate(angleToRotate);
+                Bitmap rotatedBitmap = Bitmap.createBitmap(image,
+                        0,
+                        0,
+                        image.getWidth(),
+                        image.getHeight(),
+                        matrix,
+                        true);
+                pic.setImageBitmap(rotatedBitmap);
+                pic.setVisibility(View.VISIBLE);
+                pictureSelected = true;
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            } catch (OutOfMemoryError err) {
+                err.printStackTrace();
+            }
         }
     }
 
@@ -395,7 +414,7 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
     }
 
     private void showThirdStage() {
-        if (freeEvent && address_ok) {
+        if (freeEvent && address_ok && et_place.length() != 0) {//29.09 assaf updated to support free event with no place limit
             create_event2.setVisibility(View.GONE);
             create_event3.setVisibility(View.VISIBLE);
         } else if (seats) {
@@ -415,7 +434,6 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
         }
     }
 
-
     public void saveEvent() {
         final Event event = new Event();
         event.setName(et_name.getText().toString());
@@ -427,9 +445,12 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
         else {
             mLastClickTime = SystemClock.elapsedRealtime();
         if (freeEvent) {
-            event.setPrice("FREE");
-            event.setNumOfTickets(Integer.parseInt(et_quantity.getText().toString()));
-            //event.setNumOfTickets (99999);  Assaf removed the hardcoded amount o tickets
+            event.setPrice("FREE"); // 29.09- assaf to support free events without minimal quantity
+            if(et_quantity.length() ==0) {
+                et_quantity.setText("-1"); // -1 means no minimal quantitiy- free entry to the free event
+            }
+             event.setNumOfTickets(Integer.parseInt(et_quantity.getText().toString()));
+            //event.setNumOfTickets (99999);  Assaf removed the hardcoded amount oכ tickets
         } else if (!seats) {
             event.setNumOfTickets(Integer.parseInt(et_quantity.getText().toString()));
             event.setPrice(et_price.getText().toString());
@@ -783,12 +804,14 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
                     et_price.setVisibility(View.GONE);
                     btn_price_details.setVisibility(View.GONE);
                     checkBoxPrice.setVisibility(View.GONE);
+                    et_quantity.setHint("for limited number of seats"); //29.09 assaf added
                 } else {
                     freeEvent = false;
                     et_quantity.setVisibility(View.VISIBLE);
                     tv_quantity.setVisibility(View.VISIBLE);
                     tv_price.setVisibility(View.VISIBLE);
                     et_price.setVisibility(View.VISIBLE);
+                    et_quantity.setHint(""); //29.09 assaf added
                     //     if (!checkBoxPrice.isChecked ()) {
                     btn_price_details.setVisibility(View.GONE);
                     //   }
@@ -828,7 +851,7 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
      * @param position
      * @param id
      */
-    @Override
+    @Override //29.09 - assaf updated
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         switch (parent.getId()) {
             case R.id.filterSpinner:
@@ -836,42 +859,100 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
                 switch (position) {
                     case 0:
                         filter = FILTERS[0];
-                        et_tags.setHint("tag is " + filter + '\n' + " edit to add more");
                         break;
                     case 1:
                         filter = FILTERS[1];
-                        et_tags.setHint("tag is " + filter + '\n' + " edit to add more");
                         break;
                     case 2:
                         filter = FILTERS[2];
-                        et_tags.setHint("tag is " + filter + '\n' + " edit to add more");
                         break;
                     case 3:
                         filter = FILTERS[3];
-                        et_tags.setHint("tag is " + filter + '\n' + " edit to add more");
                         break;
                     case 4:
                         filter = FILTERS[4];
-                        et_tags.setHint("tag is " + filter + '\n' + " edit to add more");
                         break;
                     case 5:
                         filter = FILTERS[5];
-                        et_tags.setHint("tag is " + filter + '\n' + " edit to add more");
                         break;
                     case 6:
                         filter = FILTERS[6];
-                        et_tags.setHint("tag is " + filter + '\n' + " edit to add more");
                         break;
                     case 7:
                         filter = FILTERS[7];
-                        et_tags.setHint("tag is " + filter + '\n' + " edit to add more");
                         break;
                     case 8:
                         filter = FILTERS[8];
-                        et_tags.setHint("tag is " + filter + '\n' + " edit to add more");
+                        break;
+                    case 9:
+                        filter = FILTERS[9];
+                        break;
+                    case 10:
+                        filter = FILTERS[10];
+                        break;
+                    case 11:
+                        filter = FILTERS[11];
+                        break;
+                    case 12:
+                        filter = FILTERS[12];
+                        break;
+                    case 13:
+                        filter = FILTERS[13];
+                        break;
+                    case 14:
+                        filter = FILTERS[14];
+                        break;
+                    case 15:
+                        filter = FILTERS[15];
+                        break;
+                    case 16:
+                        filter = FILTERS[16];
+                        break;
+                    case 17:
+                        filter = FILTERS[17];
+                        break;
+                    case 18:
+                        filter = FILTERS[18];
+                        break;
+                    case 19:
+                        filter = FILTERS[19];
+                        break;
+                    case 20:
+                        filter = FILTERS[20];
+                        break;
+                    case 21:
+                        filter = FILTERS[21];
+                        break;
+                    case 22:
+                        filter = FILTERS[22];
+                        break;
+                    case 23:
+                        filter = FILTERS[23];
+                        break;
+                    case 24:
+                        filter = FILTERS[24];
+                        break;
+                    case 25:
+                        filter = FILTERS[25];
+                        break;
+                    case 26:
+                        filter = FILTERS[26];
+                        break;
+                    case 27:
+                        filter = FILTERS[27];
+                        break;
+                    case 28:
+                        filter = FILTERS[28];
+                        break;
+                    case 29:
+                        filter = FILTERS[29];
+                        break;
+                    case 30:
+                        filter = FILTERS[30];
                         break;
 
                 }
+                et_tags.setHint("tag is " + filter + '\n' + " edit to add more");
                 break;
 
             case R.id.atmSpinner:

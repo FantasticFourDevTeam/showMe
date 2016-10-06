@@ -70,7 +70,8 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
 
         if (soldTickets!=null) { // Events with saved seats
-              date = eventsSeats.getPurchaseDate();
+             // date = eventsSeats.getPurchaseDate();
+            date = eventsSeats.getCreatedAt();//29.09 - Assaf fixed
         }
         else // for free events
         {
@@ -116,6 +117,9 @@ public class EventDetailsActivity extends AppCompatActivity {
                                         bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
                                         iv_qr.setVisibility(View.VISIBLE);
                                         iv_qr.setImageBitmap(bmp);
+                                        if (dialog.isShowing()) {
+                                            dialog.dismiss();
+                                        }
                                     } else {
                                         tv_price.setText(eventsSeats.getPrice() + "₪");
                                         if (dialog.isShowing()) {

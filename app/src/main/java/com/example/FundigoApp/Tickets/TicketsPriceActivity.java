@@ -20,12 +20,12 @@ public class TicketsPriceActivity extends AppCompatActivity implements View.OnCl
     EditText et_green;
     EditText et_pink;
     EditText et_orange;
-
+    SharedPreferences sp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate (savedInstanceState);
-        setContentView (R.layout.activity_producer_tickets_price);
+        setContentView(R.layout.activity_producer_tickets_price);
 
         btn_save = (Button) findViewById (R.id.btn_save_tickets_price);
         et_blue = (EditText) findViewById (R.id.et_blue);
@@ -33,12 +33,14 @@ public class TicketsPriceActivity extends AppCompatActivity implements View.OnCl
         et_orange = (EditText) findViewById (R.id.et_orange);
         et_pink = (EditText) findViewById (R.id.et_pink);
         et_yellow = (EditText) findViewById (R.id.et_yellow);
+        sp = PreferenceManager.getDefaultSharedPreferences(this);
+
         btn_save.setOnClickListener (this);
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId ()) {
+        switch (v.getId ()) { //29.09 - Assaf upload the values filled before
             case R.id.btn_save_tickets_price:
                 String yellow = et_yellow.getText ().toString ();
                 String pink = et_pink.getText ().toString ();
@@ -47,7 +49,7 @@ public class TicketsPriceActivity extends AppCompatActivity implements View.OnCl
                 String orange = et_orange.getText ().toString ();
 
                 if (validateQuantity (yellow) && validateQuantity (pink) && validateQuantity (blue) && validateQuantity (green) && validateQuantity (orange)) {
-                    SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences (this);
+
                     SharedPreferences.Editor editor = sp.edit ();
                     editor.putInt (GlobalVariables.YELLOW, Integer.parseInt (yellow));
                     editor.putInt (GlobalVariables.PINK, Integer.parseInt (pink));
@@ -80,4 +82,28 @@ public class TicketsPriceActivity extends AppCompatActivity implements View.OnCl
         return true;
     }
 
+    @Override
+    protected void onResume() { //29.09 ASssaf
+        super.onResume();
+        try {
+
+            int yellow = sp.getInt(GlobalVariables.YELLOW, 0);
+            int pink = sp.getInt(GlobalVariables.PINK, 0);
+            int blue = sp.getInt(GlobalVariables.BLUE, 0);
+            int green = sp.getInt(GlobalVariables.GREEN, 0);
+            int orange = sp.getInt(GlobalVariables.ORANGE, 0);
+            if (yellow>0&&pink>0&&blue>0&&green>0&&orange>0) { // SP is set to -1 after data saved . new event shoudl be with clean values
+                et_yellow.setText(Integer.toString(yellow));
+                et_pink.setText(Integer.toString(pink));
+                et_blue.setText(Integer.toString(blue));
+                et_green.setText(Integer.toString(green));
+                et_orange.setText(Integer.toString(orange));
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
+    }
 }

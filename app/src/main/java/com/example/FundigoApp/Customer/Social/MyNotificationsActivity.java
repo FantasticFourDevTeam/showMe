@@ -8,11 +8,13 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.example.FundigoApp.Events.EventInfo;
 import com.example.FundigoApp.GlobalVariables;
+import com.example.FundigoApp.MyServices;
 import com.example.FundigoApp.R;
 import com.example.FundigoApp.StaticMethod.EventDataMethods;
 import com.parse.ParseException;
@@ -112,6 +114,7 @@ public class MyNotificationsActivity extends AppCompatActivity implements Adapte
     public void onItemClick(AdapterView<?> av, View view, int i, long l) {
         Intent intent = new Intent (MyNotificationsActivity.this, DetailedNotificationActivity.class);
         intent.putExtra ("Message", pushObjectsList.get (i).getString ("pushMessage").toString ());
+        intent.putExtra ("messageDate", pushObjectsList.get(i).getString("Date"));//29.09 - assaf notiifction date
         intent.putExtra ("EvendId", notificationsEventList.get (i).getParseObjectId ());
         startActivity (intent);
     }
@@ -125,7 +128,7 @@ public class MyNotificationsActivity extends AppCompatActivity implements Adapte
     protected void onResume()
     {
         super.onResume();
-        MyServices.checkVisibilityForUnreadPushMessage(this.unreadPushMessage,getApplicationContext());
+        MyServices.checkVisibilityForUnreadPushMessage(this.unreadPushMessage, getApplicationContext());
         MyServices.checkVisibilityForUnreadCustomerAndProducerMessage(this.unreadMessage,getApplicationContext());
     }
 }

@@ -189,10 +189,12 @@ public class AllEventsStats extends Fragment implements GetEventsDataCallback {
                         }
                     }
                 }
-                if (eventInfo.isFutureEvent() && !eventInfo.isStadium() && !eventInfo.getPrice().equals("FREE")) {
+                //29.09 - assaf to support free events with limited seats
+                if (eventInfo.isFutureEvent() && !eventInfo.isStadium() && !(eventInfo.getPrice ().equals ("FREE")&& eventInfo.getNumOfTickets()<0)) {
                     int thisEventNumTicketsUpcoming = eventInfo.getNumOfTickets() - thisEventSoldTicketsNum;
                     numTicketsUpcoming += thisEventNumTicketsUpcoming;
-                    sumIncomeUpcoming += thisEventNumTicketsUpcoming * Integer.parseInt(eventInfo.getPrice());
+                    if(!eventInfo.getPrice().equals("FREE"))//29.09 assaf
+                       sumIncomeUpcoming += thisEventNumTicketsUpcoming * Integer.parseInt(eventInfo.getPrice());
                 }
             }
         }

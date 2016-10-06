@@ -61,8 +61,10 @@ public class FilterImageAdapter extends BaseAdapter {
         if(mFilter!=null) {
                if (!GlobalVariables.CURRENT_FILTER_NAME.isEmpty() && this.mFilter[position].equals(GlobalVariables.CURRENT_FILTER_NAME)) {
                    grid.setBackgroundColor(Color.RED);
+                 } else { //05.10 assaf - added to remove duplicate background Red when scroll the Grid
+                    grid.setBackgroundColor(Color.WHITE);
+                   }
                }
-           }
         return grid;
     }
 }

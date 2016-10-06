@@ -18,10 +18,11 @@ public class DetailedNotificationActivity extends AppCompatActivity {
     Intent intent;
     TextView message, date, eventObjectId;
     Button goToEvent;
+    private String messsageDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate (savedInstanceState);
+        super.onCreate(savedInstanceState);
         setContentView (R.layout.activity_customer_push_page);
         intent = getIntent ();
         message = (TextView) findViewById (R.id.eventInfoEventPage);
@@ -29,11 +30,13 @@ public class DetailedNotificationActivity extends AppCompatActivity {
         eventObjectId = (TextView) findViewById (R.id.PushPage_eventName);
         goToEvent = (Button) findViewById (R.id.Button_pushPage);
 
-        message.setText (intent.getExtras ().getString ("Message"));
+        message.setText (intent.getExtras ().getString("Message"));
+
         final EventInfo eventInfo = EventDataMethods.getEventFromObjID (intent.getExtras ().getString ("EvendId"),
                                                                                GlobalVariables.ALL_EVENTS_DATA);
-        eventObjectId.setText (eventInfo.getName ());
-        date.setText (eventInfo.getDateAsString ());
+        eventObjectId.setText (eventInfo.getName());
+        //date.setText (eventInfo.getDateAsString ());
+        date.setText(intent.getExtras().getString("messageDate"));
         final Intent intent = new Intent (this, EventPageActivity.class);
         goToEvent.setOnClickListener (new View.OnClickListener () {
             @Override

@@ -15,6 +15,8 @@ import com.parse.ParseException;
 public class WebBrowserActivity extends AppCompatActivity {
     private String amount;
     private String orderId;
+    private int eventNumOfTickets;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +24,7 @@ public class WebBrowserActivity extends AppCompatActivity {
 
         Intent i = getIntent();
         amount = i.getStringExtra("eventPrice");
+        eventNumOfTickets = i.getIntExtra("eventNumOfTickets",-2); //29.09 - assaf to support free events
 
         String isSeats = i.getStringExtra("isChoose");
         if (isSeats.equals("no")) {
@@ -46,7 +49,17 @@ public class WebBrowserActivity extends AppCompatActivity {
         } else {
             orderId = i.getStringExtra("seatParseObjId");
         }
-        GeneralStaticMethods.url(orderId,GlobalVariables.CUSTOMER_PHONE_NUM,"","","");
+        //29.09 assaf
+        GeneralStaticMethods.url(orderId, GlobalVariables.CUSTOMER_PHONE_NUM, "", "", "");
+        if(eventNumOfTickets!=-1) {
+            Toast.makeText(this, "You are successfully registered to the Event", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            Toast.makeText(this, "Event saved in your events tickets list", Toast.LENGTH_SHORT).show();
+        }
+
+        /////////
         //if (!amount.equals("FREE")) {
 
         //    MyWebView view = new MyWebView(this);
@@ -75,7 +88,6 @@ public class WebBrowserActivity extends AppCompatActivity {
       //  }
     //    else
   //      {
-            Toast.makeText(this,"You are successfully registered to the Event",Toast.LENGTH_SHORT).show();
             finish();
       //  }
     }

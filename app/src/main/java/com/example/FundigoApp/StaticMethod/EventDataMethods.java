@@ -140,7 +140,7 @@ public class EventDataMethods {
 
     }
 
-    public static String getEventDateAsString(Date eventDate) {
+    public static String getEventDateAsString(Date eventDate) { //29.09 assaf
         long time = eventDate.getTime ();
         Calendar calendar = Calendar.getInstance ();
         calendar.setTimeInMillis (time);
@@ -210,6 +210,7 @@ public class EventDataMethods {
         int day = calendar.get (Calendar.DAY_OF_MONTH);
         int hour = calendar.get (Calendar.HOUR_OF_DAY);
         int minute = calendar.get (Calendar.MINUTE);
+        int year = calendar.get (Calendar.YEAR); //29.09 - Assaf added to present year
         String ampm = null;
         if (calendar.get (Calendar.AM_PM) == Calendar.AM)
             ampm = "AM";
@@ -222,7 +223,7 @@ public class EventDataMethods {
         } else {
             min = "" + minute;
         }
-        return dayOfWeek + ", " + month + " " + day + ", " + hour + ":" + min + " " + ampm;
+        return dayOfWeek + ", " + month + " " + day + ", " + year + ", " + hour + ":" + min + " " + ampm;//29.09 -assaf add year
     }
 
     public static String getDisplayedEventPrice(String eventPrice) {

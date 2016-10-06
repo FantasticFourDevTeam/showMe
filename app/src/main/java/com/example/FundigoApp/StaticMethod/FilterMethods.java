@@ -34,32 +34,39 @@ public class FilterMethods extends Application {
                                                        EventsListAdapter eventsListAdapter,
                                                        String[] namesCity,
                                                        int indexCityChosen) {
-        if (GlobalVariables.USER_CHOSEN_CITY_MANUALLY) {
-            ArrayList<EventInfo> tempEventsList =
-                    filterByCityAndFilterName(
-                                                                   namesCity[indexCityChosen],
-                                                                   GlobalVariables.CURRENT_FILTER_NAME,
-                                                                   GlobalVariables.CURRENT_SUB_FILTER,
-                                                                   GlobalVariables.CURRENT_DATE_FILTER,
-                                                                   GlobalVariables.CURRENT_PRICE_FILTER,
-                                                                   GlobalVariables.ALL_EVENTS_DATA);
-            eventsListToFilter.clear();
-            eventsListToFilter.addAll(tempEventsList);
-            eventsListAdapter.notifyDataSetChanged();
+        try {
 
-        } else if (GlobalVariables.CITY_GPS != null) {
-            ArrayList<EventInfo> tempEventsList =
-                    filterByCityAndFilterName(
-                                                                   GlobalVariables.CITY_GPS,
-                                                                   GlobalVariables.CURRENT_FILTER_NAME,
-                                                                   GlobalVariables.CURRENT_SUB_FILTER,
-                                                                   GlobalVariables.CURRENT_DATE_FILTER,
-                                                                   GlobalVariables.CURRENT_PRICE_FILTER,
-                                                                   GlobalVariables.ALL_EVENTS_DATA);
+            if (GlobalVariables.USER_CHOSEN_CITY_MANUALLY) {
+                ArrayList<EventInfo> tempEventsList =
+                        filterByCityAndFilterName(
+                                namesCity[indexCityChosen],
+                                GlobalVariables.CURRENT_FILTER_NAME,
+                                GlobalVariables.CURRENT_SUB_FILTER,
+                                GlobalVariables.CURRENT_DATE_FILTER,
+                                GlobalVariables.CURRENT_PRICE_FILTER,
+                                GlobalVariables.ALL_EVENTS_DATA);
+                eventsListToFilter.clear();
+                eventsListToFilter.addAll(tempEventsList);
+                eventsListAdapter.notifyDataSetChanged();
 
-            eventsListToFilter.clear();
-            eventsListToFilter.addAll(tempEventsList);
-            eventsListAdapter.notifyDataSetChanged();
+            } else if (GlobalVariables.CITY_GPS != null) {
+                ArrayList<EventInfo> tempEventsList =
+                        filterByCityAndFilterName(
+                                GlobalVariables.CITY_GPS,
+                                GlobalVariables.CURRENT_FILTER_NAME,
+                                GlobalVariables.CURRENT_SUB_FILTER,
+                                GlobalVariables.CURRENT_DATE_FILTER,
+                                GlobalVariables.CURRENT_PRICE_FILTER,
+                                GlobalVariables.ALL_EVENTS_DATA);
+
+                eventsListToFilter.clear();
+                eventsListToFilter.addAll(tempEventsList);
+                eventsListAdapter.notifyDataSetChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
         }
     }
 
@@ -68,323 +75,96 @@ public class FilterMethods extends Application {
                                                      List<EventInfo> eventsListToFilter) {
         ArrayList<EventInfo> tempEventsList = new ArrayList<>();
         Date _currentDate = new Date();
-        if (currentFilterName.isEmpty() && subFilterName.isEmpty() && dateFilter == null && priceFilter == -1) {
-            tempEventsList.addAll (eventsListToFilter);
-            return tempEventsList;
-        } else {
-            for (int i = 0; i < eventsListToFilter.size(); i++) {
-                String subFilterEvent = eventsListToFilter.get(i).getSubFilterName();
-                Date dateEvent = eventsListToFilter.get(i).getDate();
-                String filterEvent = eventsListToFilter.get(i).getFilterName();
-                String tempEventPrice = eventsListToFilter.get(i).getPrice();
-                int priceEvent = -1;
-                boolean IsDateEqual = false;
-                Date weekEndFilter = FilterPageActivity.addDays (_currentDate, 1000); // for check if weekend filter was activivated
-                boolean IsWeekendFilter = false;
-                boolean  IsEventInWeekEnd= false;
+        try {
+            if (currentFilterName.isEmpty() && subFilterName.isEmpty() && dateFilter == null && priceFilter == -1) {
+                tempEventsList.addAll(eventsListToFilter);
+                return tempEventsList;
+            } else {
+                for (int i = 0; i < eventsListToFilter.size(); i++) {
+                    String subFilterEvent = eventsListToFilter.get(i).getSubFilterName();
+                    Date dateEvent = eventsListToFilter.get(i).getDate();
+                    String filterEvent = eventsListToFilter.get(i).getFilterName();
+                    String tempEventPrice = eventsListToFilter.get(i).getPrice();
+                    int priceEvent = -1;
+                    boolean IsDateEqual = false;
+                    Date weekEndFilter = FilterPageActivity.addDays(_currentDate, 1000); // for check if weekend filter was activivated
+                    boolean IsWeekendFilter = false;
+                    boolean IsEventInWeekEnd = false;
 
-                if (dateFilter != null && DateCompare(weekEndFilter,dateFilter)) // DateCompare(weekEndFilter,dateFilter) to check if Weekdnd filter seletced
-                {
-                    IsWeekendFilter = true; // to check if weekd end filter selected
-                    Date endofWeekDate = FilterPageActivity.getCurrentWeekend(); // end day of the week
-                    Date twoDaysBeforeEndOfWeek = FilterPageActivity.addDays(FilterPageActivity.getCurrentWeekend(), -3); // three days before
-                    if(dateEvent.after(twoDaysBeforeEndOfWeek)&& dateEvent.before(endofWeekDate)) {
-                        IsEventInWeekEnd = true;
+                    if (dateFilter != null && DateCompare(weekEndFilter, dateFilter)) // DateCompare(weekEndFilter,dateFilter) to check if Weekdnd filter seletced
+                    {
+                        IsWeekendFilter = true; // to check if weekd end filter selected
+                        Date endofWeekDate = FilterPageActivity.getCurrentWeekend(); // end day of the week
+                        Date twoDaysBeforeEndOfWeek = FilterPageActivity.addDays(FilterPageActivity.getCurrentWeekend(), -3); // three days before
+                        if (dateEvent.after(twoDaysBeforeEndOfWeek) && dateEvent.before(endofWeekDate)) {
+                            IsEventInWeekEnd = true;
+                        }
                     }
-                }
 
-                if (dateFilter != null && !IsWeekendFilter) // current and event date compare in case of date filter is activate
-                {
-                    IsDateEqual = DateCompare(dateEvent, dateFilter); // Isdateequal = true in all filters except when weekdend selected
-                }
+                    if (dateFilter != null && !IsWeekendFilter) // current and event date compare in case of date filter is activate
+                    {
+                        IsDateEqual = DateCompare(dateEvent, dateFilter); // Isdateequal = true in all filters except when weekdend selected
+                    }
 
-                // in case that price is FREE
-                if (!tempEventPrice.equals("FREE")) {
-                    priceEvent = priceHandler(eventsListToFilter.get(i).getPrice());
-                }
+                    // in case that price is FREE
+                    if (!tempEventPrice.equals("FREE")) {
+                        priceEvent = priceHandler(eventsListToFilter.get(i).getPrice());
+                    }
 
-                //==============Start point of conditions to filters====================== ///
+                    //==============Start point of conditions to filters====================== ///
 
-                if (currentFilterName.equals(filterEvent) & dateFilter != null // All filters
+                    if (currentFilterName.equals(filterEvent) & dateFilter != null // All filters
                             & priceFilter != -1 & subFilterName.equals(subFilterEvent)) {
-                    if ((IsDateEqual && priceFilter != 201 && priceFilter >= priceEvent) || (IsDateEqual &&tempEventPrice.equals("FREE") && priceFilter == 0)) // NEED to HANDLE EOW
-                    {
-                        tempEventsList.add(eventsListToFilter.get(i));
-                    }
-                    if (priceFilter == 201 && priceEvent >= priceFilter && IsDateEqual) {
-                        tempEventsList.add(eventsListToFilter.get(i));
-                    }
-                    if ((IsWeekendFilter && IsEventInWeekEnd &&priceFilter != 201 && priceFilter >= priceEvent) || (IsWeekendFilter && IsEventInWeekEnd&&tempEventPrice.equals("FREE") && priceFilter == 0))
-                    {
-                        tempEventsList.add(eventsListToFilter.get(i));
-                    }
-                    if (priceFilter == 201 && priceEvent >= priceFilter && IsWeekendFilter &IsEventInWeekEnd) {
-                        tempEventsList.add(eventsListToFilter.get(i));
-                    }
-
-                }
-
-                else if (currentFilterName.equals(filterEvent) & dateFilter != null // main ,Price + date filters. no sub
-                                 & priceFilter != -1 & subFilterName.isEmpty()) {
-                    if ((IsDateEqual && priceFilter != 201 && priceFilter >= priceEvent) || (IsDateEqual &&tempEventPrice.equals("FREE") && priceFilter == 0))
-                    {
-                        tempEventsList.add(eventsListToFilter.get(i));
-                    }
-                    if (priceFilter == 201 && priceEvent >= priceFilter && IsDateEqual) {
-                        tempEventsList.add(eventsListToFilter.get(i));
-                    }
-                    if ((IsWeekendFilter && IsEventInWeekEnd &&priceFilter != 201 && priceFilter >= priceEvent) || (IsWeekendFilter && IsEventInWeekEnd&&tempEventPrice.equals("FREE") && priceFilter == 0))
-                    {
-                        tempEventsList.add(eventsListToFilter.get(i));
-                    }
-                    if (priceFilter == 201 && priceEvent >= priceFilter && IsWeekendFilter &IsEventInWeekEnd) {
-                        tempEventsList.add(eventsListToFilter.get(i));
-                    }
-
-                }
-                else if (currentFilterName.equals(filterEvent) && dateFilter == null
-                                 && priceFilter == -1 && subFilterName.isEmpty())//only main Filter
-                {
-                    tempEventsList.add(eventsListToFilter.get(i));
-                }
-
-                else if (currentFilterName.equals(filterEvent) & subFilterName.equals(subFilterEvent)
-                                 && dateFilter == null && priceFilter == -1) // main + sub and no date filter and no price filters
-                {
-                    tempEventsList.add(eventsListToFilter.get(i));
-                }
-
-                else if (currentFilterName.equals(filterEvent) & subFilterName.equals(subFilterEvent) &&
-                                 dateFilter != null && priceFilter == -1)// main + sub + date and no Price filter
-                {
-                    if (IsDateEqual) // NEED to HANDLE EOW
-                    {
-                        tempEventsList.add(eventsListToFilter.get(i));
-                    }
-
-                    if(IsWeekendFilter && IsEventInWeekEnd)
-                    {
-                        tempEventsList.add(eventsListToFilter.get(i));
-                    }
-                }
-
-                else if (currentFilterName.equals(filterEvent) & subFilterName.equals(subFilterEvent)
-                                 && dateFilter == null && priceFilter != -1)// main + sub + price and no Date filter
-                {
-                    if (((priceFilter >= priceEvent && priceFilter != 201) || (tempEventPrice.equals("FREE")) && priceFilter == 0)) {
-                        tempEventsList.add(eventsListToFilter.get(i));
-                    }
-                    if (priceFilter == 201 && priceEvent >= priceFilter) {
-                        tempEventsList.add(eventsListToFilter.get(i));
-                    }
-
-                }
-
-                else if (currentFilterName.equals(filterEvent) & subFilterName.isEmpty() &
-                                 dateFilter != null && priceFilter == -1)// main + date , no sub and no Price filter
-                {
-                    if (IsDateEqual) //
-                    {
-                        tempEventsList.add(eventsListToFilter.get(i));
-                    }
-
-                    if (IsWeekendFilter && IsEventInWeekEnd)
-                    {
-                        tempEventsList.add(eventsListToFilter.get(i));
-                    }
-                }
-
-                else if (currentFilterName.equals(filterEvent) & subFilterName.isEmpty()
-                                 && dateFilter == null && priceFilter != -1)// main + price, No sub and no Date filter
-                {
-                    if (((priceFilter >= priceEvent && priceFilter != 201) || (tempEventPrice.equals("FREE")) && priceFilter == 0)) {
-                        tempEventsList.add(eventsListToFilter.get(i));
-                    }
-
-                    if (priceFilter == 201 && priceEvent >= priceFilter) {
-                        tempEventsList.add(eventsListToFilter.get(i));
-                    }
-
-                }
-
-                else if (currentFilterName.isEmpty() && subFilterName.isEmpty() && dateFilter != null //no main + no sub, price and date filters only
-                                 && priceFilter != -1) {
-                    if (IsDateEqual && (priceFilter != 201 && priceFilter >= priceEvent) || (IsDateEqual && tempEventPrice.equals("FREE") && priceFilter == 0))  // NEED to HANDLE EOW
-                    {
-                        tempEventsList.add(eventsListToFilter.get(i));
-                    }
-                    if (priceFilter == 201 && priceEvent >= priceFilter && IsDateEqual) {
-                        tempEventsList.add(eventsListToFilter.get(i));
-                    }
-
-                    if ((IsWeekendFilter && IsEventInWeekEnd&&priceFilter != 201 && priceFilter >= priceEvent) || (IsWeekendFilter && IsEventInWeekEnd&&tempEventPrice.equals("FREE") && priceFilter == 0))  // NEED to HANDLE EOW
-                    {
-                        tempEventsList.add(eventsListToFilter.get(i));
-                    }
-                    if (priceFilter == 201 && priceEvent >= priceFilter && IsWeekendFilter& IsEventInWeekEnd) {
-                        tempEventsList.add(eventsListToFilter.get(i));
-                    }
-                }
-
-                else if (currentFilterName.isEmpty() && subFilterName.isEmpty() && dateFilter == null // price filter only
-                                 && priceFilter != -1) {
-                    if ((priceFilter >= priceEvent && priceFilter != 201 || (tempEventPrice.equals("FREE") && priceFilter == 0))) {
-                        tempEventsList.add(eventsListToFilter.get(i));
-                    }
-
-                    if (priceFilter == 201 && priceEvent >= priceFilter) {
-                        tempEventsList.add(eventsListToFilter.get(i));
-                    }
-                }
-
-                else if (currentFilterName.isEmpty() && subFilterName.isEmpty() && dateFilter != null // date filter only
-                                 && priceFilter == -1) {
-                    if (IsDateEqual) // other date filters
-                    {
-                        tempEventsList.add(eventsListToFilter.get(i));
-                    }
-                    if (IsWeekendFilter && IsEventInWeekEnd)  // weekend filter
-                    {
-                        tempEventsList.add(eventsListToFilter.get(i));
-                    }
-
-                }
-            }
-        }
-        return tempEventsList;
-    }
-
-    public static ArrayList<EventInfo> filterByCityAndFilterName(String cityName,
-                                                                 String currentFilterName,
-                                                                 String subFilterName, Date dateFilter, int priceFilter,
-                                                                 List<EventInfo> eventsListToFilter) {
-        ArrayList<EventInfo> tempEventsList = new ArrayList<>();
-        Date _currentDate = new Date();
-        String allCitiesFilterString;
-        if (Locale.getDefault().getDisplayLanguage ().equals ("עברית")) {
-            allCitiesFilterString = "כל הערים";
-        } else {
-            allCitiesFilterString = "All Cities";
-        }
-
-        if (cityName.equals(allCitiesFilterString) && currentFilterName.isEmpty() && subFilterName.isEmpty()
-                    && dateFilter == null && priceFilter == -1) {
-            tempEventsList.addAll (eventsListToFilter);
-            return tempEventsList;
-
-        } else {
-            for (int i = 0; i < eventsListToFilter.size(); i++) {
-                String cityEvent = eventsListToFilter.get(i).getCity();
-                String subFilterEvent = eventsListToFilter.get(i).getSubFilterName();
-                Date dateEvent = eventsListToFilter.get(i).getDate();
-                String filterEvent = eventsListToFilter.get(i).getFilterName();
-                String tempEventPrice = eventsListToFilter.get(i).getPrice();
-                int priceEvent = -1;
-                boolean IsDateEqual = false;
-                Date weekEndFilter = FilterPageActivity.addDays(_currentDate, 1000); // for check if weekend filter was activivated
-                boolean IsWeekendFilter = false;
-                boolean  IsEventInWeekEnd= false;
-
-                if (dateFilter != null && DateCompare(weekEndFilter,dateFilter)) // DateCompare(weekEndFilter,dateFilter) to check if Weekdnd filter seletced
-                {
-                    IsWeekendFilter = true; // to check if weekd end filter selected
-                    Date endofWeekDate = FilterPageActivity.getCurrentWeekend(); // end day of the week
-                    Date twoDaysBeforeEndOfWeek = FilterPageActivity.addDays(FilterPageActivity.getCurrentWeekend(), -3); // two days before
-                    if(dateEvent.after(twoDaysBeforeEndOfWeek)&& dateEvent.before(endofWeekDate)) {
-                        IsEventInWeekEnd = true;
-                    }
-                }
-
-                if (dateFilter != null && !IsWeekendFilter) // current and event date compare in case of date filter is activate
-                {
-                    IsDateEqual = DateCompare(dateEvent, dateFilter); // Isdateequal = true in all filters except when weekdend selected
-                }
-
-                // in case that price is FREE
-                if (!tempEventPrice.equals("FREE")) {
-                    priceEvent = priceHandler(eventsListToFilter.get(i).getPrice());
-                }
-
-
-                //==============Start point of conditions to filters====================== ///
-
-
-                if (cityName.equals(allCitiesFilterString) || (cityEvent != null && cityEvent.equals(cityName)))
-                {
-                    if (currentFilterName.isEmpty() & dateFilter == null // All filters empty
-                                & priceFilter == -1 & subFilterName.isEmpty())
-                    {
-                        tempEventsList.add(eventsListToFilter.get(i));
-                    }
-
-                    if (currentFilterName.equals(filterEvent) & dateFilter != null // All filters active
-                                & priceFilter != -1 & subFilterName.equals(subFilterEvent))
-                    {
-                        if ((IsDateEqual && priceFilter != 201 && priceFilter >= priceEvent) || (IsDateEqual &&tempEventPrice.equals("FREE") && priceFilter == 0))
+                        if ((IsDateEqual && priceFilter != 201 && priceFilter >= priceEvent) || (IsDateEqual && tempEventPrice.equals("FREE") && priceFilter == 0)) // NEED to HANDLE EOW
                         {
                             tempEventsList.add(eventsListToFilter.get(i));
                         }
                         if (priceFilter == 201 && priceEvent >= priceFilter && IsDateEqual) {
                             tempEventsList.add(eventsListToFilter.get(i));
                         }
-                        if ((IsWeekendFilter && IsEventInWeekEnd &&priceFilter != 201 && priceFilter >= priceEvent) || (IsWeekendFilter && IsEventInWeekEnd&&tempEventPrice.equals("FREE") && priceFilter == 0))
-                        {
+                        if ((IsWeekendFilter && IsEventInWeekEnd && priceFilter != 201 && priceFilter >= priceEvent) || (IsWeekendFilter && IsEventInWeekEnd && tempEventPrice.equals("FREE") && priceFilter == 0)) {
                             tempEventsList.add(eventsListToFilter.get(i));
                         }
-                        if (priceFilter == 201 && priceEvent >= priceFilter && IsWeekendFilter &IsEventInWeekEnd) {
+                        if (priceFilter == 201 && priceEvent >= priceFilter && IsWeekendFilter & IsEventInWeekEnd) {
                             tempEventsList.add(eventsListToFilter.get(i));
                         }
 
-                    }
-
-                    else if (currentFilterName.equals(filterEvent) & dateFilter != null // main ,Price + date filters. no sub
-                                     & priceFilter != -1 & subFilterName.isEmpty())
-                    {
-                        if ((IsDateEqual && priceFilter != 201 && priceFilter >= priceEvent) || (IsDateEqual &&tempEventPrice.equals("FREE") && priceFilter == 0))
-                        {
+                    } else if (currentFilterName.equals(filterEvent) & dateFilter != null // main ,Price + date filters. no sub
+                            & priceFilter != -1 & subFilterName.isEmpty()) {
+                        if ((IsDateEqual && priceFilter != 201 && priceFilter >= priceEvent) || (IsDateEqual && tempEventPrice.equals("FREE") && priceFilter == 0)) {
                             tempEventsList.add(eventsListToFilter.get(i));
                         }
                         if (priceFilter == 201 && priceEvent >= priceFilter && IsDateEqual) {
                             tempEventsList.add(eventsListToFilter.get(i));
                         }
-                        if ((IsWeekendFilter && IsEventInWeekEnd &&priceFilter != 201 && priceFilter >= priceEvent) || (IsWeekendFilter && IsEventInWeekEnd&&tempEventPrice.equals("FREE") && priceFilter == 0))
-                        {
+                        if ((IsWeekendFilter && IsEventInWeekEnd && priceFilter != 201 && priceFilter >= priceEvent) || (IsWeekendFilter && IsEventInWeekEnd && tempEventPrice.equals("FREE") && priceFilter == 0)) {
                             tempEventsList.add(eventsListToFilter.get(i));
                         }
-                        if (priceFilter == 201 && priceEvent >= priceFilter && IsWeekendFilter &IsEventInWeekEnd) {
+                        if (priceFilter == 201 && priceEvent >= priceFilter && IsWeekendFilter & IsEventInWeekEnd) {
                             tempEventsList.add(eventsListToFilter.get(i));
                         }
 
-                    }
-
-                    else if (currentFilterName.equals(filterEvent) && dateFilter == null
-                                     && priceFilter == -1 && subFilterName.isEmpty())//only main Filter
+                    } else if (currentFilterName.equals(filterEvent) && dateFilter == null
+                            && priceFilter == -1 && subFilterName.isEmpty())//only main Filter
                     {
                         tempEventsList.add(eventsListToFilter.get(i));
-                    }
-
-                    else if (currentFilterName.equals(filterEvent) & subFilterName.equals(subFilterEvent)
-                                     && dateFilter == null && priceFilter == -1) // main + sub and no date filter and no price filters
+                    } else if (currentFilterName.equals(filterEvent) & subFilterName.equals(subFilterEvent)
+                            && dateFilter == null && priceFilter == -1) // main + sub and no date filter and no price filters
                     {
                         tempEventsList.add(eventsListToFilter.get(i));
-                    }
-
-                    else if (currentFilterName.equals(filterEvent) & subFilterName.equals(subFilterEvent) &&
-                                     dateFilter != null && priceFilter == -1)// main + sub + date and no Price filter
+                    } else if (currentFilterName.equals(filterEvent) & subFilterName.equals(subFilterEvent) &&
+                            dateFilter != null && priceFilter == -1)// main + sub + date and no Price filter
                     {
                         if (IsDateEqual) // NEED to HANDLE EOW
                         {
                             tempEventsList.add(eventsListToFilter.get(i));
                         }
 
-                        if(IsWeekendFilter && IsEventInWeekEnd)
-                        {
+                        if (IsWeekendFilter && IsEventInWeekEnd) {
                             tempEventsList.add(eventsListToFilter.get(i));
                         }
-                    }
-
-                    else if (currentFilterName.equals(filterEvent) & subFilterName.equals(subFilterEvent)
-                                     && dateFilter == null && priceFilter != -1)// main + sub + price and no Date filter
+                    } else if (currentFilterName.equals(filterEvent) & subFilterName.equals(subFilterEvent)
+                            && dateFilter == null && priceFilter != -1)// main + sub + price and no Date filter
                     {
                         if (((priceFilter >= priceEvent && priceFilter != 201) || (tempEventPrice.equals("FREE")) && priceFilter == 0)) {
                             tempEventsList.add(eventsListToFilter.get(i));
@@ -393,24 +173,19 @@ public class FilterMethods extends Application {
                             tempEventsList.add(eventsListToFilter.get(i));
                         }
 
-                    }
-
-                    else if (currentFilterName.equals(filterEvent) & subFilterName.isEmpty() &
-                                     dateFilter != null && priceFilter == -1)// main + date , no sub and no Price filter
+                    } else if (currentFilterName.equals(filterEvent) & subFilterName.isEmpty() &
+                            dateFilter != null && priceFilter == -1)// main + date , no sub and no Price filter
                     {
                         if (IsDateEqual) //
                         {
                             tempEventsList.add(eventsListToFilter.get(i));
                         }
 
-                        if (IsWeekendFilter && IsEventInWeekEnd)
-                        {
+                        if (IsWeekendFilter && IsEventInWeekEnd) {
                             tempEventsList.add(eventsListToFilter.get(i));
                         }
-                    }
-
-                    else if (currentFilterName.equals(filterEvent) & subFilterName.isEmpty()
-                                     && dateFilter == null && priceFilter != -1)// main + price, No sub and no Date filter
+                    } else if (currentFilterName.equals(filterEvent) & subFilterName.isEmpty()
+                            && dateFilter == null && priceFilter != -1)// main + price, No sub and no Date filter
                     {
                         if (((priceFilter >= priceEvent && priceFilter != 201) || (tempEventPrice.equals("FREE")) && priceFilter == 0)) {
                             tempEventsList.add(eventsListToFilter.get(i));
@@ -420,10 +195,8 @@ public class FilterMethods extends Application {
                             tempEventsList.add(eventsListToFilter.get(i));
                         }
 
-                    }
-
-                    else if (currentFilterName.isEmpty() && subFilterName.isEmpty() && dateFilter != null //no main + no sub, price and date filters only
-                                     && priceFilter != -1) {
+                    } else if (currentFilterName.isEmpty() && subFilterName.isEmpty() && dateFilter != null //no main + no sub, price and date filters only
+                            && priceFilter != -1) {
                         if (IsDateEqual && (priceFilter != 201 && priceFilter >= priceEvent) || (IsDateEqual && tempEventPrice.equals("FREE") && priceFilter == 0))  // NEED to HANDLE EOW
                         {
                             tempEventsList.add(eventsListToFilter.get(i));
@@ -432,17 +205,15 @@ public class FilterMethods extends Application {
                             tempEventsList.add(eventsListToFilter.get(i));
                         }
 
-                        if ((IsWeekendFilter && IsEventInWeekEnd&&priceFilter != 201 && priceFilter >= priceEvent) || (IsWeekendFilter && IsEventInWeekEnd&&tempEventPrice.equals("FREE") && priceFilter == 0))  // NEED to HANDLE EOW
+                        if ((IsWeekendFilter && IsEventInWeekEnd && priceFilter != 201 && priceFilter >= priceEvent) || (IsWeekendFilter && IsEventInWeekEnd && tempEventPrice.equals("FREE") && priceFilter == 0))  // NEED to HANDLE EOW
                         {
                             tempEventsList.add(eventsListToFilter.get(i));
                         }
-                        if (priceFilter == 201 && priceEvent >= priceFilter && IsWeekendFilter& IsEventInWeekEnd) {
+                        if (priceFilter == 201 && priceEvent >= priceFilter && IsWeekendFilter & IsEventInWeekEnd) {
                             tempEventsList.add(eventsListToFilter.get(i));
                         }
-                    }
-
-                    else if (currentFilterName.isEmpty() && subFilterName.isEmpty() && dateFilter == null // price filter only
-                                     && priceFilter != -1) {
+                    } else if (currentFilterName.isEmpty() && subFilterName.isEmpty() && dateFilter == null // price filter only
+                            && priceFilter != -1) {
                         if ((priceFilter >= priceEvent && priceFilter != 201 || (tempEventPrice.equals("FREE") && priceFilter == 0))) {
                             tempEventsList.add(eventsListToFilter.get(i));
                         }
@@ -450,10 +221,8 @@ public class FilterMethods extends Application {
                         if (priceFilter == 201 && priceEvent >= priceFilter) {
                             tempEventsList.add(eventsListToFilter.get(i));
                         }
-                    }
-
-                    else if (currentFilterName.isEmpty() && subFilterName.isEmpty() && dateFilter != null // date filter only
-                                     && priceFilter == -1) {
+                    } else if (currentFilterName.isEmpty() && subFilterName.isEmpty() && dateFilter != null // date filter only
+                            && priceFilter == -1) {
                         if (IsDateEqual) // other date filters
                         {
                             tempEventsList.add(eventsListToFilter.get(i));
@@ -466,6 +235,205 @@ public class FilterMethods extends Application {
                     }
                 }
             }
+
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
+        return tempEventsList;
+    }
+
+    public static ArrayList<EventInfo> filterByCityAndFilterName(String cityName,
+                                                                 String currentFilterName,
+                                                                 String subFilterName, Date dateFilter, int priceFilter,
+                                                                 List<EventInfo> eventsListToFilter) {
+        ArrayList<EventInfo> tempEventsList = new ArrayList<>();
+        Date _currentDate = new Date();
+        String allCitiesFilterString;
+
+        try {
+            if (Locale.getDefault().getDisplayLanguage().equals("עברית")) {
+                allCitiesFilterString = "כל הערים";
+            } else {
+                allCitiesFilterString = "All Cities";
+            }
+
+            if (cityName.equals(allCitiesFilterString) && currentFilterName.isEmpty() && subFilterName.isEmpty()
+                    && dateFilter == null && priceFilter == -1) {
+                tempEventsList.addAll(eventsListToFilter);
+                return tempEventsList;
+
+            } else {
+                for (int i = 0; i < eventsListToFilter.size(); i++) {
+                    String cityEvent = eventsListToFilter.get(i).getCity();
+                    String subFilterEvent = eventsListToFilter.get(i).getSubFilterName();
+                    Date dateEvent = eventsListToFilter.get(i).getDate();
+                    String filterEvent = eventsListToFilter.get(i).getFilterName();
+                    String tempEventPrice = eventsListToFilter.get(i).getPrice();
+                    int priceEvent = -1;
+                    boolean IsDateEqual = false;
+                    Date weekEndFilter = FilterPageActivity.addDays(_currentDate, 1000); // for check if weekend filter was activivated
+                    boolean IsWeekendFilter = false;
+                    boolean IsEventInWeekEnd = false;
+
+                    if (dateFilter != null && DateCompare(weekEndFilter, dateFilter)) // DateCompare(weekEndFilter,dateFilter) to check if Weekdnd filter seletced
+                    {
+                        IsWeekendFilter = true; // to check if weekd end filter selected
+                        Date endofWeekDate = FilterPageActivity.getCurrentWeekend(); // end day of the week
+                        Date twoDaysBeforeEndOfWeek = FilterPageActivity.addDays(FilterPageActivity.getCurrentWeekend(), -3); // two days before
+                        if (dateEvent.after(twoDaysBeforeEndOfWeek) && dateEvent.before(endofWeekDate)) {
+                            IsEventInWeekEnd = true;
+                        }
+                    }
+
+                    if (dateFilter != null && !IsWeekendFilter) // current and event date compare in case of date filter is activate
+                    {
+                        IsDateEqual = DateCompare(dateEvent, dateFilter); // Isdateequal = true in all filters except when weekdend selected
+                    }
+
+                    // in case that price is FREE
+                    if (!tempEventPrice.equals("FREE")) {
+                        priceEvent = priceHandler(eventsListToFilter.get(i).getPrice());
+                    }
+
+
+                    //==============Start point of conditions to filters====================== ///
+
+
+                    if (cityName.equals(allCitiesFilterString) || (cityEvent != null && cityEvent.equals(cityName))) {
+                        if (currentFilterName.isEmpty() & dateFilter == null // All filters empty
+                                & priceFilter == -1 & subFilterName.isEmpty()) {
+                            tempEventsList.add(eventsListToFilter.get(i));
+                        }
+
+                        if (currentFilterName.equals(filterEvent) & dateFilter != null // All filters active
+                                & priceFilter != -1 & subFilterName.equals(subFilterEvent)) {
+                            if ((IsDateEqual && priceFilter != 201 && priceFilter >= priceEvent) || (IsDateEqual && tempEventPrice.equals("FREE") && priceFilter == 0)) {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
+                            if (priceFilter == 201 && priceEvent >= priceFilter && IsDateEqual) {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
+                            if ((IsWeekendFilter && IsEventInWeekEnd && priceFilter != 201 && priceFilter >= priceEvent) || (IsWeekendFilter && IsEventInWeekEnd && tempEventPrice.equals("FREE") && priceFilter == 0)) {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
+                            if (priceFilter == 201 && priceEvent >= priceFilter && IsWeekendFilter & IsEventInWeekEnd) {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
+
+                        } else if (currentFilterName.equals(filterEvent) & dateFilter != null // main ,Price + date filters. no sub
+                                & priceFilter != -1 & subFilterName.isEmpty()) {
+                            if ((IsDateEqual && priceFilter != 201 && priceFilter >= priceEvent) || (IsDateEqual && tempEventPrice.equals("FREE") && priceFilter == 0)) {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
+                            if (priceFilter == 201 && priceEvent >= priceFilter && IsDateEqual) {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
+                            if ((IsWeekendFilter && IsEventInWeekEnd && priceFilter != 201 && priceFilter >= priceEvent) || (IsWeekendFilter && IsEventInWeekEnd && tempEventPrice.equals("FREE") && priceFilter == 0)) {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
+                            if (priceFilter == 201 && priceEvent >= priceFilter && IsWeekendFilter & IsEventInWeekEnd) {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
+
+                        } else if (currentFilterName.equals(filterEvent) && dateFilter == null
+                                && priceFilter == -1 && subFilterName.isEmpty())//only main Filter
+                        {
+                            tempEventsList.add(eventsListToFilter.get(i));
+                        } else if (currentFilterName.equals(filterEvent) & subFilterName.equals(subFilterEvent)
+                                && dateFilter == null && priceFilter == -1) // main + sub and no date filter and no price filters
+                        {
+                            tempEventsList.add(eventsListToFilter.get(i));
+                        } else if (currentFilterName.equals(filterEvent) & subFilterName.equals(subFilterEvent) &&
+                                dateFilter != null && priceFilter == -1)// main + sub + date and no Price filter
+                        {
+                            if (IsDateEqual) // NEED to HANDLE EOW
+                            {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
+
+                            if (IsWeekendFilter && IsEventInWeekEnd) {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
+                        } else if (currentFilterName.equals(filterEvent) & subFilterName.equals(subFilterEvent)
+                                && dateFilter == null && priceFilter != -1)// main + sub + price and no Date filter
+                        {
+                            if (((priceFilter >= priceEvent && priceFilter != 201) || (tempEventPrice.equals("FREE")) && priceFilter == 0)) {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
+                            if (priceFilter == 201 && priceEvent >= priceFilter) {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
+
+                        } else if (currentFilterName.equals(filterEvent) & subFilterName.isEmpty() &
+                                dateFilter != null && priceFilter == -1)// main + date , no sub and no Price filter
+                        {
+                            if (IsDateEqual) //
+                            {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
+
+                            if (IsWeekendFilter && IsEventInWeekEnd) {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
+                        } else if (currentFilterName.equals(filterEvent) & subFilterName.isEmpty()
+                                && dateFilter == null && priceFilter != -1)// main + price, No sub and no Date filter
+                        {
+                            if (((priceFilter >= priceEvent && priceFilter != 201) || (tempEventPrice.equals("FREE")) && priceFilter == 0)) {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
+
+                            if (priceFilter == 201 && priceEvent >= priceFilter) {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
+
+                        } else if (currentFilterName.isEmpty() && subFilterName.isEmpty() && dateFilter != null //no main + no sub, price and date filters only
+                                && priceFilter != -1) {
+                            if (IsDateEqual && (priceFilter != 201 && priceFilter >= priceEvent) || (IsDateEqual && tempEventPrice.equals("FREE") && priceFilter == 0))  // NEED to HANDLE EOW
+                            {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
+                            if (priceFilter == 201 && priceEvent >= priceFilter && IsDateEqual) {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
+
+                            if ((IsWeekendFilter && IsEventInWeekEnd && priceFilter != 201 && priceFilter >= priceEvent) || (IsWeekendFilter && IsEventInWeekEnd && tempEventPrice.equals("FREE") && priceFilter == 0))  // NEED to HANDLE EOW
+                            {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
+                            if (priceFilter == 201 && priceEvent >= priceFilter && IsWeekendFilter & IsEventInWeekEnd) {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
+                        } else if (currentFilterName.isEmpty() && subFilterName.isEmpty() && dateFilter == null // price filter only
+                                && priceFilter != -1) {
+                            if ((priceFilter >= priceEvent && priceFilter != 201 || (tempEventPrice.equals("FREE") && priceFilter == 0))) {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
+
+                            if (priceFilter == 201 && priceEvent >= priceFilter) {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
+                        } else if (currentFilterName.isEmpty() && subFilterName.isEmpty() && dateFilter != null // date filter only
+                                && priceFilter == -1) {
+                            if (IsDateEqual) // other date filters
+                            {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
+                            if (IsWeekendFilter && IsEventInWeekEnd)  // weekend filter
+                            {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
         }
         return tempEventsList;
     }

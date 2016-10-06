@@ -133,6 +133,28 @@
         <item>Kids</item>
         <item>LifeStyle</item>
         <item>Music</item>
+        <item>ART</item>
+        <item>BOOK</item>
+        <item>MOVIE</item>
+        <item>FUNDRAISER</item>
+        <item>VOLUNTEERING</item>
+        <item>FAMILY</item>
+        <item>FESTIVAL</item>
+        <item>NEIGHBORHOOD</item>
+        <item>RELIGIOUS</item>
+        <item>SHOPPING</item>
+        <item>NIGHTLIFE</item>
+        <item>THEATER</item>
+        <item>DINING</item>
+        <item>FOOD</item>
+        <item>FITNESS</item>
+        <item>DANCE</item>
+        <item>CONFERENCE</item>
+        <item>MEETUP</item>
+        <item>CLASS</item>
+        <item>LECTURE</item>
+        <item>OTHER</item>
+
     </string-array>
 
     <string-array name="sportFiltersAllLanguages">
@@ -541,6 +563,7 @@
     <string name="save_credit_card">Save Credit Card</string>
     <string name="delete_credit_card">Delete Credit Card</string>
     <string name="guest">Guest</string>
-
+<string name="please_enter_valid_address">Please enter valid address and fill event Place</string>
+<string name="event_image_upload">Event Image Upload</string>
 
 </resources>

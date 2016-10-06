@@ -7,7 +7,7 @@
 
 
 
-
+<string name="please_enter_valid_address">הזן כתובת תקינה ומקום בו יערך האירוע</string>
     <string name="profile_me">תמונת הפרופיל שלי</string>
     <string name="profile_other">תמונת פרופיל אחרת</string>
     <string name="message_hint">תגיד משהו</string>
@@ -188,14 +188,14 @@
     <string name="title_activity_mipo">Mipo</string>
 
 
-
+<string name="event_image_upload">Event Image Upload</string>
 
 
     <string name="create_event">צור אירוע</string>
-    <string name="name">שם:</string>
+  <string name="name">שם*:</string>
     <string name="pick_date">בחר תאריך</string>
     <string name="artist">אמנים</string>
-    <string name="description">תיאור</string>
+   <string name="description">תיאור*:</string>
     <string name="next">הבא</string>
     <string name="user_name">שם משתמש:</string>
     <string name="email_address"></string>
@@ -419,6 +419,15 @@
     <string name="guest">אורח</string>
     <string name="producer_are_you_sure_you_want_to_exit">האם ברצונך לצאת מאיזור המפיק?</string>
 
+	<string name="please_fill_empty_forms">השלם נתונים חסרים</string>
+
+ <string name="price">מחיר*:</string>
+ <string name="event_name">שם*:</string>
+<string name="quantity">כמות*:</string>
+ <string name="address">כתובת מלאה*:</string>
+<string name="tags">תגיות*:</string>
+
+	
 </resources>
 
 

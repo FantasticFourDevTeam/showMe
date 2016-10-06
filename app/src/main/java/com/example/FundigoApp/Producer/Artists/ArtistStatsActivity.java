@@ -143,10 +143,12 @@ public class ArtistStatsActivity extends Activity implements GetEventsDataCallba
                     sumIncomeSold += eventsSeat.getPrice ();
                 }
             }
-            if (eventInfo.isFutureEvent () && !eventInfo.isStadium () && !eventInfo.getPrice ().equals ("FREE")) {
+            if (eventInfo.isFutureEvent () && !eventInfo.isStadium () && !(eventInfo.getPrice ().equals ("FREE")&& eventInfo.getNumOfTickets()<0))
+             { //29.09 assaf - updated to include also FRee events that has limited place
                 int thisEventNumTicketsUpcoming = eventInfo.getNumOfTickets () - thisEventSoldTicketsNum;
                 numTicketsUpcoming += thisEventNumTicketsUpcoming;
-                sumIncomeUpcoming += thisEventNumTicketsUpcoming * Integer.parseInt (eventInfo.getPrice ());
+                 if(!eventInfo.getPrice().equals("FREE"))//29.09 assaf
+                     sumIncomeUpcoming += thisEventNumTicketsUpcoming * Integer.parseInt (eventInfo.getPrice ());
             }
         }
     }
