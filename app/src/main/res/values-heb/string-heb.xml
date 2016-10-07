@@ -230,10 +230,9 @@
     <string name="Send_push">שלח התראות</string>
     <string name="sms_verification">אימות sms</string>
     <string name="phone_number">מספר טלפון:</string>
-    <string name="price">מחיר</string>
+
     <string name="new_text">טקסט חדש</string>
     <string name="massage">הודעה</string>
-    <string name="event_name">שם האירוע</string>
     <string name="date">תאריך</string>
     <string name="go_to_event">לך לאירוע</string>
     <string name="turn_on_gps_to_see_real_time_events">לא קיימת קליטת GPS ,מידע מבוסס מיקום לא מוצג</string>
@@ -258,14 +257,11 @@
     <string name="all_tickets_value">ערך כל הכרטיסים</string>
     <string name="ticket_price_avg">ממחיר ממוצע כרטיס: </string>
     <string name="upcoming_tickets_price_avg">מחיר ממוצע אירועים עתידים</string>
-    <string name="quantity">כמות:</string>
-    <string name="address">כתובת:</string>
     <string name="ibn_gabirol_tel_aviv">אבן גבירול תל אביב"</string>
     <string name="validate_address">אמת כתובת</string>
     <string name="place">מקום: </string>
     <string name="hall_capacity">תכולת אולם: </string>
     <string name="parking">חניה: </string>
-    <string name="tags">תגיות</string>
     <string name="toilet">שירותים: </string>
     <string name="atm">כספומט</string>
     <string name="finish">סיים</string>
@@ -296,10 +292,10 @@
     <string name="km_away">ק\"מ</string>
     <string name="you_unsaved_this_event">אירוע אינו שמור</string>
     <string name="you_saved_this_event">אירוע שמור</string>
-    <string name="please_enter_valid_address">הכנס כתובת נכונה בבקשה</string>
+
     <string name="saved_in_calendar">זימון לאירוע נשלח ליומן</string>
     <string name="save_to_calander">ערוך אירוע ביומן שלך</string>
-    <string name="please_fill_empty_forms">מלא נתונים חסרים</string>
+
     <string name="event_has_created_successfully">אירוע נוצר בהצלחה!</string>
     <string name="event_hasnot_created_successfully">יצירת אירוע נכשלה נסה שוב</string>
     <string name="please_fill_empty_fields">מלא שדות חסרים</string>

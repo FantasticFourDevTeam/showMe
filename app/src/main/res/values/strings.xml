@@ -422,7 +422,6 @@
     <string name="you_unsaved_this_event">You unSaved this event</string>
     <string name="you_saved_this_event">You Saved this event</string>
     <string name="saved_in_calendar">Invitation was sent to your calendar</string>
-    <string name="please_enter_valid_address">Please enter valid address</string>
     <string name="please_fill_empty_forms">Please fill empty forms</string>
     <string name="event_has_created_successfully">Event has created successfully</string>
     <string name="event_hasnot_created_successfully">Event creation was failed please try again</string>

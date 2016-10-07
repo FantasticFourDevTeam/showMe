@@ -9,7 +9,9 @@ import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.EditText;
 
+import com.example.FundigoApp.MyServices;
 import com.example.FundigoApp.Chat.ChatActivity;
 import com.example.FundigoApp.Chat.ChatToCustomersActivity;
 import com.example.FundigoApp.Chat.MessageRoomAdapter;
