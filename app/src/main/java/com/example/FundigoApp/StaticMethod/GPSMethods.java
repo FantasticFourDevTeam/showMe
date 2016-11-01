@@ -24,10 +24,12 @@ import java.util.Locale;
 public class GPSMethods {
     private static LocationManager locationManager;
     private static LocationListener locationListener;
+    private static Geocoder gcd;
 
     public interface GpsICallback {
         void gpsCallback();
     }
+
 
     public static void updateDeviceLocationGPS(Context context, GpsICallback iCallback) {
         boolean gps_enabled = false;
@@ -130,18 +132,17 @@ public class GPSMethods {
         }
 
         public String findCurrentCityGPS(Location loc) {
-            Geocoder gcd = new Geocoder (context, Locale.ENGLISH);
+            Geocoder gcd = new Geocoder (context, Locale.getDefault());// 31.10 assaf changed to support also Hebrew locations
             if (loc != null) {
                 List<Address> addresses = null;
                 try {
-                    addresses = gcd.getFromLocation (loc.getLatitude (), loc.getLongitude (), 1);
+                   addresses = gcd.getFromLocation (loc.getLatitude (), loc.getLongitude (), 1);
                 } catch (IOException e) {
                     e.printStackTrace ();
                 }
                 if (addresses != null && addresses.size () > 0) {
 
                     return addresses.get (0).getLocality ();
-
                 }
             }
             return "";
@@ -157,4 +158,63 @@ public class GPSMethods {
         }
         return -1;
     }
+
+
+    //Assaf - 30.10 -Not In Use
+   /* public static String findAddressByCoordinates (Context context , Double latitude , Double Longitude){ // 26.10 assaf to get Address in Other language we use coordoinates to get the address
+
+
+        if (gcd == null) {
+
+            gcd = new Geocoder(context, Locale.getDefault());
+        }
+        if (latitude != null && Longitude != null) {
+                List<Address> addresses = null;
+                try {
+                    addresses = gcd.getFromLocation (latitude, Longitude, 1);
+                } catch (IOException e) {
+                    e.printStackTrace ();
+                }
+                if (addresses != null && addresses.size () > 0) {
+
+                   String city  = addresses.get (0).getLocality();
+                   String streetAddress = addresses.get(0).getThoroughfare(); //addresses.get (0).getAddressLine(0);
+                   String number = addresses.get(0).getSubThoroughfare();
+                   return streetAddress + ", " + number + ", " + city + " ";
+                }
+            }
+            return "";
+    }*/
+
+    //Assaf - 30.10 - Not in Use
+
+    /*public static void findAddressByAddress(Context context , String eventAddress){ // 26.10 assaf to get Address in Other language we use coordoinates to get the address using Geodocer
+
+        if (gcd == null) {
+
+            gcd = new Geocoder(context);
+        }
+        if (eventAddress != null && eventAddress != null) {
+            List<Address> addresses = null;
+            try {
+                addresses = gcd.getFromLocationName(eventAddress, 1);
+
+            } catch (IOException e) {
+                e.printStackTrace ();
+            }
+            if (addresses != null && addresses.size () > 0) {
+
+                String city  = addresses.get (0).getLocality();
+                String streetAddress =  addresses.get (0).getAddressLine(0);
+                Double lat = addresses.get(0).getLatitude();
+                Double lnt = addresses.get(0).getLongitude();
+
+                //return streetAddress + ", " + city;
+                Log.i("Geo-Geocoder", streetAddress + ", " + city + " " + Double.toString(lat) + Double.toString(lnt));
+            }
+        }
+        //return "";
+    }*/
+
+
 }

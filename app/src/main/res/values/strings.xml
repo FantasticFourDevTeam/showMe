@@ -229,10 +229,10 @@
     </string-array>
 
     <string-array name="governmentFiltersAllLanguages">
-    <item>Security</item>
-    <item>Services</item>
-    <item>Law</item>
-   </string-array>
+        <item>Security</item>
+        <item>Services</item>
+        <item>Law</item>
+    </string-array>
 
     <string-array name="governmentFiltersName">
         <item>Security</item>
@@ -310,7 +310,8 @@
         <item>Tomorrow</item>
         <item>Day After Tomorrow</item>
         <item>Weekend</item>
-        <item>Select From Calendar</item>
+        <item>Select a Date</item>
+        <item>Select Dates Range</item>
     </string-array>
 
     <string name="login">Login</string>
@@ -428,7 +429,7 @@
     <string name="please_fill_empty_fields">"Please Fill The  Empty Fields</string>
     <string name="are_you_sure_you_want_to_exit">Are you sure you want to exit?</string>
     <string name="producer_are_you_sure_you_want_to_exit">Are you sure you want to exit from Producer area?</string>
-    <string name="validating">Validating...</string>
+    <string name="validating">Validating address</string>
     <string name="something_went_wrong_plese_try_again">Something went wrong, plese try again</string>
     <string name="problem_is">The address is not valid, the problem is </string>
     <string name="tickets_status">Event Status</string>
@@ -507,11 +508,6 @@
     <string name="other">Other</string>
 
 
-
-
-
-
-
     <string name="filter_page">Filter Page</string>
     <string name="can_choice_one_category">Can Choice One Category</string>
     <string name="stats">Stats</string>
@@ -521,7 +517,6 @@
     <string name="producer_login">Producer Login</string>
     <string name="customer_log_in">Customer Login</string>
     <string name="money">\$</string>
-
 
 
     <string name="cancel_push">Cancel Push</string>
@@ -562,7 +557,14 @@
     <string name="save_credit_card">Save Credit Card</string>
     <string name="delete_credit_card">Delete Credit Card</string>
     <string name="guest">Guest</string>
-<string name="please_enter_valid_address">Please enter valid address and fill event Place</string>
-<string name="event_image_upload">Event Image Upload</string>
+    <string name="please_enter_valid_address">Please enter valid address and fill event Place</string>
+    <string name="event_image_upload">Event Image Upload</string>
+    <string name="event_expiration">Event Expired</string>
+    <string name="title_activity_landing_page">LandingPage</string>
+    <string name="fromDate">From</string>
+    <string name="toDate">To</string>
+    <string name="setfromto">One of the dates in the range is missing</string>
+    <string name="address_found">The address that was recognized is: </string>
+    <string name="price_per_seat">Price per seat</string>
 
 </resources>

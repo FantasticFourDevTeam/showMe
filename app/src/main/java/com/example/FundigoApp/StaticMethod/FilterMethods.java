@@ -1,6 +1,8 @@
 package com.example.FundigoApp.StaticMethod;
 
 import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.example.FundigoApp.Events.EventInfo;
@@ -16,6 +18,13 @@ import java.util.Locale;
 
 
 public class FilterMethods extends Application {
+
+    public static Context _context;
+    public static String [] resultsGet;//for get Dates range Shared P.
+
+    public static void setContext(Context context) { //used for callin gthe getdata and pass Context parameter to it.
+        _context = context;
+    }
 
     public static void filterEventsByArtist(String artistName, List<EventInfo> eventsListFiltered) {
         eventsListFiltered.clear ();
@@ -75,6 +84,9 @@ public class FilterMethods extends Application {
                                                      List<EventInfo> eventsListToFilter) {
         ArrayList<EventInfo> tempEventsList = new ArrayList<>();
         Date _currentDate = new Date();
+        resultsGet = getData(_context);//for date range
+        Date[] datesFilter = getRangeDateForFilter();//for dates range
+
         try {
             if (currentFilterName.isEmpty() && subFilterName.isEmpty() && dateFilter == null && priceFilter == -1) {
                 tempEventsList.addAll(eventsListToFilter);
@@ -90,7 +102,8 @@ public class FilterMethods extends Application {
                     Date weekEndFilter = FilterPageActivity.addDays(_currentDate, 1000); // for check if weekend filter was activivated
                     boolean IsWeekendFilter = false;
                     boolean IsEventInWeekEnd = false;
-
+                    boolean IsDatesRangeSelected = false; // 19.10 assaf to support filter by dates Range
+                    boolean ISEventInRange = false;
                     if (dateFilter != null && DateCompare(weekEndFilter, dateFilter)) // DateCompare(weekEndFilter,dateFilter) to check if Weekdnd filter seletced
                     {
                         IsWeekendFilter = true; // to check if weekd end filter selected
@@ -101,15 +114,36 @@ public class FilterMethods extends Application {
                         }
                     }
 
-                    if (dateFilter != null && !IsWeekendFilter) // current and event date compare in case of date filter is activate
+                    if (dateFilter != null && (!IsWeekendFilter || !IsDatesRangeSelected)) // current and event date compare in case of date filter is activate
                     {
-                        IsDateEqual = DateCompare(dateEvent, dateFilter); // Isdateequal = true in all filters except when weekdend selected
+                        IsDateEqual = DateCompare(dateEvent, dateFilter); // Isdateequal = true in all filters except when weekdend selected or Dates in Range
                     }
 
                     // in case that price is FREE
                     if (!tempEventPrice.equals("FREE")) {
                         priceEvent = priceHandler(eventsListToFilter.get(i).getPrice());
                     }
+
+                    if (dateFilter!=null && (DateCompare(dateFilter,FilterPageActivity.addDays(_currentDate,3000))))//19.10 - assaf check if Dates range filter (From or To or Both) were set
+                    {
+                        IsDatesRangeSelected = true;
+                        if (!datesFilter[0].equals("") && !datesFilter[1].equals("")) {// from and To
+                            if (dateEvent.after(datesFilter[0]) && dateEvent.before(datesFilter[1])) {
+                                ISEventInRange = true;
+                            }
+                        }
+//                          else if (!datesFilter[0].equals("") && datesFilter[1].equals("")) { // only From
+//                            if (dateEvent.after(datesFilter[0])) {
+//                                ISEventInRange = true;
+//                            }
+//                        }
+//                          else if (datesFilter[0].equals("") && !datesFilter[1].equals("")) { // only To
+//                            if (dateEvent.before(datesFilter[1])) {
+//                                ISEventInRange = true;
+//                            }
+//                        }
+                    }
+
 
                     //==============Start point of conditions to filters====================== ///
 
@@ -128,6 +162,13 @@ public class FilterMethods extends Application {
                         if (priceFilter == 201 && priceEvent >= priceFilter && IsWeekendFilter & IsEventInWeekEnd) {
                             tempEventsList.add(eventsListToFilter.get(i));
                         }
+                        if ((ISEventInRange && IsDatesRangeSelected && priceFilter != 201 && priceFilter >= priceEvent) || (IsDatesRangeSelected && ISEventInRange && tempEventPrice.equals("FREE") && priceFilter == 0)) {
+                            tempEventsList.add(eventsListToFilter.get(i));
+                        }
+                        if (priceFilter == 201 && priceEvent >= priceFilter && ISEventInRange & IsDatesRangeSelected) {
+                            tempEventsList.add(eventsListToFilter.get(i));
+                        }
+
 
                     } else if (currentFilterName.equals(filterEvent) & dateFilter != null // main ,Price + date filters. no sub
                             & priceFilter != -1 & subFilterName.isEmpty()) {
@@ -143,6 +184,13 @@ public class FilterMethods extends Application {
                         if (priceFilter == 201 && priceEvent >= priceFilter && IsWeekendFilter & IsEventInWeekEnd) {
                             tempEventsList.add(eventsListToFilter.get(i));
                         }
+                        if ((ISEventInRange && IsDatesRangeSelected && priceFilter != 201 && priceFilter >= priceEvent) || (IsDatesRangeSelected && ISEventInRange && tempEventPrice.equals("FREE") && priceFilter == 0)) {
+                            tempEventsList.add(eventsListToFilter.get(i));
+                        }
+                        if (priceFilter == 201 && priceEvent >= priceFilter && IsDatesRangeSelected & ISEventInRange) {
+                            tempEventsList.add(eventsListToFilter.get(i));
+                        }
+
 
                     } else if (currentFilterName.equals(filterEvent) && dateFilter == null
                             && priceFilter == -1 && subFilterName.isEmpty())//only main Filter
@@ -161,6 +209,10 @@ public class FilterMethods extends Application {
                         }
 
                         if (IsWeekendFilter && IsEventInWeekEnd) {
+                            tempEventsList.add(eventsListToFilter.get(i));
+                        }
+
+                        if (ISEventInRange && IsDatesRangeSelected) {
                             tempEventsList.add(eventsListToFilter.get(i));
                         }
                     } else if (currentFilterName.equals(filterEvent) & subFilterName.equals(subFilterEvent)
@@ -182,6 +234,9 @@ public class FilterMethods extends Application {
                         }
 
                         if (IsWeekendFilter && IsEventInWeekEnd) {
+                            tempEventsList.add(eventsListToFilter.get(i));
+                        }
+                        if (IsDatesRangeSelected && ISEventInRange) {
                             tempEventsList.add(eventsListToFilter.get(i));
                         }
                     } else if (currentFilterName.equals(filterEvent) & subFilterName.isEmpty()
@@ -212,6 +267,14 @@ public class FilterMethods extends Application {
                         if (priceFilter == 201 && priceEvent >= priceFilter && IsWeekendFilter & IsEventInWeekEnd) {
                             tempEventsList.add(eventsListToFilter.get(i));
                         }
+                        if ((IsDatesRangeSelected && ISEventInRange && priceFilter != 201 && priceFilter >= priceEvent) || (ISEventInRange && IsDatesRangeSelected && tempEventPrice.equals("FREE") && priceFilter == 0))  // NEED to HANDLE EOW
+                        {
+                            tempEventsList.add(eventsListToFilter.get(i));
+                        }
+                        if (priceFilter == 201 && priceEvent >= priceFilter && IsDatesRangeSelected & ISEventInRange) {
+                            tempEventsList.add(eventsListToFilter.get(i));
+                        }
+
                     } else if (currentFilterName.isEmpty() && subFilterName.isEmpty() && dateFilter == null // price filter only
                             && priceFilter != -1) {
                         if ((priceFilter >= priceEvent && priceFilter != 201 || (tempEventPrice.equals("FREE") && priceFilter == 0))) {
@@ -232,6 +295,10 @@ public class FilterMethods extends Application {
                             tempEventsList.add(eventsListToFilter.get(i));
                         }
 
+                        if (ISEventInRange && IsDatesRangeSelected)  // weekend filter
+                        {
+                            tempEventsList.add(eventsListToFilter.get(i));
+                        }
                     }
                 }
             }
@@ -252,6 +319,8 @@ public class FilterMethods extends Application {
         ArrayList<EventInfo> tempEventsList = new ArrayList<>();
         Date _currentDate = new Date();
         String allCitiesFilterString;
+        resultsGet = getData(_context);
+        Date[] datesFilter = getRangeDateForFilter();
 
         try {
             if (Locale.getDefault().getDisplayLanguage().equals("עברית")) {
@@ -274,11 +343,14 @@ public class FilterMethods extends Application {
                     String tempEventPrice = eventsListToFilter.get(i).getPrice();
                     int priceEvent = -1;
                     boolean IsDateEqual = false;
+//                    resultsGet = getData(_context);
+//                    Date[] datesFilter = getRangeDateForFilter();
                     Date weekEndFilter = FilterPageActivity.addDays(_currentDate, 1000); // for check if weekend filter was activivated
                     boolean IsWeekendFilter = false;
                     boolean IsEventInWeekEnd = false;
-
-                    if (dateFilter != null && DateCompare(weekEndFilter, dateFilter)) // DateCompare(weekEndFilter,dateFilter) to check if Weekdnd filter seletced
+                    boolean IsDatesRangeSelected = false; // 19.10 assaf to support filter by dates Range
+                    boolean ISEventInRange = false;
+                    if (dateFilter != null && DateCompare(weekEndFilter, dateFilter)) // to check if Weekdnd filter seletced
                     {
                         IsWeekendFilter = true; // to check if weekd end filter selected
                         Date endofWeekDate = FilterPageActivity.getCurrentWeekend(); // end day of the week
@@ -288,9 +360,19 @@ public class FilterMethods extends Application {
                         }
                     }
 
-                    if (dateFilter != null && !IsWeekendFilter) // current and event date compare in case of date filter is activate
+                    if (dateFilter!=null && (DateCompare(dateFilter,FilterPageActivity.addDays(_currentDate,3000))))//19.10 - assaf check if Dates range filter (From or To or Both) were set
                     {
-                        IsDateEqual = DateCompare(dateEvent, dateFilter); // Isdateequal = true in all filters except when weekdend selected
+                        IsDatesRangeSelected = true;
+                        if (!datesFilter[0].equals("") && !datesFilter[1].equals("")) {// from and To
+                            if (dateEvent.after(datesFilter[0]) && dateEvent.before(datesFilter[1])) {
+                                ISEventInRange = true;
+                            }
+                        }
+                    }
+
+                    if (dateFilter != null && (!IsWeekendFilter || !IsDatesRangeSelected)) // current and event date compare in case of date filter is activate
+                    {
+                        IsDateEqual = DateCompare(dateEvent, dateFilter); // Isdateequal = true in all filters except when weekdend selected or Dated in range
                     }
 
                     // in case that price is FREE
@@ -322,6 +404,12 @@ public class FilterMethods extends Application {
                             if (priceFilter == 201 && priceEvent >= priceFilter && IsWeekendFilter & IsEventInWeekEnd) {
                                 tempEventsList.add(eventsListToFilter.get(i));
                             }
+                            if ((IsDatesRangeSelected && ISEventInRange && priceFilter != 201 && priceFilter >= priceEvent) || (IsDatesRangeSelected && ISEventInRange && tempEventPrice.equals("FREE") && priceFilter == 0)) {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
+                            if (priceFilter == 201 && priceEvent >= priceFilter && IsDatesRangeSelected & ISEventInRange) {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
 
                         } else if (currentFilterName.equals(filterEvent) & dateFilter != null // main ,Price + date filters. no sub
                                 & priceFilter != -1 & subFilterName.isEmpty()) {
@@ -337,6 +425,13 @@ public class FilterMethods extends Application {
                             if (priceFilter == 201 && priceEvent >= priceFilter && IsWeekendFilter & IsEventInWeekEnd) {
                                 tempEventsList.add(eventsListToFilter.get(i));
                             }
+                            if ((IsDatesRangeSelected && ISEventInRange && priceFilter != 201 && priceFilter >= priceEvent) || (IsDatesRangeSelected && ISEventInRange && tempEventPrice.equals("FREE") && priceFilter == 0)) {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
+                            if (priceFilter == 201 && priceEvent >= priceFilter && IsDatesRangeSelected & ISEventInRange) {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
+
 
                         } else if (currentFilterName.equals(filterEvent) && dateFilter == null
                                 && priceFilter == -1 && subFilterName.isEmpty())//only main Filter
@@ -357,6 +452,11 @@ public class FilterMethods extends Application {
                             if (IsWeekendFilter && IsEventInWeekEnd) {
                                 tempEventsList.add(eventsListToFilter.get(i));
                             }
+
+                            if (IsDatesRangeSelected && ISEventInRange) {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
+
                         } else if (currentFilterName.equals(filterEvent) & subFilterName.equals(subFilterEvent)
                                 && dateFilter == null && priceFilter != -1)// main + sub + price and no Date filter
                         {
@@ -378,6 +478,11 @@ public class FilterMethods extends Application {
                             if (IsWeekendFilter && IsEventInWeekEnd) {
                                 tempEventsList.add(eventsListToFilter.get(i));
                             }
+
+                            if (IsDatesRangeSelected && ISEventInRange) {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
+
                         } else if (currentFilterName.equals(filterEvent) & subFilterName.isEmpty()
                                 && dateFilter == null && priceFilter != -1)// main + price, No sub and no Date filter
                         {
@@ -406,6 +511,16 @@ public class FilterMethods extends Application {
                             if (priceFilter == 201 && priceEvent >= priceFilter && IsWeekendFilter & IsEventInWeekEnd) {
                                 tempEventsList.add(eventsListToFilter.get(i));
                             }
+
+                            if ((IsDatesRangeSelected && ISEventInRange && priceFilter != 201 && priceFilter >= priceEvent) || (IsDatesRangeSelected && ISEventInRange && tempEventPrice.equals("FREE") && priceFilter == 0))  // NEED to HANDLE EOW
+                            {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
+                            if (priceFilter == 201 && priceEvent >= priceFilter && IsDatesRangeSelected & ISEventInRange) {
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
+
+
                         } else if (currentFilterName.isEmpty() && subFilterName.isEmpty() && dateFilter == null // price filter only
                                 && priceFilter != -1) {
                             if ((priceFilter >= priceEvent && priceFilter != 201 || (tempEventPrice.equals("FREE") && priceFilter == 0))) {
@@ -426,6 +541,9 @@ public class FilterMethods extends Application {
                                 tempEventsList.add(eventsListToFilter.get(i));
                             }
 
+                            if (IsDatesRangeSelected && ISEventInRange){ // 19.10 assaf Add Dates Range to
+                                tempEventsList.add(eventsListToFilter.get(i));
+                            }
                         }
                     }
                 }
@@ -459,7 +577,6 @@ public class FilterMethods extends Application {
     private static boolean DateCompare(Date filterDate, Date eventDate) // compare only date withut hours
     {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-
         boolean IsCompare = dateFormat.format(filterDate).equals(dateFormat.format(eventDate));
 
         if (IsCompare)
@@ -469,4 +586,71 @@ public class FilterMethods extends Application {
     }
 
     //==============================================================================================
+
+//    private static boolean DateAfterOrBefore(Date currentDate, Date eventDate) // compare dates, 15/10 assaf
+//    {
+//       if(currentDate.before(eventDate))
+//            return true;
+//        else
+//            return false;
+//    }
+
+
+//  public static void sortEventListByDate (List<EventInfo> allEvents) {//get expired events ot the en dof events list
+//
+//      Calendar calendar = Calendar.getInstance();
+//      final Date currentDate = calendar.getTime();
+//
+//      Collections.sort(allEvents, new Comparator<EventInfo>() {
+//         @Override
+//          public int compare(EventInfo eventDateOne,EventInfo eventDateTwo ) {
+//
+//              if (eventDateTwo.getCreatedAt().after(eventDateOne.getCreatedAt())&& eventDateTwo.getDate().after(currentDate))
+//                  return 1;
+//              if (eventDateTwo.getCreatedAt().after(eventDateOne.getCreatedAt()) &&  eventDateTwo.getDate().before(currentDate))
+//                  return -1;
+//              else if ((eventDateTwo.getCreatedAt().before(eventDateOne.getCreatedAt()) &&  eventDateTwo.getDate().before(currentDate)))
+//                  return -1;
+//             else
+//                 return  0;
+//          }
+//      });
+//  }
+
+    private static String[] getData(Context context)
+    // display the filter info.
+    {
+        SharedPreferences _sharedPref = context.getSharedPreferences("filterInfo", Context.MODE_PRIVATE);
+        String _filterName = _sharedPref.getString("mainFilter", "");
+        String _date = _sharedPref.getString ("date", "");
+        String _dateFrom = _sharedPref.getString ("dateFrom", "");
+        String _dateTo =  _sharedPref.getString ("dateTo", "");
+        String _price = _sharedPref.getString ("price", "");
+        String _subFilter = _sharedPref.getString("subFilter","");
+        String _mainFilterForFilter = _sharedPref.getString("mainFilterForFilter","");
+        String _subFilterForFilter = _sharedPref.getString("subFilterForFilter","");
+        Integer _priceForFilter = _sharedPref.getInt("priceFilterForFilter", -5);
+        String _dateForFilter = _sharedPref.getString("dateFilterForFilter", "");
+
+        String[] values = {_date, _price,_subFilter,_filterName,_mainFilterForFilter,_subFilterForFilter,Integer.toString(_priceForFilter),_dateForFilter,_dateFrom,_dateTo};
+
+        return values;
+    }
+
+    private static Date[] getRangeDateForFilter() // Static method for get the Ranges dates
+    {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM d HH:mm:ss zz yyyy",Locale.ENGLISH);
+
+        Date[] rangeDates=null;
+        String fromDate = resultsGet[8];
+        String toDate = resultsGet[9];
+        try {
+            if (resultsGet[8] !=null && resultsGet[8] != "" && resultsGet[9] != null && resultsGet[9]!="")
+                rangeDates = new Date[]{dateFormat.parse(fromDate),dateFormat.parse(toDate) };
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return rangeDates;
+    }
+
 }

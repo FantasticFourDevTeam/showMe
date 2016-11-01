@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.example.FundigoApp.Events.EventInfo;
+import com.example.FundigoApp.GlobalVariables;
 import com.example.FundigoApp.R;
 import com.example.FundigoApp.StaticMethod.FilterMethods;
 
@@ -54,8 +55,11 @@ public class ArtistAdapter extends BaseAdapter {
         }
 
         artist = (Artist) getItem(position);
-        mViewHolder.tvTitle.setText(artist.getName());
-        mViewHolder.numOfArtistEvents.setText(Integer.toString(getArtistEvents()));
+        if(artist.getName()!="" && artist.getName()!=null&&artist.getName()!= GlobalVariables.No_Artist_Events) {
+            //12.10 Assaf added to presnt only artists with real name (no artist not present)
+            mViewHolder.tvTitle.setText(artist.getName());
+            mViewHolder.numOfArtistEvents.setText(Integer.toString(getArtistEvents()));
+        }
         return convertView;
     }
 

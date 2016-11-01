@@ -1,6 +1,7 @@
 package com.example.FundigoApp.Filter;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -11,6 +12,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.GridView;
 import android.widget.Spinner;
@@ -82,15 +84,18 @@ public class FilterPageActivity extends AppCompatActivity implements AdapterView
     private static String filter;
     GridView gridView;
     private static String dateFilterSelected;
+    private static String dateFilterFromSelected=""; //18.10 assaf: support from to date Range
+    private static String dateFilterToSelected="";//18.10 assaf: support from to date Range
     private static String priceFilterSelected;
     private static ArrayAdapter<CharSequence> dateAdapter;
     private static ArrayAdapter<CharSequence> priceAdapter;
     private static SharedPreferences _sharedPref;
-    private boolean IsCalendarOpened = false;
+   // private boolean IsCalendarOpened = false;
     private static String subFilter;
     private String filterNameToPresentInEventPage;
     private String subFilterNameToPresentInEventPage;
-
+    Button fromButton;
+    Button toButton ;
 
 
     @Override
@@ -158,17 +163,19 @@ public class FilterPageActivity extends AppCompatActivity implements AdapterView
 
         dateSpinner = (Spinner) findViewById (R.id.dateFilter);
         dateAdapter = ArrayAdapter.createFromResource (this, R.array.eventDateFilter, android.R.layout.simple_spinner_item);
-        dateAdapter.setDropDownViewResource (android.R.layout.simple_spinner_dropdown_item);
-        dateSpinner.setAdapter (dateAdapter);
-        dateSpinner.setOnItemSelectedListener (this);
+        dateAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        dateSpinner.setAdapter(dateAdapter);
+        dateSpinner.setOnItemSelectedListener(this);
 
 
         priceSpinner = (Spinner) findViewById (R.id.priceFilter);
         priceAdapter = ArrayAdapter.createFromResource (this, R.array.eventPriceFilter, android.R.layout.simple_spinner_item);
-        priceAdapter.setDropDownViewResource (android.R.layout.simple_spinner_dropdown_item);
-        priceSpinner.setAdapter (priceAdapter);
-        priceSpinner.setOnItemSelectedListener (this);
+        priceAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        priceSpinner.setAdapter(priceAdapter);
+        priceSpinner.setOnItemSelectedListener(this);
 
+        fromButton = (Button) findViewById(R.id.fromDateButton);
+        toButton = (Button) findViewById(R.id.toDateButton);
     }
 
     @Override
@@ -182,38 +189,71 @@ public class FilterPageActivity extends AppCompatActivity implements AdapterView
                     case 0:
                         dateFilterSelected = parent.getItemAtPosition (position).toString ();
                         GlobalVariables.CURRENT_DATE_FILTER = null;//no filter
+                        fromButton.setVisibility(View.GONE);
+                        toButton.setVisibility(View.GONE);
+                        dateFilterToSelected="";
+                        dateFilterFromSelected="";
                         break;
                     case 1:
                         dateFilterSelected = parent.getItemAtPosition (position).toString ();
                         GlobalVariables.CURRENT_DATE_FILTER = currentDate;//Today
+                        fromButton.setVisibility(View.GONE);
+                        toButton.setVisibility(View.GONE);
+                        dateFilterToSelected="";
+                        dateFilterFromSelected="";
                         break;
                     case 2:
                         dateFilterSelected = parent.getItemAtPosition (position).toString ();
                         GlobalVariables.CURRENT_DATE_FILTER = addDays (currentDate, 1);//day after
+                        fromButton.setVisibility(View.GONE);
+                        toButton.setVisibility(View.GONE);
+                        dateFilterToSelected="";
+                        dateFilterFromSelected="";
                         break;
                     case 3:
                         dateFilterSelected = parent.getItemAtPosition (position).toString ();
                         GlobalVariables.CURRENT_DATE_FILTER = addDays (currentDate, 2); // day after tomorrow
+                        fromButton.setVisibility(View.GONE);
+                        toButton.setVisibility(View.GONE);
+                        dateFilterToSelected="";
+                        dateFilterFromSelected="";
                         break;
                     case 4:
                         dateFilterSelected = parent.getItemAtPosition (position).toString ();
                         GlobalVariables.CURRENT_DATE_FILTER = addDays (currentDate, 1000); // (just as a code to identify weekend selection) = Weekend
+                        fromButton.setVisibility(View.GONE);
+                        toButton.setVisibility(View.GONE);
+                        dateFilterToSelected="";
+                        dateFilterFromSelected="";
                         break;
                     case 5:
                           dateFilterSelected = parent.getItemAtPosition (position).toString ();
-                        if (IsCalendarOpened == false) {
+                       // if (IsCalendarOpened == false) {
                             GlobalVariables.CURRENT_DATE_FILTER=null;// delete previous selections to cover case that selection from calendar was canceled
                             //after it was opened
                             int year = Calendar.getInstance ().get (Calendar.YEAR);
                             int day = Calendar.getInstance ().get (Calendar.DAY_OF_MONTH);
                             int month = Calendar.getInstance ().get (Calendar.MONTH); // date picker conclude months from 0-11
                             datePickerDialog = new DatePickerDialog (this, listener, year, month, day);
-                            datePickerDialog.show ();
-
-                        } else {
-                            IsCalendarOpened = false;
-                        }
+                            datePickerDialog.show();
+                            fromButton.setVisibility(View.GONE);
+                            toButton.setVisibility(View.GONE);
+                            dateFilterToSelected="";
+                            dateFilterFromSelected="";
+                       //  }// else {
+                          //  IsCalendarOpened = false;
+                   //     }
                         break;
+                    case 6: // 18.10 assaf add dates range
+                            dateFilterSelected = parent.getItemAtPosition(position).toString();
+                            if (dateFilterFromSelected !="" && dateFilterToSelected!="")
+                            {
+                               GlobalVariables.CURRENT_DATE_FILTER = addDays(new Date(),3000); // save the same dates range when back to it
+                            }
+                            else {
+                                GlobalVariables.CURRENT_DATE_FILTER = null;//cancel the dates range when sellecting other options
+                            }
+                            openRangeDatePickers();
                 }
                 break;
             case R.id.priceFilter:
@@ -248,6 +288,18 @@ public class FilterPageActivity extends AppCompatActivity implements AdapterView
         }
          saveInfo ();
     }
+
+    DatePickerDialog.OnDateSetListener listener = new DatePickerDialog.OnDateSetListener () {//Assaf:Date selected even without press the Done
+          //Data picker appear when select calendar in filter
+        @Override
+        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(year, monthOfYear, dayOfMonth);
+                GlobalVariables.CURRENT_DATE_FILTER = calendar.getTime();
+                Toast.makeText(getApplicationContext(),calendar.getTime().toString(),Toast.LENGTH_SHORT).show();
+                saveInfo(); //24.09 added
+        }
+    };
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
@@ -285,7 +337,7 @@ public class FilterPageActivity extends AppCompatActivity implements AdapterView
             _alert.show ();*/
 
         } else {
-            if (filter.equals (num[i])) { // cancel filter selection - reset mainFilter and subFilter
+            if (filter.equals(num[i])) { // cancel filter selection - reset mainFilter and subFilter
                 filter = null;
                 filterNameToPresentInEventPage = null;// main filter name to present
                 GlobalVariables.CURRENT_FILTER_NAME = "";
@@ -294,8 +346,9 @@ public class FilterPageActivity extends AppCompatActivity implements AdapterView
                 subFilterNameToPresentInEventPage = null;
                 view.setBackgroundColor (Color.TRANSPARENT);
                 saveInfo ();  // assaf added for open Intent to subcategory activity
-            } else {
-                Toast.makeText (this, R.string.can_choice_one_category, Toast.LENGTH_SHORT).show ();
+            }
+            else {
+                Toast.makeText (this, R.string.can_choice_one_category, Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -312,17 +365,7 @@ public class FilterPageActivity extends AppCompatActivity implements AdapterView
         return super.onKeyDown (keyCode, event);
     }
 
-    DatePickerDialog.OnDateSetListener listener = new DatePickerDialog.OnDateSetListener () {
-        //Data picker appear when select calendar in filter
-        @Override
-        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
 
-            Calendar calendar = Calendar.getInstance ();
-            calendar.set (year, monthOfYear, dayOfMonth);
-            GlobalVariables.CURRENT_DATE_FILTER = calendar.getTime();
-            saveInfo(); //24.09 added
-        }
-    };
 
 
     private void saveInfo() { // save the filter info.
@@ -332,6 +375,8 @@ public class FilterPageActivity extends AppCompatActivity implements AdapterView
         editor.putString ("mainFilter", filterNameToPresentInEventPage);
         editor.putString("subFilter", subFilterNameToPresentInEventPage);
         editor.putString("date", dateFilterSelected);
+        editor.putString("dateFrom",dateFilterFromSelected);
+        editor.putString("dateTo",dateFilterToSelected);
         editor.putString("price", priceFilterSelected);
         editor.putString("mainFilterForFilter", filter); //24.09 assaf
         editor.putString("subFilterForFilter", GlobalVariables.CURRENT_SUB_FILTER); //24.09 assaf
@@ -346,19 +391,22 @@ public class FilterPageActivity extends AppCompatActivity implements AdapterView
     }
 
 
-    private String[] getData()
+    public String[] getData()
     // display the filter info.
     {
-        _sharedPref = getSharedPreferences ("filterInfo", MODE_PRIVATE);
+        _sharedPref = getSharedPreferences("filterInfo", Context.MODE_PRIVATE);
         String _filterName = _sharedPref.getString("mainFilter", "");
         String _date = _sharedPref.getString ("date", "");
+        String _dateFrom = _sharedPref.getString ("dateFrom", "");
+        String _dateTo =  _sharedPref.getString ("dateTo", "");
         String _price = _sharedPref.getString ("price", "");
         String _subFilter = _sharedPref.getString("subFilter","");
         String _mainFilterForFilter = _sharedPref.getString("mainFilterForFilter","");
         String _subFilterForFilter = _sharedPref.getString("subFilterForFilter","");
         Integer _priceForFilter = _sharedPref.getInt("priceFilterForFilter", -5);
         String _dateForFilter = _sharedPref.getString("dateFilterForFilter", "");
-        String[] values = {_date, _price,_subFilter,_filterName,_mainFilterForFilter,_subFilterForFilter,Integer.toString(_priceForFilter),_dateForFilter};
+
+        String[] values = {_date, _price,_subFilter,_filterName,_mainFilterForFilter,_subFilterForFilter,Integer.toString(_priceForFilter),_dateForFilter,_dateFrom,_dateTo};
 
         return values;
     }
@@ -368,7 +416,6 @@ public class FilterPageActivity extends AppCompatActivity implements AdapterView
         intent.putExtra ("mainFilter", filter);
         intent.putExtra ("date", dateFilterSelected);
         intent.putExtra("price", priceFilterSelected);
-
 
         startActivity(intent);
     }
@@ -385,8 +432,8 @@ public class FilterPageActivity extends AppCompatActivity implements AdapterView
         filterNameToPresentInEventPage = results[3];//get the mainfilter set
         subFilterNameToPresentInEventPage = results[2];//get the subfilter set in subfilter activity
         if (!results[0].equals ("") || !results[1].equals ("")) {
-            if (dateAdapter.getPosition (results[0]) == 5) // prevent open calendar automtically follwoing open in main filter
-                IsCalendarOpened = true;
+          //  if (dateAdapter.getPosition (results[0]) == 5) // prevent open calendar automtically follwoing open in main filter
+            //    IsCalendarOpened = true;
             dateSpinner.setSelection (dateAdapter.getPosition (results[0]));
             priceSpinner.setSelection (priceAdapter.getPosition (results[1]));
         }
@@ -420,4 +467,74 @@ public class FilterPageActivity extends AppCompatActivity implements AdapterView
         return weekEnd;
     }
 
+    private void openRangeDatePickers(){ // 18.10 assaf add dates range
+
+     fromButton.setVisibility(View.VISIBLE);
+     toButton.setVisibility(View.VISIBLE);
+     View.OnClickListener onClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+           if (v.getId() == fromButton.getId()) {
+
+                int year = Calendar.getInstance ().get (Calendar.YEAR);
+                int day = Calendar.getInstance ().get (Calendar.DAY_OF_MONTH);
+                int month = Calendar.getInstance ().get (Calendar.MONTH); // date picker conclude months from 0-11
+               datePickerDialog = new DatePickerDialog (v.getContext(), fromDatelistener, year, month, day);
+               datePickerDialog.show ();
+
+            } else if (v.getId() == toButton.getId()) {
+
+                int year = Calendar.getInstance ().get (Calendar.YEAR);
+                int day = Calendar.getInstance ().get (Calendar.DAY_OF_MONTH);
+                int month = Calendar.getInstance ().get (Calendar.MONTH); // date picker conclude months from 0-11
+                datePickerDialog = new DatePickerDialog (v.getContext(), toDatelistener, year, month, day);
+                datePickerDialog.show ();
+            }
+        }
+    };
+        fromButton.setOnClickListener(onClickListener);
+        toButton.setOnClickListener(onClickListener);
+
+}
+
+    DatePickerDialog.OnDateSetListener fromDatelistener = new DatePickerDialog.OnDateSetListener () {//18.10 asaf add dates range
+        //Data picker appear when select calendar in filter
+        @Override
+        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+            Date currentDate = new Date ();
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(year, monthOfYear, dayOfMonth);
+            GlobalVariables.CURRENT_DATE_FILTER = addDays(currentDate, 3000);//18.10 assaf -  Just to sign that this is Range Dates Filter
+            dateFilterFromSelected = calendar.getTime().toString();
+            Toast.makeText(getApplicationContext(),dateFilterFromSelected ,Toast.LENGTH_SHORT).show();
+            saveInfo();
+        }
+    };
+
+    DatePickerDialog.OnDateSetListener toDatelistener = new DatePickerDialog.OnDateSetListener () {//18.10 asaf add dates range
+        //Data picker appear when select calendar in filter
+        @Override
+        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+            Date currentDate = new Date ();
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(year, monthOfYear, dayOfMonth);
+            dateFilterToSelected= calendar.getTime().toString();
+            GlobalVariables.CURRENT_DATE_FILTER = addDays(currentDate, 3000);
+            Toast.makeText(getApplicationContext(),dateFilterToSelected,Toast.LENGTH_SHORT).show();//18.10 assaf -Just to sign that this is Range Dates Filter
+            saveInfo();
+        }
+    };
+
+    @Override
+    public void onBackPressed() {
+               // 20.10 Assaf: verify that From and To dates were set
+        if (dateFilterFromSelected!="" && dateFilterToSelected=="" || dateFilterToSelected!="" && dateFilterFromSelected=="")
+        {
+          Toast.makeText(getApplicationContext(),getString(R.string.setfromto),Toast.LENGTH_SHORT).show();
+        }
+        else {
+            this.finish();
+        }
+
+    }
 }

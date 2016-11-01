@@ -190,6 +190,12 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnCl
                     checkIfInside.add(GlobalVariables.ALL_EVENTS_DATA.get(i).getParseObjectId());
                     flag = false;
                 }
+                 //09.10 . assaf added to search in artist value
+                if (flag && GlobalVariables.ALL_EVENTS_DATA.get(i).getArtist().toLowerCase().contains(search.toLowerCase())) {
+                    ans.add(GlobalVariables.ALL_EVENTS_DATA.get(i));
+                    checkIfInside.add(GlobalVariables.ALL_EVENTS_DATA.get(i).getParseObjectId());
+                    flag = false;
+                }
                 flag = true;
             }
         }

@@ -9,8 +9,10 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.example.FundigoApp.Events.CreateEventActivity;
+import com.example.FundigoApp.Producer.Artists.QR_producer;
 import com.example.FundigoApp.Producer.TabPagerAdapter;
 import com.example.FundigoApp.R;
 
@@ -20,6 +22,7 @@ public class ProducerActivity extends AppCompatActivity {
 
 public static int dialogCounter; //for present the progress dialog only once when statiscics page loaded
 public static ProgressDialog dialog;
+private static ImageView qr_scan_icon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,40 +30,54 @@ public static ProgressDialog dialog;
         setContentView (R.layout.producer_avtivity_main);
         TabLayout tabLayout = (TabLayout) findViewById (R.id.tab_layout);
         if (Locale.getDefault ().getDisplayLanguage ().equals ("עברית")) {
-            tabLayout.addTab (tabLayout.newTab ().setText ("אמנים"));
-            tabLayout.addTab (tabLayout.newTab ().setText ("מידע"));
+            tabLayout.addTab (tabLayout.newTab ().setText ("אומנים"));
+            tabLayout.addTab (tabLayout.newTab ().setText ("ללא אומן"));
+            tabLayout.addTab (tabLayout.newTab ().setText ("מדדי אירועים"));
         } else {
-            tabLayout.addTab (tabLayout.newTab ().setText ("Artist"));
-            tabLayout.addTab (tabLayout.newTab ().setText ("State"));
+            tabLayout.addTab (tabLayout.newTab ().setText ("Artists"));
+            tabLayout.addTab(tabLayout.newTab().setText("No Artist"));//12.10 assaf
+            tabLayout.addTab (tabLayout.newTab().setText("Events State"));
         }
         dialogCounter =0;
-        tabLayout.setTabGravity (TabLayout.GRAVITY_FILL);
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);//12.10 assaf
+        tabLayout.setTabMode(TabLayout.MODE_FIXED);//12.10 assaf
         final ViewPager viewPager = (ViewPager) findViewById (R.id.pager);
         final TabPagerAdapter adapter = new TabPagerAdapter
                 (getSupportFragmentManager (), tabLayout.getTabCount ());
         viewPager.setAdapter (adapter);
         viewPager.addOnPageChangeListener (new TabLayout.TabLayoutOnPageChangeListener (tabLayout));
-        tabLayout.setOnTabSelectedListener (new TabLayout.OnTabSelectedListener () {
+        viewPager.setOffscreenPageLimit(2);//assaf: 13.10: keep the fragments in Memory and prevent refresh the page each time swipe to it , it takes time
+       tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
 
-                if (tab.getPosition() == 1 && dialogCounter == 0) {
+                if (tab.getPosition() == 2 && dialogCounter == 2) {
                     dialog = new ProgressDialog(ProducerActivity.this);
                     dialog.setMessage("Loading...");
                     dialog.show();
                 }
-                viewPager.setCurrentItem (tab.getPosition ());
+                viewPager.setCurrentItem(tab.getPosition());
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-                if (tab.getPosition() == 1) {
+                if (tab.getPosition() == 1 || tab.getPosition() == 0 ) {
                     dialogCounter++;
                 }
-            }
+               }
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
+            }
+        });
+
+
+        qr_scan_icon =(ImageView)findViewById (R.id._qr_scan_producer);
+        qr_scan_icon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), QR_producer.class);
+                startActivity(intent);
             }
         });
     }
@@ -91,4 +108,6 @@ public static ProgressDialog dialog;
         AlertDialog alert = builder.create ();
         alert.show();
     }
+
+
 }

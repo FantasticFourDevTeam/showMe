@@ -32,6 +32,7 @@ public class CustomerProfileUpdate extends AppCompatActivity {
     String emailValue;
     boolean IMAGE_SELECTED = false;
     ProgressDialog dialog;
+    private static Bitmap imageToUpdate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,8 +114,9 @@ public class CustomerProfileUpdate extends AppCompatActivity {
     public byte[] imageUpdate() {
         byte[] image;
         try {
-            customerImg.buildDrawingCache ();
-            Bitmap bitmap = customerImg.getDrawingCache ();
+            //customerImg.buildDrawingCache ();
+            //Bitmap bitmap = customerImg.getDrawingCache ();
+            Bitmap bitmap = imageToUpdate;//24.10 assaf updated tro get better picture view
             ByteArrayOutputStream stream = new ByteArrayOutputStream ();
             bitmap.compress (Bitmap.CompressFormat.JPEG, 100, stream);
             image = stream.toByteArray ();
@@ -133,8 +135,8 @@ public class CustomerProfileUpdate extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         try {
             if (requestCode == GlobalVariables.SELECT_PICTURE && resultCode == RESULT_OK && null != data) {
-                Bitmap image = FileAndImageMethods.getImageFromDevice (data, this);
-                customerImg.setImageBitmap (image);
+                imageToUpdate = FileAndImageMethods.getImageFromDevice (data, this);
+                customerImg.setImageBitmap (imageToUpdate);
                 customerImg.setVisibility (View.VISIBLE);
                 IMAGE_SELECTED = true;
             }

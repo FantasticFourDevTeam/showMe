@@ -111,7 +111,8 @@
         <item>מחר</item>
         <item>מחרתיים</item>
         <item>סוף שבוע</item>
-        <item>בחר מלוח שנה</item>
+        <item>בחר תאריך מלוח שנה</item>
+        <item>בחר טווח תאריכים</item>
     </string-array>
 
     <string-array name="sportFiltersName">
@@ -259,7 +260,7 @@
     <string name="upcoming_tickets_price_avg">מחיר ממוצע אירועים עתידים</string>
     <string name="ibn_gabirol_tel_aviv">אבן גבירול תל אביב"</string>
     <string name="validate_address">אמת כתובת</string>
-    <string name="place">מקום: </string>
+    <string name="place">מקום*:</string>
     <string name="hall_capacity">תכולת אולם: </string>
     <string name="parking">חניה: </string>
     <string name="toilet">שירותים: </string>
@@ -300,7 +301,7 @@
     <string name="event_hasnot_created_successfully">יצירת אירוע נכשלה נסה שוב</string>
     <string name="please_fill_empty_fields">מלא שדות חסרים</string>
     <string name="are_you_sure_you_want_to_exit">האם אתה בטוח שברצונך לצאת?</string>
-    <string name="validating">מוודא</string>
+    <string name="validating">מזהה כתובת</string>
     <string name="something_went_wrong_plese_try_again">נמצאה תקלה נסה שוב</string>
     <string name="problem_is">הכתובת אינה תקינה, הבעיה היא </string>
     <string name="tickets_status">סטטוס אירוע</string>
@@ -417,13 +418,17 @@
 
 	<string name="please_fill_empty_forms">השלם נתונים חסרים</string>
 
- <string name="price">מחיר*:</string>
- <string name="event_name">שם*:</string>
+<string name="price">מחיר*:</string>
+<string name="event_name">שם*:</string>
 <string name="quantity">כמות*:</string>
- <string name="address">כתובת מלאה*:</string>
+<string name="address">כתובת מלאה*:</string>
 <string name="tags">תגיות*:</string>
-
-	
+<string name ="event_expiration">אירוע עבר</string>
+<string name="fromDate">מתאריך</string>
+<string name="toDate">עד תאריך</string>
+<string name="setfromto">אחד מהערכים בטווח התאריכים חסר</string>
+<string name="address_found">הכתובת שהמערכת קלטה היא: </string>
+<string name="price_per_seat">מחיר לפי מושב</string>
 </resources>
 
 

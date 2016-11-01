@@ -33,6 +33,7 @@ import com.parse.SaveCallback;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.HashMap;
 
 import fr.ganfra.materialspinner.MaterialSpinner;
 
@@ -75,6 +76,11 @@ public class EditEventActivity extends AppCompatActivity implements AdapterView.
     private static final int SELECT_PICTURE = 1;
     private Bitmap bmp;
     EventInfo eventInfo;
+    private Bitmap image;
+    private String region1="";
+    private String region2="";
+    private static HashMap<String,String> addressPerLanguage = new HashMap<>();
+    private static HashMap<String,String> cityPerLanguage = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -374,7 +380,7 @@ public class EditEventActivity extends AppCompatActivity implements AdapterView.
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == GlobalVariables.SELECT_PICTURE && resultCode == RESULT_OK && null != data) {
-            Bitmap image = FileAndImageMethods.getImageFromDevice (data, this);
+            image = FileAndImageMethods.getImageFromDevice (data, this);
             img.setImageBitmap(image);
             pictureSelected = true;
         }
@@ -418,15 +424,15 @@ public class EditEventActivity extends AppCompatActivity implements AdapterView.
             event.put("artist", et_artist.getText().toString());
             if (!event.getAddress().equals(et_address.getText().toString())) {
                 event.put("address", valid_address);
+                event.setAddressPerLanguage(addressPerLanguage); //assaf - 28.10 save address per Lnagauge as an object in Parse
                 event.put("city", city);
+                event.setCityPerLanguage(cityPerLanguage);//assaf - 28.10 save city name per Lanagauge as an object in Parse
                 event.put("X", lat);
                 event.put("Y", lng);
             }
-
             try {
                 if (pictureSelected) {
-                    img.buildDrawingCache();
-                    Bitmap bitmap = img.getDrawingCache();
+                    Bitmap bitmap = image;
                     ByteArrayOutputStream stream = new ByteArrayOutputStream();
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                     byte[] image = stream.toByteArray();
@@ -465,7 +471,6 @@ public class EditEventActivity extends AppCompatActivity implements AdapterView.
         address = et_address.getText ().toString ();
         if (!address.isEmpty()) {
             iv_val_add_edit.setVisibility(View.INVISIBLE);
-            //new ValidateAddress ().execute (GlobalVariables.GEO_API_ADDRESS);
             new ValidateAddress().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, GlobalVariables.GEO_API_ADDRESS);
         }
         else
@@ -490,21 +495,36 @@ public class EditEventActivity extends AppCompatActivity implements AdapterView.
         protected String doInBackground(String... params) {
             dialog.dismiss ();
             String queryString = null;
+            String language = "";
+            String addressResult = "";
+
             try {
                 queryString = "" +
                                       "&address=" + URLEncoder.encode (address, "utf-8") +
-                                      "&key=" + GlobalVariables.GEO_API_KEY;
+                                      "&key=" + GlobalVariables.GEO_API_KEY + language;
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace ();
             }
 
+            try {
+                addressResult = HttpHandler.get(params[0], queryString);
 
-            return HttpHandler.get (params[0], queryString);
+                if (addressResult != null && addressResult!="") { // get address and city in othr languages only if English works ok
+                    addressPerLanguage.clear();
+                    cityPerLanguage.clear();
+                    EventDataMethods.addressNameNonEnglish(address, addressPerLanguage,cityPerLanguage);
+                }
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            return addressResult;
         }
 
         // ----------------------------------------------------
         @Override
         protected void onPostExecute(String s) {
+            String street= "";
+            String number = "";
 
             if (s == null) {
                 Toast.makeText (EditEventActivity.this, "Something went wrong, plese try again", Toast.LENGTH_SHORT).show ();
@@ -512,19 +532,33 @@ public class EditEventActivity extends AppCompatActivity implements AdapterView.
                 iv_val_add_edit.setVisibility (View.VISIBLE);
 
             } else {
+
                 gson = new Gson ();
                 result = gson.fromJson (s, Result.class);
                 if (result.getStatus ().equals ("OK")) {
                     address_ok = true;
-                    iv_val_add_edit.setImageResource (R.drawable.v);
+                    iv_val_add_edit.setImageResource(R.drawable.v);
                     iv_val_add_edit.setVisibility (View.VISIBLE);
-                    String long_name = result.getResults ().get (0).getAddress_components ().get (1).getLong_name ();
-                    String street = long_name.replaceAll ("Street", "");
-                    String number = result.getResults ().get (0).getAddress_components ().get (0).getShort_name ();
-                    lat = result.getResults ().get (0).getGeometry ().getLocation ().getLat ();
-                    lng = result.getResults ().get (0).getGeometry ().getLocation ().getLng ();
-                    city = result.getResults ().get (0).getAddress_components ().get (2).getShort_name ();
-                    valid_address = street + number + ", " + city;
+
+                    try {
+                        String long_name = result.getResults().get(0).getAddress_components().get(1).getLong_name();
+                        street = long_name.replaceAll("Street", "");
+                        number = result.getResults().get(0).getAddress_components().get(0).getShort_name();
+                        lat = result.getResults().get(0).getGeometry().getLocation().getLat();
+                        lng = result.getResults().get(0).getGeometry().getLocation().getLng();
+                        city = result.getResults().get(0).getAddress_components().get(2).getLong_name();
+                        region1 = result.getResults().get(0).getAddress_components().get(4).getLong_name(); // sub region was added - 25.10 assaf
+                        region2 = result.getResults().get(0).getAddress_components().get(5).getLong_name();
+                        valid_address = street + number + ", " + city;
+
+                        Toast.makeText(getApplicationContext(), getString(R.string.address_found) + valid_address + " " + region1 + " " + region2, Toast.LENGTH_LONG).show();
+                    }
+
+                    catch (Exception ex){
+                        ex.printStackTrace();
+                        valid_address = street + " " + number + ", " + city; //Assaf 25.10 in case that region1 or Region2 not provided by the resposnse from Json and exc[etion was thrown
+                        Toast.makeText(getApplicationContext(), getString(R.string.address_found) + valid_address + " " + region1 + " " + region2, Toast.LENGTH_LONG).show();
+                    }
 
                 } else if (result.getStatus ().equals ("ZERO_RESULTS")) {
                     address_ok = false;

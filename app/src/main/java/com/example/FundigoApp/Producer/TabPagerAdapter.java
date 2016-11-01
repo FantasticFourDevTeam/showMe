@@ -4,6 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import com.example.FundigoApp.Producer.Artists.ProducerNoArtistEventsActivity;
 import com.example.FundigoApp.Producer.Artists.ProducerMainActivity;
 
 public class TabPagerAdapter extends FragmentStatePagerAdapter {
@@ -21,8 +22,12 @@ public class TabPagerAdapter extends FragmentStatePagerAdapter {
                 ProducerMainActivity tab1 = new ProducerMainActivity ();
                 return tab1;
             case 1:
-                AllEventsStats tab2 = new AllEventsStats ();
+                ProducerNoArtistEventsActivity tab2 = new ProducerNoArtistEventsActivity();
                 return tab2;
+            case 2:
+                AllEventsStats tab3 = new AllEventsStats ();
+                return tab3;
+
             default:
                 return null;
         }

@@ -156,7 +156,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="10dp"
-            android:text="@string/image_upload"/>
+            android:text="@string/event_image_upload"/>
 
         <ImageView
             android:id="@+id/pic"

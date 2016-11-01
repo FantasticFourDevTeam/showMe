@@ -34,12 +34,16 @@ public class EventsListAdapter extends BaseAdapter {
     boolean isSavedActivity;
     public int index;
     ImageLoader loader;
+    Date currentDate;
 
     public EventsListAdapter(Context c, List<EventInfo> eventList, boolean isSavedActivity) {
         this.context = c;
         this.eventList = eventList;
         this.isSavedActivity = isSavedActivity;
         loader = FileAndImageMethods.getImageLoader (c);
+
+        Calendar calendar = Calendar.getInstance();
+        currentDate = calendar.getTime();
     }
 
     @Override
@@ -70,16 +74,31 @@ public class EventsListAdapter extends BaseAdapter {
         } else {
             eventListHolder = (EventListHolder) row.getTag ();
         }
-        final EventInfo event = eventList.get (i);
+        final EventInfo event = eventList.get(i);
 
         index = i;
-        loader.displayImage (eventList.get (i).getPicUrl (), eventListHolder.image);
-        eventListHolder.date.setText (event.getDateAsString ());
-        eventListHolder.name.setText (event.getName ());
-        eventListHolder.tags.setText (event.getTags ());
-        eventListHolder.price.setText (EventDataMethods.getDisplayedEventPrice (event.getPrice ()));
+        loader.displayImage(eventList.get(i).getPicUrl(), eventListHolder.image);
+        eventListHolder.date.setText(event.getDateAsString());
+
+        eventListHolder.name.setText (event.getName());
+        eventListHolder.tags.setText (event.getTags());
+
+        if (EventDataMethods.getDisplayedEventPrice (event.getPrice ()).equals("FREE")) {
+            eventListHolder.price.setText(R.string.free);
+        }else {
+            eventListHolder.price.setText(EventDataMethods.getDisplayedEventPrice(event.getPrice()));
+        }
         eventListHolder.place.setText (event.getPlace ());
+
         eventListHolder.address.setText(event.getAddress());
+
+        if (event.getDate().before(currentDate)) {
+            eventListHolder.expiredTag.setText(R.string.event_expiration);
+            eventListHolder.expiredTag.setVisibility(View.VISIBLE);
+        }
+        else{
+            eventListHolder.expiredTag.setVisibility(View.GONE);
+        }
 
         checkIfChangeColorToSaveButtton (event, eventListHolder.saveEvent);
         eventListHolder.saveEvent.setOnClickListener (new View.OnClickListener () {
@@ -142,6 +161,7 @@ public class EventsListAdapter extends BaseAdapter {
                 }
             }
         });
+
         return row;
     }
 
@@ -173,4 +193,5 @@ public class EventsListAdapter extends BaseAdapter {
             Log.e (ex.getMessage (), "save in Calendar was failed");
         }
     }
+
 }

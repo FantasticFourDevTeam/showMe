@@ -71,11 +71,11 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         if (soldTickets!=null) { // Events with saved seats
              // date = eventsSeats.getPurchaseDate();
-            date = eventsSeats.getCreatedAt();//29.09 - Assaf fixed
+            date = eventsSeats.getUpdatedAt();//29.09 - Assaf fixed
         }
         else // for free events
         {
-            date = eventsSeats.getCreatedAt();
+            date = eventsSeats.getUpdatedAt();
         }
             SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
             Calendar cal = Calendar.getInstance();

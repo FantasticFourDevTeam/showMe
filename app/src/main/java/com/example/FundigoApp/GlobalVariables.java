@@ -24,7 +24,7 @@ public class GlobalVariables {
     public static final String FB_PIC_URL = "fb_pic_url";
     public static final String FB_NAME = "fb_name";
     public static final String FB_ID = "fb_id";
-    public static final String No_Artist_Events = "NoArtist Events";
+    public static final String No_Artist_Events = "No Artist";
     public static final int REQUEST_CODE_MY_PICK = 1;
     public static final int SELECT_PICTURE = 1;
     public static final String GEO_API_ADDRESS = "https://maps.googleapis.com/maps/api/geocode/json?";
@@ -38,7 +38,7 @@ public class GlobalVariables {
 
     public static List<EventInfo> ALL_EVENTS_DATA = new ArrayList<EventInfo> ();
     public static List<Artist> artist_list = new ArrayList<> ();
-    public static String CITY_GPS = null;
+    public static String CITY_GPS = "";
     public static Location MY_LOCATION = null;
     public static String CURRENT_FILTER_NAME = "";
     public static String CURRENT_CITY_NAME = "";

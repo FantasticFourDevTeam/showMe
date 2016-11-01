@@ -1,6 +1,6 @@
 package com.example.FundigoApp.Producer.Artists;
 
-import android.app.Activity;
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -8,11 +8,12 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.view.ContextMenu;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.example.FundigoApp.Events.EditEventActivity;
 import com.example.FundigoApp.Events.EventInfo;
@@ -31,29 +32,25 @@ import com.parse.ParseQuery;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ArtistEventsActivity extends Activity implements AdapterView.OnItemClickListener {
-    private static List<EventInfo> eventsList = new ArrayList<EventInfo> ();
+public class ProducerNoArtistEventsActivity extends android.support.v4.app.Fragment implements AdapterView.OnItemClickListener,EventDataMethods.GetEventsDataCallback {
+    private static List<EventInfo> eventsList = new ArrayList<EventInfo>();
     ListView eventsListView;
     private static EventsListAdapter eventsListAdapter;
-    TextView artistTV;
+   // TextView artistTV;
     String eventObjectId;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView (R.layout.artist_events);
-        artistTV = (TextView) findViewById (R.id.artistNameEventsPage);
-        String artistName = getIntent ().getStringExtra ("artist_name");
-        artistTV.setText (artistName);
-
-        eventsListView = (ListView) findViewById (R.id.artistEventList);
-        eventsListAdapter = new EventsListAdapter (this,
-                                                          eventsList,
-                                                          false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+        View rootView = inflater.inflate(R.layout.activity_noartist_events, container, false);
+        eventsListView = (ListView) rootView.findViewById(R.id.noArtistEventList);
+        eventsListAdapter = new EventsListAdapter(getActivity(),
+                eventsList,
+                false);
         eventsListView.setAdapter(eventsListAdapter);
         eventsListView.setSelector(new ColorDrawable(Color.TRANSPARENT));
         eventsListView.setOnItemClickListener(this);
-        FilterMethods.filterEventsByArtist(artistName,
+        FilterMethods.filterEventsByArtist(GlobalVariables.No_Artist_Events,
                 eventsList);
         eventsListAdapter.notifyDataSetChanged();
         registerForContextMenu(eventsListView);
@@ -65,75 +62,83 @@ public class ArtistEventsActivity extends Activity implements AdapterView.OnItem
                 return false;/////
             }
         });
+
+        return rootView;
     }
 
     @Override
     public void onItemClick(AdapterView<?> av, View view, int i, long l) {
-        Bundle b = new Bundle ();
-        Intent intent = new Intent (this, EventPageActivity.class);
+        Bundle b = new Bundle();
+        Intent intent = new Intent(getActivity(), EventPageActivity.class);
         EventDataMethods.onEventItemClick(i, eventsList, intent);
         intent.putExtras(b);
         startActivity(intent);
     }
 
     @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         GeneralStaticMethods.onActivityResult(requestCode,
                 data,
-                this);
+                this.getActivity());
     }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-    //The menu Appear when Prodcuer stand on the Event frame and press the Event long time
+        //The menu Appear when Prodcuer stand on the Event frame and press the Event long time
         super.onCreateContextMenu(menu, v, menuInfo);
-        getMenuInflater().inflate(R.menu.context_menu, menu);
+        getActivity().getMenuInflater().inflate(R.menu.context_menu, menu);
 
     }
 
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
         eventsListAdapter.notifyDataSetChanged();
+
+        if(GlobalVariables.refreshArtistsList){
+            GlobalVariables.refreshArtistsList = false;
+            Intent intent = new Intent (this.getActivity (), EventPageActivity.class);
+            EventDataMethods.downloadEventsData (this, GlobalVariables.PRODUCER_PARSE_OBJECT_ID, this.getContext (), intent);
+        }
     }
 
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo ();
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         final int pos = info.position;
 
-        switch (item.getItemId ()) {
+        switch (item.getItemId()) {
             case R.id.delete_event:
-                eventObjectId = eventsList.get (pos).getParseObjectId ();
-                DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener () {
+                eventObjectId = eventsList.get(pos).getParseObjectId();
+                DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
                             case DialogInterface.BUTTON_POSITIVE:
-                                deleteEvent (eventObjectId);
+                                deleteEvent(eventObjectId);
                                 GlobalVariables.refreshArtistsList = true;
                                 break;
                             case DialogInterface.BUTTON_NEGATIVE:
-                                dialog.dismiss ();
+                                dialog.dismiss();
                                 break;
                         }
                     }
                 };
-                AlertDialog.Builder builder = new AlertDialog.Builder (this);
-                builder.setTitle ("You are going to delete "+ eventsList.get(pos).getName() + " event");
-                builder.setIcon (R.drawable.warning);
-                builder.setMessage ("Are you sure? This event could not be resume after deleting it");
-                builder.setPositiveButton ("Yes", listener);
-                builder.setNegativeButton ("No", listener);
+                AlertDialog.Builder builder = new AlertDialog.Builder (this.getActivity());
+                builder.setTitle("You are going to delete " + eventsList.get(pos).getName() + " event");
+                builder.setIcon(R.drawable.warning);
+                builder.setMessage("Are you sure? This event could not be resume after deleting it");
+                builder.setPositiveButton("Yes", listener);
+                builder.setNegativeButton("No", listener);
                 AlertDialog dialog = builder.create ();
                 dialog.show ();
                 return true;
             case R.id.edit_event:
                 eventObjectId = eventsList.get (pos).getParseObjectId ();
-                Intent intent = new Intent (this, EditEventActivity.class);
+                Intent intent = new Intent (getActivity(), EditEventActivity.class);
                 intent.putExtra(GlobalVariables.OBJECTID, eventObjectId);
                 startActivity (intent);
                 return true;
@@ -143,10 +148,12 @@ public class ArtistEventsActivity extends Activity implements AdapterView.OnItem
         }
     }
 
+
+
     public void deleteEvent(final String objectId) {
         ParseQuery<ParseObject> query = ParseQuery.getQuery ("Event");
         query.whereEqualTo ("objectId", objectId);
-        query.orderByDescending ("createdAt");
+        query.orderByDescending("createdAt");
         try {
             ParseObject parseObject = query.getFirst ();
             parseObject.delete ();
@@ -214,6 +221,32 @@ public class ArtistEventsActivity extends Activity implements AdapterView.OnItem
                 }
             }
         });
-        finish ();
+        getActivity().finish();
     }
+
+//    @Override
+//    public void setUserVisibleHint(boolean isVisibleToUser) { // refresh the fragment When swipe to it
+//        super.setUserVisibleHint(isVisibleToUser);
+//
+//        if (isVisibleToUser)
+//        {
+//            if (getView()!=null)
+//            {
+//
+//                FragmentManager fragmentManager = getFragmentManager();
+//                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//
+//                Fragment _fragment = new ProducerNoArtistEventsActivity();
+//                fragmentTransaction.replace(R.id.noArtistFragment,_fragment);
+//                fragmentTransaction.commit();
+//            }
+//        }
+//    }
+
+    @Override
+    public void eventDataCallback() {
+        EventDataMethods.uploadArtistData();
+        eventsListAdapter.notifyDataSetChanged();
+    }
+
 }

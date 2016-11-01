@@ -32,7 +32,10 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class GeneralStaticMethods {
 
@@ -255,6 +258,23 @@ public class GeneralStaticMethods {
             super.onPostExecute(s);
             Log.e("onPostExecute", "is " + s);
         }
+    }
+    public static boolean getLanguage() { //25.10 - assaf
+        if (Locale.getDefault().getDisplayLanguage().equals("עברית")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static String getDateToStringConversion (Date dateToConvert){
+
+       // SimpleDateFormat dateFormatter = new SimpleDateFormat("E,MMMMMM d, yyyy, hh:mm a", Locale.getDefault());
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("E,d/M/yyyy, hh:mm a", Locale.getDefault());
+
+        String dateConverted = dateFormatter.format(dateToConvert);
+
+        return dateConverted;
     }
 }
 

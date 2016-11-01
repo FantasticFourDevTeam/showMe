@@ -25,19 +25,19 @@ import com.example.FundigoApp.GlobalVariables;
 import com.example.FundigoApp.R;
 import com.example.FundigoApp.SearchActivity;
 import com.example.FundigoApp.StaticMethod.EventDataMethods;
+import com.example.FundigoApp.StaticMethod.EventDataMethods.GetEventsDataCallback;
 import com.example.FundigoApp.StaticMethod.FilterMethods;
 import com.example.FundigoApp.StaticMethod.GPSMethods;
 import com.example.FundigoApp.StaticMethod.GPSMethods.GpsICallback;
 import com.example.FundigoApp.StaticMethod.GeneralStaticMethods;
-import com.example.FundigoApp.StaticMethod.EventDataMethods.GetEventsDataCallback;
 
 import java.text.DecimalFormat;
-import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 public class RealTimeActivity extends AppCompatActivity implements View.OnClickListener,
                                                                            AdapterView.OnItemClickListener,
@@ -261,8 +261,10 @@ public class RealTimeActivity extends AppCompatActivity implements View.OnClickL
         String _price = _sharedPref.getString ("price", "");
         String _mainfilter = _sharedPref.getString ("mainFilter", "");
         String _subfilter = _sharedPref.getString ("subFilter", "");
+        String _dateFrom = _sharedPref.getString ("dateFrom", ""); //18.10 assaf
+        String _dateTo =  _sharedPref.getString ("dateTo", "");//18.10 - assaf
 
-        String[] values = {_mainfilter, _subfilter, _date, _price};
+        String[] values = {_mainfilter, _subfilter, _date, _price,_dateFrom,_dateTo};
 
         return values;
     }
@@ -272,6 +274,8 @@ public class RealTimeActivity extends AppCompatActivity implements View.OnClickL
             String[] results = getData (); // display the filter line
             String[] values = getResources ().getStringArray(R.array.eventPriceFilter);
             String[] dateValues = getResources().getStringArray(R.array.eventDateFilter);
+            SimpleDateFormat dateFormatter = new SimpleDateFormat("E MMM d yyyy", Locale.getDefault());
+            String toFromDates="";
 
             if (!results[0].equals ("") || !results[1].equals ("") || !results[2].equals ("") || !results[3].equals ("")) {
                 for (int i = 0; i < results.length; i++) {
@@ -281,16 +285,26 @@ public class RealTimeActivity extends AppCompatActivity implements View.OnClickL
                     }
                     if(results[i].equals(dateValues[5])&&GlobalVariables.CURRENT_DATE_FILTER!=null)
                     {
-                        Format dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-                        results[i] = dateFormatter.format(GlobalVariables.CURRENT_DATE_FILTER);// if Select from calendar then present real Date
+                         results[i] = dateFormatter.format(GlobalVariables.CURRENT_DATE_FILTER);// if Select from calendar then present real Date
                     }
-                    else if(results[i].equals(dateValues[5])&&GlobalVariables.CURRENT_DATE_FILTER==null)
+                    else if(results[i].equals(dateValues[5])|| results[i].equals(dateValues[6]) &&GlobalVariables.CURRENT_DATE_FILTER==null)
                     {
                         results[i] =""; // if select from calendar filter selected but a date not set in Date picker
                     }
+
+                    else if (results[i].equals(dateValues[6])&& GlobalVariables.CURRENT_DATE_FILTER!=null) //19.10 assaf :selected dates range
+                    {
+                        results[2] = ""; //remove the test "Select Date
+                        if (results[4] != "") {
+                            toFromDates = " " + results[4].substring(0, 10);
+                            if (results[5] != "") {
+                                toFromDates = toFromDates + " " + " - " + " " + results[5].substring(0, 10);
+                            }
+                        }
+                    }
                 }
                 filterTextView.setVisibility (View.VISIBLE);
-                filterTextView.setText (results[0] + " " + results[1] + " " + results[2] + " " + results[3]);
+                filterTextView.setText (results[0] + " " + results[1] + " " + results[2] + " " + results[3] + " " + toFromDates);
             }
         } catch (Exception ex) {
             Log.e ("TAG", ex.getMessage ());

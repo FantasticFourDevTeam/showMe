@@ -65,6 +65,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 import io.branch.referral.Branch;
 import io.branch.referral.BranchError;
@@ -204,6 +205,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             inflateCityMenu();
             filtered_events_data.clear();
             filtered_events_data.addAll(GlobalVariables.ALL_EVENTS_DATA);
+
             eventsListAdapter.notifyDataSetChanged();
             FilterMethods.filterListsAndUpdateListAdapter(filtered_events_data,
                     eventsListAdapter,
@@ -346,6 +348,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     protected void onResume() {
         super.onResume();
+        FilterMethods.setContext(getApplicationContext());//for Intilaize FilterMethods Context to getData static method.
 		unreadMessageAndPushNumber = Integer.parseInt(MyServices.getFromSharedPreferences("push",getApplicationContext()) + MyServices.getFromSharedPreferences("unreadMessageFromCustomer",getApplicationContext()) + MyServices.getFromSharedPreferences("unreadMessageFromProducer",getApplicationContext()));
         if(unreadMessageAndPushNumber > 0) {
             if (unreadMessage.getVisibility() != View.VISIBLE)
@@ -672,6 +675,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             _sharedPref = getSharedPreferences("filterInfo", MODE_PRIVATE); // 24.09- assaf: to Edit the Shared P. and delete the price and date form filter
             _sharedPref.edit().putString("date","").commit();// 24.09- assaf:
             _sharedPref.edit().putString("price", "").commit();// 24.09- assaf:
+            _sharedPref.edit().putString("dateFrom","").commit();// 18.10- assaf:
+            _sharedPref.edit().putString("dateTo", "").commit();// 18.10- assaf:
             //    _sharedPref.edit().clear().commit(); //// 24.-9 Assaf: this is destroy the filter banner selected by a user. was marked so filter will be save
             System.exit(0);     // for kill  background Threads that operate the Endless loop of present the push messages
         } catch (Exception ex) {
@@ -684,6 +689,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     {
         _sharedPref = getSharedPreferences("filterInfo", MODE_PRIVATE);
         String _date = _sharedPref.getString("date", "");
+        String _dateFrom = _sharedPref.getString ("dateFrom", ""); //18.10 assaf
+        String _dateTo =  _sharedPref.getString ("dateTo", "");//18.10 - assaf
         String _price = _sharedPref.getString("price", "");
         String _mainfilter = _sharedPref.getString("mainFilter", "");
         String _subfilter = _sharedPref.getString("subFilter", "");
@@ -691,7 +698,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         String _subFilterForFilter = _sharedPref.getString("subFilterForFilter",""); //24.09
         Integer _priceForFilter = _sharedPref.getInt("priceFilterForFilter", -2); //24.09
         String _dateForFilter = _sharedPref.getString("dateFilterForFilter", "");
-        String[] _results = {_mainfilter, _subfilter, _date, _price,_mainFilterForFilter,_subFilterForFilter,Integer.toString(_priceForFilter),_dateForFilter};//24.09
+        String[] _results = {_mainfilter, _subfilter, _date, _price,_mainFilterForFilter,_subFilterForFilter,Integer.toString(_priceForFilter),_dateForFilter,_dateFrom,_dateTo};//24.09
 
         return _results;
     }
@@ -801,10 +808,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private void displayFilterBannerAndSaveFilter() {//24.09 display filter banner and initial Filters from Shared.P.
         try {
             String[] results = getData();
+            String toFromDates = "";
             String[] priceValues = getResources().getStringArray(R.array.eventPriceFilter);
             String[] dateValues = getResources().getStringArray(R.array.eventDateFilter);
-            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");//assaf 24.-09
-
+            SimpleDateFormat dateFormatter = new SimpleDateFormat("E MMMMM d yyyy", Locale.getDefault());
 
             if (!results[0].equals("") || !results[1].equals("") || !results[2].equals("") || !results[3].equals("")) {
                 for (int i = 0; i < results.length; i++) {
@@ -814,17 +821,27 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     }
                     if (results[i].equals(dateValues[5]) && GlobalVariables.CURRENT_DATE_FILTER != null) {
                         results[i] = dateFormatter.format(GlobalVariables.CURRENT_DATE_FILTER);// if Select from calendar then present real Date
-                    } else if (results[i].equals(dateValues[5]) && GlobalVariables.CURRENT_DATE_FILTER == null) {
-                        results[i] = ""; // if select from calendar filter selected but a date not set in Date picker
+
+                    } else if ((results[i].equals(dateValues[5]) || results[i].equals(dateValues[6])) && GlobalVariables.CURRENT_DATE_FILTER == null) {
+                        results[i] = ""; // if select from calendar filter or dates range selected but a date not set in Date picker
+                    } else if (results[i].equals(dateValues[6]) && GlobalVariables.CURRENT_DATE_FILTER != null) //19.10 assaf :selected dates range
+                    {
+                        results[2] = ""; //remove the test "Select Date
+                        if (results[8] != "") {
+                            toFromDates = " " + results[8].substring(0, 10);
+                            if (results[9] != "") {
+                                toFromDates = toFromDates + " " + " - " + " " + results[9].substring(0, 10);
+                            }
+                        }
                     }
                 }
                 filterTextView.setVisibility(View.VISIBLE);
-                filterTextView.setText(results[0] + " " + results[1] + " " + results[2] + " " + results[3]);
+                filterTextView.setText(results[0] + " " + results[1] + " " + results[2] + " " + results[3] + " " + toFromDates);
 
                 ///intial filters 24.09 - keep main Filter and sub filter - so after relogin filter will save
                 GlobalVariables.CURRENT_FILTER_NAME = results[4]; // 24.09 assaf
                 GlobalVariables.CURRENT_SUB_FILTER = results[5]; // 24.09 assaf
-              //   GlobalVariables.CURRENT_PRICE_FILTER=Integer.parseInt(results[6]);// 24.09 assaf not present price after exit
+                //   GlobalVariables.CURRENT_PRICE_FILTER=Integer.parseInt(results[6]);// 24.09 assaf not present price after exit
 
                 //24.09 assaf marked it not present date after exit
                 //   if(results[7]!=null){
@@ -835,8 +852,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 //  }
                 /////////
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        }
+             catch (Exception ex) {
+                ex.printStackTrace();
         }
     }
 

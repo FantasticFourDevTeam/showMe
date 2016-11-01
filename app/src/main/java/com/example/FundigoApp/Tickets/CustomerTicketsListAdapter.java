@@ -10,10 +10,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.FundigoApp.R;
+import com.example.FundigoApp.StaticMethod.GeneralStaticMethods;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class CustomerTicketsListAdapter extends ArrayAdapter<EventsSeatsInfo> {
+    SimpleDateFormat dateFormat = new SimpleDateFormat("E, MMM dd, yyyy, hh:mm a", Locale.getDefault());
 
     public CustomerTicketsListAdapter(Context context, int resource, List objects) {
         super (context, resource, objects);
@@ -37,9 +41,12 @@ public class CustomerTicketsListAdapter extends ArrayAdapter<EventsSeatsInfo> {
                 LinearLayout seatLayout = (LinearLayout)convertView.findViewById(R.id.seatLinearLayout);
 
                 String priceString = String.valueOf (eventsSeatsInfo.getPrice ());
-                eventName.setText (eventsSeatsInfo.getEventInfo ().getName ());
-                eventDate.setText (eventsSeatsInfo.getEventInfo ().getDateAsString ());
-                purchaseDate.setText(eventsSeatsInfo.getPurchaseDate().toString().substring(0,20));
+                eventName.setText (eventsSeatsInfo.getEventInfo().getName());
+                eventDate.setText (eventsSeatsInfo.getEventInfo().getDateAsString());
+                if (GeneralStaticMethods.getLanguage()) //27.10 - assaf presnet dates in Hebrew
+                   purchaseDate.setText(GeneralStaticMethods.getDateToStringConversion(eventsSeatsInfo.getPurchaseDate()));
+                else
+                   purchaseDate.setText(dateFormat.format(eventsSeatsInfo.getPurchaseDate()));
                 price.setText (priceString);
                 listViewButton.setTag (position);
 

@@ -25,7 +25,7 @@ public class TicketAdapter extends ArrayAdapter<EventsSeats> {
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         final ViewHolder holder;
-        LayoutInflater inflater = LayoutInflater.from (context);
+        LayoutInflater inflater = LayoutInflater.from(context);
         if (convertView == null) {
             convertView = inflater.inflate (R.layout.ticket_item, null);
 
@@ -41,7 +41,12 @@ public class TicketAdapter extends ArrayAdapter<EventsSeats> {
 
         EventsSeats ticket = tickets.get (position);
         holder.tv_price.setText (ticket.getPrice () + "₪");
-        holder.tv_ticket.setText (ticket.getSeatNumber ());
+        if (ticket.getSeatNumber()==null || ticket.getSeatNumber().equals(""))// 09.10 - assaf updated to support also
+        //tickets without seat number
+             holder.tv_ticket.setText (ticket.getCustomerPhone());
+        else
+            holder.tv_ticket.setText (ticket.getSeatNumber ());
+        /////
         if (!ticket.getIsSold ()) {
             holder.tv_sold.setText (R.string.available_ticket);
         } else{

@@ -43,7 +43,7 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_margin="5dp"
-        android:id="@+id/qr_scan_produ"
+        android:id="@+id/_qr_scan_producer"
         android:src="@drawable/qr_scan"
         android:layout_toEndOf="@+id/imageButton"
         android:layout_toRightOf="@+id/imageButton"

@@ -9,14 +9,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.ParcelFileDescriptor;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
@@ -40,6 +37,8 @@ import android.widget.Toast;
 
 import com.example.FundigoApp.GlobalVariables;
 import com.example.FundigoApp.R;
+import com.example.FundigoApp.StaticMethod.EventDataMethods;
+import com.example.FundigoApp.StaticMethod.FileAndImageMethods;
 import com.example.FundigoApp.Tickets.TicketsPriceActivity;
 import com.google.gson.Gson;
 import com.parse.FindCallback;
@@ -53,9 +52,6 @@ import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileDescriptor;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -70,6 +66,8 @@ import fr.ganfra.materialspinner.MaterialSpinner;
 public class CreateEventActivity extends Activity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, AdapterView.OnItemSelectedListener {
 
     private static final String TAG = "CreateEventActivity";
+    private static HashMap<String,String> addressPerLanguage = new HashMap<>();
+    private static HashMap<String,String> cityPerLanguage = new HashMap<>();
 
     TextView tv_create;
     TextView tv_price;
@@ -110,6 +108,8 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
     private double lat;
     private double lng;
     private String city;
+    private String region1="";
+    private String region2="";
     private Button btn_date;
     private TextView tv_date_new;
     private String date;
@@ -147,6 +147,9 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
     SharedPreferences sp;
     Boolean ISOpened = false; // prevent timepicker open twice
 	long mLastClickTime=0;
+    int IMAGE_MAX_SIZE = 650;
+    private static Bitmap image;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,11 +158,11 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
         sp = PreferenceManager.getDefaultSharedPreferences(this);
 
         //29.09 - Assaf remove seates price from shared P.
-        sp.edit().putInt(GlobalVariables.YELLOW, -1).commit();
-        sp.edit().putInt(GlobalVariables.PINK, -1).commit();
-        sp.edit().putInt(GlobalVariables.BLUE, -1).commit();
-        sp.edit().putInt(GlobalVariables.GREEN, -1).commit();
-        sp.edit().putInt(GlobalVariables.ORANGE,-1).commit();
+        sp.edit().putInt(GlobalVariables.YELLOW, -1).apply();
+        sp.edit().putInt(GlobalVariables.PINK, -1).apply();
+        sp.edit().putInt(GlobalVariables.BLUE, -1).apply();
+        sp.edit().putInt(GlobalVariables.GREEN, -1).apply();
+        sp.edit().putInt(GlobalVariables.ORANGE,-1).apply();
         componentInit();
     }
 
@@ -326,36 +329,14 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+         //14.10 assaf changed this method , to use Static one
+        //excpetions
         if (requestCode == SELECT_PICTURE && resultCode == RESULT_OK && null != data) {
-            Uri selectedImage = data.getData();
-            ParcelFileDescriptor parcelFileDescriptor =
-                    null;
-            try {
-                parcelFileDescriptor = getContentResolver().openFileDescriptor(selectedImage, "r");
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
-            Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
-            try {
-                parcelFileDescriptor.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
 
             try //29.09 add try catch
             {
-                Matrix matrix = new Matrix();
-                int angleToRotate = getOrientation(selectedImage);
-                matrix.postRotate(angleToRotate);
-                Bitmap rotatedBitmap = Bitmap.createBitmap(image,
-                        0,
-                        0,
-                        image.getWidth(),
-                        image.getHeight(),
-                        matrix,
-                        true);
-                pic.setImageBitmap(rotatedBitmap);
+                image = FileAndImageMethods.getImageFromDevice(data,getApplicationContext()); //15.10 assaf
+                pic.setImageBitmap(image);
                 pic.setVisibility(View.VISIBLE);
                 pictureSelected = true;
             } catch (Exception ex) {
@@ -400,7 +381,6 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
         try {
             if (!address.isEmpty()) {
                 iv_val_add.setVisibility(View.INVISIBLE);
-                //   new ValidateAddress ().execute(GlobalVariables.GEO_API_ADDRESS);
                 new ValidateAddress().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, GlobalVariables.GEO_API_ADDRESS);
             } else {
                 Toast.makeText(CreateEventActivity.this, "Event Address is empty", Toast.LENGTH_SHORT).show();
@@ -468,7 +448,9 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
             event.setNumOfTickets(Integer.parseInt(et_quantity.getText().toString()));
         }
         event.setAddress(valid_address);
+        event.setAddressPerLanguage(addressPerLanguage); //assaf - 28.10 save address per Lnagauge as an object in Parse
         event.setCity(city);
+        event.setCityPerLanguage(cityPerLanguage);//assaf - 28.10 save city name per Lanagauge as an object in Parse
         event.setX(lat);
         event.setY(lng);
         //===========================Setting tags the right way==============
@@ -534,8 +516,9 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
         event.setEventATMService(atmStatus);
         try {
         if (pictureSelected) {
-            pic.buildDrawingCache();
-            Bitmap bitmap = pic.getDrawingCache();
+            //pic.buildDrawingCache(); //assaf - 15.10
+            //Bitmap bitmap = pic.getDrawingCache(); //asaf 15.10
+            Bitmap bitmap = image; //15.10 assaf changed
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
             byte[] image = stream.toByteArray();
@@ -1089,32 +1072,46 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
         @Override
         protected void onPreExecute() {
             dialog = new ProgressDialog(CreateEventActivity.this);
-            dialog.setMessage("" + R.string.validating);
+            dialog.setMessage("" + getString(R.string.validating));
             dialog.show();
         }
 
         // ----------------------------------------------------
         @Override
         protected String doInBackground(String... params) {
-            dialog.dismiss();
             String queryString = null;
+            String addressResult = "";
             try {
                 queryString = "" +
                         "&address=" + URLEncoder.encode(address, "utf-8") +
-                        "&key=" + GlobalVariables.GEO_API_KEY;
+                        "&key=" + GlobalVariables.GEO_API_KEY ;
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-            return HttpHandler.get(params[0], queryString);
+            try {
+                addressResult = HttpHandler.get(params[0], queryString);
+
+                if (addressResult != null && addressResult!="") { // get address and city in othr languages only if English works ok
+                    addressPerLanguage.clear();
+                    cityPerLanguage.clear();
+                    EventDataMethods.addressNameNonEnglish(address, addressPerLanguage,cityPerLanguage);
+                }
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            return addressResult;
         }
 
         // ----------------------------------------------------
         @Override
         protected void onPostExecute(String s) {
+            String street= "";
+            String number = "";
 
                 if (s == null) {
+                    dialog.dismiss();
                     Toast.makeText(CreateEventActivity.this, R.string.something_went_wrong_plese_try_again, Toast.LENGTH_SHORT).show();
                     iv_val_add.setImageResource(R.drawable.x);
                     iv_val_add.setVisibility(View.VISIBLE);
@@ -1126,23 +1123,45 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
                         address_ok = true;
                         iv_val_add.setImageResource(R.drawable.v);
                         iv_val_add.setVisibility(View.VISIBLE);
-                        String long_name = result.getResults().get(0).getAddress_components().get(1).getLong_name();
-                        String street = long_name.replaceAll("Street", "");
-                        String number = result.getResults().get(0).getAddress_components().get(0).getShort_name();
-                        lat = result.getResults().get(0).getGeometry().getLocation().getLat();
-                        lng = result.getResults().get(0).getGeometry().getLocation().getLng();
-                        city = result.getResults().get(0).getAddress_components().get(2).getShort_name();
-                        valid_address = street + number + ", " + city;
 
-                    } else if (result.getStatus().equals("ZERO_RESULTS")) {
-                        address_ok = false;
-                        iv_val_add.setImageResource(R.drawable.x);
-                        iv_val_add.setVisibility(View.VISIBLE);
-                        Toast.makeText(CreateEventActivity.this, R.string.problem_is + result.getStatus(), Toast.LENGTH_SHORT).show();
+                      try {
+                            String long_name = result.getResults().get(0).getAddress_components().get(1).getLong_name();
+                            street = long_name.replaceAll("Street", "");
+                            number = result.getResults().get(0).getAddress_components().get(0).getShort_name();
+                            lat = result.getResults().get(0).getGeometry().getLocation().getLat();
+                            lng = result.getResults().get(0).getGeometry().getLocation().getLng();
+                            city = result.getResults().get(0).getAddress_components().get(2).getLong_name();
+                            region1 = result.getResults().get(0).getAddress_components().get(4).getLong_name(); // sub region was added - 25.10 assaf
+                            region2 = result.getResults().get(0).getAddress_components().get(5).getLong_name();
+                            valid_address = street + " " + number + ", " + city;
+                            //25.10 - print to the user what address that found
+                            Toast.makeText(getApplicationContext(), getString(R.string.address_found) + valid_address + " " + region1 + " " + region2, Toast.LENGTH_LONG).show();
+
+                          dialog.dismiss();
+
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                            if (ex instanceof IndexOutOfBoundsException) {//if region and city not appear in the results of json
+                                valid_address = street + " " + number + ", " + city; //Assaf 25.10 in case that region1 or Region2 not provided by the resposnse from Json and exc[etion was thrown
+                                 Toast.makeText(getApplicationContext(), getString(R.string.address_found) + valid_address + " " + region1 + " " + region2, Toast.LENGTH_LONG).show();
+                                dialog.dismiss();
+                            }
+                          else {
+                                Toast.makeText(getApplicationContext(), "error occur please try again later", Toast.LENGTH_LONG).show();
+                                dialog.dismiss();
+                            }
+                        }
+                        }else if (result.getStatus().equals("ZERO_RESULTS")) {
+                            address_ok = false;
+                            iv_val_add.setImageResource(R.drawable.x);
+                            iv_val_add.setVisibility(View.VISIBLE);
+                            Toast.makeText(CreateEventActivity.this, R.string.problem_is + result.getStatus(), Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                        }
+
                     }
                 }
             }
-         }
 
         private void saveTicketsPrice(String eventObjectId) {
             final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
@@ -1246,7 +1265,6 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
             editor.putBoolean(GlobalVariables.SEATS, false);
             editor.apply();
         }
-
 
     }
 

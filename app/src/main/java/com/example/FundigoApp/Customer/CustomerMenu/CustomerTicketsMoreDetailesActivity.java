@@ -11,9 +11,12 @@ import android.widget.TextView;
 import com.example.FundigoApp.Events.EventPageActivity;
 import com.example.FundigoApp.R;
 import com.example.FundigoApp.StaticMethod.EventDataMethods;
+import com.example.FundigoApp.StaticMethod.FileAndImageMethods;
 import com.example.FundigoApp.Tickets.EventsSeatsInfo;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 public class CustomerTicketsMoreDetailesActivity extends AppCompatActivity {
 
@@ -23,16 +26,18 @@ public class CustomerTicketsMoreDetailesActivity extends AppCompatActivity {
     private ImageView qrImg;
     private EventsSeatsInfo eventsSeatsInfo;
     Context context;
+    ImageLoader loader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate (savedInstanceState);
-        setContentView (R.layout.activity_tickets_more_detailes);
+        setContentView(R.layout.activity_tickets_more_detailes);
         intent = getIntent ();
         purchaseTv = (TextView) findViewById (R.id.dateRow);
         qrImg = (ImageView) findViewById (R.id.qrTicketImage);
         eventLinkTv = (TextView) findViewById (R.id.linkEventRow);
         context = this;
+        loader = FileAndImageMethods.getImageLoader(context); //09.10 assaf
         getIntentData ();
     }
 
@@ -41,14 +46,16 @@ public class CustomerTicketsMoreDetailesActivity extends AppCompatActivity {
 
         final int index = intent.getIntExtra("index", -1);
         eventsSeatsInfo = MyEventsTicketsActivity.my_tickets_list.get(index);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("E, dd/M/yyyy hh:mm a", Locale.getDefault());
         if (eventsSeatsInfo.getSoldTickets() != null){
-            purchaseTv.setText(dateFormat.format(eventsSeatsInfo.getSoldTickets().getCreatedAt()));// actaully purchase ticket time
+            purchaseTv.setText(dateFormat.format(eventsSeatsInfo.getSoldTickets().getUpdatedAt()));// actaully purchase ticket time
            }
         else {
             purchaseTv.setText("No Information");
         }
-        qrImg.setImageBitmap (eventsSeatsInfo.getQR ());
+       // qrImg.setImageBitmap (eventsSeatsInfo.getQR ());
+        if (eventsSeatsInfo.getQRPath()!= null && eventsSeatsInfo.getQRPath()!= "")
+            loader.displayImage(eventsSeatsInfo.getQRPath(),qrImg); // 09.10 load QR path
         //Intent for Presnet the Event when click the link
         eventLinkTv.setOnClickListener (new View.OnClickListener () {
             @Override

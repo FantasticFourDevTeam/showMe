@@ -17,6 +17,7 @@ public class EventListHolder {
     TextView place;
     TextView address;
     ImageView saveEvent;
+    TextView expiredTag;
 
     public EventListHolder(View v) {
         image = (ImageView) v.findViewById (R.id.imageView);
@@ -27,5 +28,6 @@ public class EventListHolder {
         place = (TextView) v.findViewById (R.id.event_location);
         saveEvent = (ImageView) v.findViewById (R.id.imageView3);
         address = (TextView) v.findViewById (R.id.event_address);
+        expiredTag = (TextView)v.findViewById(R.id.event_expired);
     }
 }

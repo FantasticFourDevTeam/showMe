@@ -118,9 +118,8 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
                 //getTicketsButton.setText("Free Event");
                 getTicketsButton.setText("Schedule"); //29.09 - Assaf changed for the option to register also fr Free events
                 getTicketsButton.setClickable(true);
-                //getTicketsButton.setClickable (false);
             } else if (!GlobalVariables.IS_PRODUCER && !eventInfo.isFutureEvent()) {
-                getTicketsButton.setText("Event Expired");
+                getTicketsButton.setText(R.string.event_expiration);
                 getTicketsButton.setClickable(false);
             } else {
                 if (eventInfo.isFutureEvent()&& !(eventInfo.getPrice().equals("FREE") && eventInfo.getNumOfTickets() < 0)) {
@@ -142,7 +141,13 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
         ImageView event_image = (ImageView) findViewById (R.id.eventPage_image);
         loader = FileAndImageMethods.getImageLoader (this);
         loader.displayImage (eventInfo.getPicUrl(), event_image);
-        date = eventInfo.getDateAsString ();
+       /* if (GeneralStaticMethods.getLanguage()) //25.10 assaf for presnet Date in Hebrew
+        {
+            date = GeneralStaticMethods.getDateToStringConversion(eventInfo.getDate());
+        } */
+       // else {
+        date = eventInfo.getDateAsString();
+       // }
         TextView event_date = (TextView) findViewById (R.id.eventPage_date);
         event_date.setText (date);
         eventName = intent.getStringExtra ("eventName");
@@ -198,7 +203,7 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
                             getLocation2().getLongitude() +
                             "&destinations=" +
                             even_addr +
-                            "+Israel&mode=driving&language=" + Locale.getDefault().getLanguage() + "&key=AIzaSyAuwajpG7_lKGFWModvUIoMqn3vvr9CMyc");
+                            "+Israel&mode=driving&language=" + Locale.getDefault().getLanguage() + "&key=AIzaSyAuwajpG7_lKGFWModvUIoMqn3vvr9CMyc","Driving");
             new GetEventDis2 (EventPageActivity.this).executeOnExecutor (AsyncTask.THREAD_POOL_EXECUTOR,
                                                                       "https://maps.googleapis.com/maps/api/distancematrix/json?origins=" +
                                                                               getLocation2 ().getLatitude () +
@@ -206,7 +211,7 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
                                                                               getLocation2 ().getLongitude () +
                                                                               "&destinations=" +
                                                                               even_addr +
-                                                                              "+Israel&mode=walking&language=" + Locale.getDefault ().getLanguage () + "&key=AIzaSyAuwajpG7_lKGFWModvUIoMqn3vvr9CMyc");
+                                                                              "+Israel&mode=walking&language=" + Locale.getDefault ().getLanguage () + "&key=AIzaSyAuwajpG7_lKGFWModvUIoMqn3vvr9CMyc","Walking");
         }
     }
 
@@ -523,7 +528,8 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
 
     private class GetEventDis2 extends AsyncTask<String, Integer, String> {
         String jsonStr;
-        String duritation;
+        String drivingDuration="";
+        String walkingDuration="";
         boolean toLongToWalk = false;
 
         public GetEventDis2(EventPageActivity eventPageActivity) {
@@ -533,6 +539,7 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
         protected String doInBackground(String... params) {
             try {
                 URL url = new URL (params[0]);
+                String durationMeasureFor = params[1]; //23.10 - assaf - measure walking or driving
                 HttpURLConnection con = (HttpURLConnection) url.openConnection ();
                 con.setRequestMethod ("GET");
                 con.connect ();
@@ -544,7 +551,7 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
                         sr.append (line);
                     }
                     jsonStr = sr.toString ();
-                    parseJSON (jsonStr);
+                    parseJSON (jsonStr,durationMeasureFor);
                 } else {
                 }
             } catch (MalformedURLException e) {
@@ -560,28 +567,33 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
         }
 
         @Override
-        protected void onPostExecute(String re) {
-            if (!walkNdrive) {
-                driving = duritation;
+        protected void onPostExecute(String re) { // 23.10 assaf updated the methods . walking and dring were mixed. it is running two unsafety threads
+         //   if (!walkNdrive) {
+            if (drivingDuration!=""){
+                driving = drivingDuration; // drivign duration
                 walkNdrive = true;
-            } else {
+            } else if (walkingDuration!="" && walkValue !=-1) {
                 if (!toLongToWalk) {
-                    walking = duritation;
+                    walking = walkingDuration;//walking duration
                     walkNdrive = false;
                     toLongToWalk = false;
                 }
             }
         }
 
-        public void parseJSON(String jsonStr) {
+        public void parseJSON(String jsonStr,String durationMeasureFor) {
             try {
                 JSONObject obj = new JSONObject (jsonStr);
-                duritation = obj.getJSONArray ("rows").getJSONObject (0).getJSONArray ("elements").getJSONObject (0).getJSONObject ("duration").get ("text").toString ();
-                if (walkNdrive) {
-                    walkValue = (int) obj.getJSONArray ("rows").getJSONObject (0).getJSONArray ("elements").getJSONObject (0).getJSONObject ("duration").get ("value");
+                if (durationMeasureFor.equals("Walking"))
+                {
+                    walkingDuration = obj.getJSONArray("rows").getJSONObject(0).getJSONArray("elements").getJSONObject(0).getJSONObject("duration").get("text").toString();//walking string value text
+                    walkValue = (int) obj.getJSONArray ("rows").getJSONObject (0).getJSONArray ("elements").getJSONObject (0).getJSONObject ("duration").get ("value"); // walking int duration
                 }
-            } catch (JSONException e) {
-                e.printStackTrace ();
+                else if (durationMeasureFor.equals("Driving")) {
+                    drivingDuration = obj.getJSONArray("rows").getJSONObject(0).getJSONArray("elements").getJSONObject(0).getJSONObject("duration").get("text").toString(); //driving duration
+                }
+              } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
     }

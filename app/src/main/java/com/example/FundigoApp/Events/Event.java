@@ -5,6 +5,8 @@ import com.parse.ParseFile;
 import com.parse.ParseObject;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @ParseClassName("Event")
 public class Event extends ParseObject {
@@ -180,4 +182,35 @@ public class Event extends ParseObject {
     public void setSubFilterName(String subFilterName) {
         put ("subFilterName", subFilterName);
     }
+
+    public Map<String, String> getAddressPerLanguage(){ //28.10 assaf - get address per Lanugauge
+        try {
+
+            return getMap("addressInLanguage");
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+    public Map<String, String> getCityPerLanguage(){ //28.10 assaf - get city names in otyher lAnguage
+        try {
+
+            return getMap("cityInLanguage");
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+    public void setAddressPerLanguage(HashMap address){ //28.10 assaf
+        put ("addressInLanguage",address);
+    }
+
+    public void setCityPerLanguage(HashMap city){ //28.10 assaf
+        put ("cityInLanguage",city);
+    }
+
 }

@@ -2,8 +2,6 @@ package com.example.FundigoApp.Customer.CustomerMenu;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -20,7 +18,6 @@ import com.example.FundigoApp.Tickets.EventsSeats;
 import com.example.FundigoApp.Tickets.EventsSeatsInfo;
 import com.parse.FindCallback;
 import com.parse.ParseException;
-import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
@@ -36,6 +33,7 @@ public class MyEventsTicketsActivity extends AppCompatActivity {
     private static TextView noTickets;
     private static ListAdapter _adapter;
     ProgressDialog dialog;
+    private String imageQRFilePath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +52,7 @@ public class MyEventsTicketsActivity extends AppCompatActivity {
         String _userPhoneNumber = GlobalVariables.CUSTOMER_PHONE_NUM;
         dialog = new ProgressDialog(this);
         dialog.setMessage("Loading...");
+        dialog.setIndeterminate(true);
         dialog.show();
 
         try {
@@ -66,32 +65,44 @@ public class MyEventsTicketsActivity extends AppCompatActivity {
                     if(e==null) {
                         if (objects.size() != 0) {
                             for (EventsSeats eventsSeats : objects) {
-                                Bitmap qrCode=null;
-                                byte[] data = null;
-                                ParseFile imageFile = (ParseFile) eventsSeats.get("QR_Code");
-                                if (imageFile != null) {
-                                    try {
-                                        data = imageFile.getData();
-                                    } catch (ParseException e1) {
-                                        e1.printStackTrace();
-                                    }
-                                     //qrCode = BitmapFactory.decodeByteArray(data, 0, data.length);
-                                    try {//29.09 - Assaf adding try catch and minimize scale
-                                        Bitmap imageDecode = BitmapFactory.decodeByteArray(data, 0, data.length);
-                                        qrCode = Bitmap.createScaledBitmap(imageDecode, 200, 200, true);// convert decoded bitmap into well scalled Bitmap format.
-                                    }
-                                    catch (Exception ex) {
-                                        ex.printStackTrace();
-                                    }
-                                    catch (OutOfMemoryError err)
-                                    {
-                                        err.printStackTrace();
-                                    }
-
-
-                                } else {
-                                    qrCode = null;
+                              //  Bitmap qrCode=null;
+                              //  byte[] data = null;
+                                //ParseFile imageFile = (ParseFile) eventsSeats.get("QR_Code");
+                                try {
+                                    imageQRFilePath = eventsSeats.getQR_CodeFile().getUrl(); //09.10 Assaf
                                 }
+                                catch (Exception ex)
+                                {
+                                    ex.printStackTrace();
+                                }
+
+                               // if (imageFile != null) {
+                             //       try {
+                            //            data = imageFile.getData();
+                                 //   } catch (ParseException e1) {
+                              //          e1.printStackTrace();
+                                  //  }
+
+
+
+                            //        try {//29.09 - Assaf adding try catch and minimize scale
+                                 //       Bitmap imageDecode = BitmapFactory.decodeByteArray(data, 0, data.length);
+                                   //     qrCode = Bitmap.createScaledBitmap(imageDecode, 200, 200, true);// convert decoded bitmap into well scalled Bitmap format.
+                              //      }
+                             //       catch (Exception ex) {
+                             //           ex.printStackTrace();
+                           //         }
+                            //        catch (OutOfMemoryError err)
+                           //         {
+                           //             err.printStackTrace();
+                           //         }
+
+
+                               // } else {
+                                 //   qrCode = null;
+                            //    }
+
+
                                 try { //Assaf - 29.09 -try-catch added
                                 EventInfo eventInfo = EventDataMethods.getEventFromObjID(eventsSeats.getString("eventObjectId"), GlobalVariables.ALL_EVENTS_DATA);
                                 Date current_date = new Date();
@@ -105,21 +116,20 @@ public class MyEventsTicketsActivity extends AppCompatActivity {
                                             if (!eventInfo.getPrice().equals("FREE")) { //11.08 - Assaf added to support Free events also
                                                 my_tickets_events_list.add(eventInfo);
                                                 my_tickets_list.add(new EventsSeatsInfo(eventsSeats.getSeatNumber(),
-                                                        qrCode,
-                                                        //soldTickets.getCreatedAt(),
+                                                       // qrCode,
                                                         eventsSeats.getCreatedAt(),// The time that the Seat Order made
                                                         eventsSeats.getIntPrice(),
                                                         eventInfo,
-                                                        soldTickets));
+                                                        soldTickets,imageQRFilePath)); //09.10 QR file path instead of QR
                                             } else //11.08 - Assaf added to support Free events also
                                             {
                                                 my_tickets_events_list.add(eventInfo);
                                                 my_tickets_list.add(new EventsSeatsInfo(eventsSeats.getSeatNumber(),
-                                                        qrCode,
+                                                       // qrCode,
                                                         eventsSeats.getCreatedAt(), //the time that the Seat Order made
                                                         eventsSeats.getIntPrice(),
                                                         eventInfo,
-                                                        soldTickets));
+                                                        soldTickets,imageQRFilePath));//09.10 QR file path instead of QR
                                             }
                                         }
 
@@ -155,59 +165,6 @@ public class MyEventsTicketsActivity extends AppCompatActivity {
         }
     }
 
-//    public void getListOfEventsTickets() {
-//        my_tickets_events_list.clear ();
-//        my_tickets_list.clear ();
-//        String _userPhoneNumber = GlobalVariables.CUSTOMER_PHONE_NUM;
-//        List<EventsSeats> list;
-//        try {
-//            ParseQuery<EventsSeats> query = ParseQuery.getQuery ("EventsSeats");
-//            query.whereEqualTo ("CustomerPhone", _userPhoneNumber).whereEqualTo ("sold", true).orderByDescending ("updatedAt");
-//            list = query.find ();
-//            if (list.size () != 0) {
-//                for (EventsSeats eventsSeats : list) {
-//                    Bitmap qrCode;
-//                    byte[] data = null;
-//                    ParseFile imageFile = (ParseFile) eventsSeats.get ("QR_Code");
-//                    if (imageFile != null) {
-//                        try {
-//                            data = imageFile.getData ();
-//                        } catch (ParseException e1) {
-//                            e1.printStackTrace ();
-//                        }
-//                             Bitmap imageDecode = BitmapFactory.decodeByteArray(data, 0, data.length);
-//                             qrCode = Bitmap.createScaledBitmap(imageDecode, 250, 250, true);// convert decoded bitmap into well scalled Bitmap format.
-//
-//                    } else {
-//                        qrCode = null;
-//                    }
-//                    EventInfo eventInfo = EventDataMethods.getEventFromObjID (eventsSeats.getString ("eventObjectId"), GlobalVariables.ALL_EVENTS_DATA);
-//                    Date current_date = new Date ();
-//                    Date event_date = eventInfo.getDate ();
-//                    eventInfo.setIsFutureEvent (event_date.after (current_date));
-//                    ParseObject soldTickets = eventsSeats.getSoldTicketsPointer ().fetch ();
-//                    my_tickets_events_list.add (eventInfo);
-//                    my_tickets_list.add (new EventsSeatsInfo (eventsSeats.getSeatNumber (),
-//                                                                     qrCode,
-//                                                                     soldTickets.getCreatedAt (),
-//                                                                     eventsSeats.getIntPrice (),
-//                                                                     eventInfo,
-//                                                                     soldTickets));
-//                }
-//                listT.deferNotifyDataSetChanged ();
-//            } else {
-//                noTickets.setText (R.string.no_tickets_to_display);
-//                noTickets.setVisibility (View.VISIBLE);
-//            }
-//        } catch (ParseException e) {
-//            e.printStackTrace ();
-//        } catch (Exception e) {
-//            e.printStackTrace ();
-//        }
-//        catch (OutOfMemoryError err) {
-//            err.printStackTrace();
-//        }
-//    }
 
     public void onClickButton(View v) {
         final Intent intent = new Intent (this, CustomerTicketsMoreDetailesActivity.class);

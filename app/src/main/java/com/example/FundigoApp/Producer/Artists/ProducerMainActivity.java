@@ -4,12 +4,10 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.example.FundigoApp.Events.EventPageActivity;
@@ -18,11 +16,10 @@ import com.example.FundigoApp.R;
 import com.example.FundigoApp.StaticMethod.EventDataMethods;
 import com.example.FundigoApp.StaticMethod.EventDataMethods.GetEventsDataCallback;
 
-public class ProducerMainActivity extends Fragment implements GetEventsDataCallback {
+public class ProducerMainActivity extends android.support.v4.app.Fragment implements GetEventsDataCallback {
 
     ListView artistListView;
     public static ArtistAdapter artistAdapter;
-    private ImageView qr_scan_icon;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -30,15 +27,7 @@ public class ProducerMainActivity extends Fragment implements GetEventsDataCallb
         artistListView = (ListView) rootView.findViewById (R.id.artist_list_view);
         artistAdapter = new ArtistAdapter (getActivity ().getApplicationContext (), GlobalVariables.artist_list);
         artistListView.setAdapter (artistAdapter);
-        artistListView.setSelector (new ColorDrawable (Color.TRANSPARENT));
-        qr_scan_icon =(ImageView)rootView.findViewById(R.id.qr_scan_produ);
-        qr_scan_icon.setOnClickListener (new View.OnClickListener () {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent (getContext (), QR_producer.class);
-                startActivity (intent);
-            }
-        });
+        artistListView.setSelector(new ColorDrawable(Color.TRANSPARENT));
          Intent intent = new Intent (this.getActivity (), EventPageActivity.class);
          EventDataMethods.downloadEventsData(this, GlobalVariables.PRODUCER_PARSE_OBJECT_ID, this.getContext(), intent);
 
@@ -56,7 +45,7 @@ public class ProducerMainActivity extends Fragment implements GetEventsDataCallb
 
     @Override
     public void eventDataCallback() {
-        EventDataMethods.uploadArtistData();
+        EventDataMethods.uploadArtistDataWithoutNoArtist();//13.10 assaf fixed
         artistAdapter.notifyDataSetChanged();
     }
 
@@ -64,7 +53,7 @@ public class ProducerMainActivity extends Fragment implements GetEventsDataCallb
     public void onResume() {
         super.onResume();
         if(GlobalVariables.refreshArtistsList){
-            GlobalVariables.refreshArtistsList = false;
+             GlobalVariables.refreshArtistsList = false;
              Intent intent = new Intent (this.getActivity (), EventPageActivity.class);
              EventDataMethods.downloadEventsData (this, GlobalVariables.PRODUCER_PARSE_OBJECT_ID, this.getContext (), intent);
         }
