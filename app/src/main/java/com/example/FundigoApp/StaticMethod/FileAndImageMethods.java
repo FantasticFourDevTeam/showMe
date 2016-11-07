@@ -50,7 +50,7 @@ public class FileAndImageMethods {
                 number = myData;
         }
         //return number;
-        return "0528545124";
+        return "0545262140";
     }
 
     public static Bitmap getImageFromDevice(Intent data, Context context) { //14.10 assaf updated for prevent outpfmemory exceptions

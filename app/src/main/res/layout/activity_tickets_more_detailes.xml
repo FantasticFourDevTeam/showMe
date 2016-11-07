@@ -19,21 +19,26 @@
         android:layout_alignParentStart="true"
         android:layout_marginTop="10dp">
 
-        <TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
             <TextView
                 android:layout_column="1"
                 android:layout_alignParentStart="true"
                 android:textSize="18sp"
                 android:layout_marginRight="5dp"
                 android:textStyle="bold"
-                android:text="@string/purchase_date"/>
+                android:text="@string/purchase_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
             <TextView
                 android:id="@+id/dateRow"
                 android:padding="5dp"
                 android:textSize="14sp"
                 android:text="Purchase Date:"
-                />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
         </TableRow>
     </TableLayout>
 
@@ -48,6 +53,7 @@
           android:textSize="18dp"
           android:text="@string/ticketLinkEvent"
          android:layout_below="@+id/ticketMoreDetailesTable"
+         android:layout_alignParentLeft="true"
          android:layout_alignParentStart="true" />
 
     <ImageView
@@ -57,4 +63,11 @@
         android:layout_below="@+id/linkEventRow"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="38dp" />
-</RelativeLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:id="@+id/sendTicketToMail"
+        android:layout_below="@+id/qrTicketImage"
+        android:text="@string/sendMail"
+        android:layout_height="wrap_content"/>
+    </RelativeLayout>

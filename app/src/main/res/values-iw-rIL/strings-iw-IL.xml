@@ -416,7 +416,8 @@
 <string name="setfromto">אחד מהערכים בטווח התאריכים חסר</string>
 <string name="address_found">הכתובת שהמערכת קלטה היא: </string>
 <string name="price_per_seat">מחיר לפי מושב</string>
-
-
+<string name="sendMail">שלח כרטיס למייל שלך</string>
+<string name="upload_picture">תמונה הועלתה בהצלחה</string>
+<string name="upload_picture_failure">העלאת תמונה נכשלה</string>
 </resources>
 

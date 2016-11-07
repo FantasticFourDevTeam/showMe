@@ -39,6 +39,7 @@ public class EventInfo {
     boolean isStadium;
     List<EventsSeats> eventsSeatsList;
     String picUrl;
+    Date createdAt;
 
     public EventInfo(String picUrl,
                      Date date,
@@ -65,7 +66,7 @@ public class EventInfo {
                      int numOfTickets,
                      String parseObjectId,
                      String fbUrl,
-                     boolean isStadium) {
+                     boolean isStadium,Date createdAt) {
         this.picUrl = picUrl;
         this.date = date;
         this.dateAsString = dateAsString;
@@ -92,10 +93,16 @@ public class EventInfo {
         this.fbUrl = fbUrl;
         this.isStadium = isStadium;
         this.subFilterName = subFilterName;
+        this.createdAt = createdAt;
     }
 
     public Date getDate() {
         return date;
+    }
+
+    public Date getCreatedAt()
+    {
+       return createdAt;
     }
 
     public void setDate(Date date) {

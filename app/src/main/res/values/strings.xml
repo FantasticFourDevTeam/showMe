@@ -566,5 +566,8 @@
     <string name="setfromto">One of the dates in the range is missing</string>
     <string name="address_found">The address that was recognized is: </string>
     <string name="price_per_seat">Price per seat</string>
+    <string name="sendMail">Send ticket to your email</string>
+    <string name="upload_picture">Picture was successfully uploaded</string>
+    <string name="upload_picture_failure">Picture upload was failed</string>
 
 </resources>

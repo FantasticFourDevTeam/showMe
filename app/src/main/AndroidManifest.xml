@@ -142,7 +142,7 @@
             </intent-filter>
         </receiver>
 		<receiver
-            android:name=".CountPushMassageReceive"
+            android:name=".CountPushMassage"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.parse.push.intent.RECEIVE" />

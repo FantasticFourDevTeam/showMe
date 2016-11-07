@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.provider.CalendarContract;
+import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -41,12 +43,16 @@ import com.google.zxing.integration.android.IntentResult;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.SaveCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -71,7 +77,7 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
     private ImageView iv_chat;
     Button getTicketsButton;
     Intent intent;
-
+    private static final int REQUEST_IMAGE_CAPTURE = 1; //code for picture taking by device camera
     private String date;
     private String eventName;
     private String eventPlace;
@@ -81,7 +87,7 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
     private int walkValue = -1;
     EventInfo eventInfo;
     String i = "";
-
+    private Button eventPicsUpload;
 	long mLastClickTime=0;
     private String faceBookUrl;
     ImageLoader loader;
@@ -100,7 +106,7 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
         Date eventDate = eventInfo.getDate ();
         eventInfo.setIsFutureEvent (eventDate.after (currentDate));
         saveOrPushBotton = (ImageView) findViewById (R.id.imageEvenetPageView3);
-
+        eventPicsUpload = (Button) findViewById(R.id.uploadPics);//04.11 assaf updated to upload pics of events by prodcuer
         if (!GlobalVariables.IS_PRODUCER) //29.09 - support free and fix logic
         {
             if(eventInfo.getNumOfTickets()==0)// in case by mistake someone filled 0 mainly in case of Free events
@@ -132,8 +138,9 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
         else if (GlobalVariables.IS_PRODUCER) {
 
             getTicketsButton.setText (this.getString (R.string.tickets_status));//09.08 - Assaf changed for the option to register also for Free events
-            saveOrPushBotton.setImageResource (R.drawable.ic_micro_send_push_frame);
-
+            saveOrPushBotton.setImageResource(R.drawable.ic_micro_send_push_frame);
+            eventPicsUpload.setVisibility(View.VISIBLE);
+            eventPicsUpload.setOnClickListener(this);
            }
         faceBookUrl = intent.getStringExtra ("fbUrl");//get link from the Intent
         GlobalVariables.deepLinkEventObjID = "";
@@ -374,6 +381,10 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
                 TextView messageText = (TextView) dialog.findViewById (android.R.id.message);
                 messageText.setGravity (Gravity.CENTER);
                 break;
+
+            case R.id.uploadPics:
+                picturesTakeAndUpload();
+                break;
         }
     }
 
@@ -413,25 +424,38 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
     };
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {//05.11 - assaf added pictiures add to event by Prodcuer
         IntentResult scan = null;
-        if (data != null) {
-            scan = IntentIntegrator.parseActivityResult (requestCode,
-                                                                resultCode,
-                                                                data);
-        }
-        if (scan != null) {
-            String result = scan.getContents ();
-            String objectId = result.substring (13, 23);
-            Toast.makeText (EventPageActivity.this, "" + scan.getFormatName () + " " + scan.getContents () + " ObjectId is " + objectId, Toast.LENGTH_LONG).show ();
+        if (data != null && requestCode != REQUEST_IMAGE_CAPTURE) {
+            scan = IntentIntegrator.parseActivityResult(requestCode,
+                    resultCode,
+                    data);
 
-        } else {
-            Toast.makeText (EventPageActivity.this, R.string.scan_didnt_finish, Toast.LENGTH_SHORT).show ();
+            if (scan != null) {
+                String result = scan.getContents();
+                String objectId = result.substring(13, 23);
+                Toast.makeText(EventPageActivity.this, "" + scan.getFormatName() + " " + scan.getContents() + " ObjectId is " + objectId, Toast.LENGTH_LONG).show();
+
+            } else {
+                Toast.makeText(EventPageActivity.this, R.string.scan_didnt_finish, Toast.LENGTH_SHORT).show();
+            }
         }
-        if (data != null && requestCode == GlobalVariables.REQUEST_CODE_MY_PICK) {
-            GeneralStaticMethods.onActivityResult (requestCode,
-                                                          data,
-                                                          this);
+        if (data != null && requestCode == GlobalVariables.REQUEST_CODE_MY_PICK && requestCode != REQUEST_IMAGE_CAPTURE) {
+            GeneralStaticMethods.onActivityResult(requestCode,
+                    data,
+                    this);
+        }
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {// camera get picture result
+            //Bundle extras = data.getExtras();
+            //Bitmap picBitmap = (Bitmap) extras.get("data");
+            Bitmap picBitmap = FileAndImageMethods.getImageFromDevice(data,this.getApplicationContext());
+            try {
+                if (picBitmap!= null)
+                    saveImageToParse(picBitmap);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                Toast.makeText(getApplicationContext(),getString(R.string.upload_picture_failure),Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -697,6 +721,46 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
             startActivity(intent);
         } catch (Exception ex) {
             Log.e(ex.getMessage(), "save in Calendar was failed");
+        }
+    }
+
+    private void picturesTakeAndUpload() { //05.11 - assaf - take pictures and upload to app
+        PackageManager packageManager = this.getPackageManager();
+       // if (packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
+            try {
+                Intent takePictureIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+       // }
+    }
+
+    private void saveImageToParse(Bitmap eventPicture) { // save event picture to Parse , evnets pictirses table with pointer to Event
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        if (eventPicture!=null) {
+            eventPicture.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            byte[] eventPicData = stream.toByteArray();
+
+            try {
+                final ParseFile pictureFile = new ParseFile("picture.jpeg", eventPicData);
+
+                pictureFile.saveInBackground(new SaveCallback() {
+                    public void done(ParseException e) {
+                        ParseObject eventsPictures = new ParseObject("EventMultiMedia");
+                        eventsPictures.put("eventPointer", ParseObject.createWithoutData("Event", eventInfo.getParseObjectId()));
+                        eventsPictures.put("MultiMedia", pictureFile);
+                        eventsPictures.saveInBackground();
+                    }
+                });
+                Toast.makeText(this, getString(R.string.upload_picture), Toast.LENGTH_SHORT).show();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                Toast.makeText(this, getString(R.string.upload_picture_failure), Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }
