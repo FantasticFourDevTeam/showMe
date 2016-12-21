@@ -90,23 +90,23 @@
         android:layout_below="@+id/password_et"
         android:weightSum="30">
 
-        <Button
+        <!--Button
             android:id="@+id/button_login"
             android:layout_width="90dp"
             android:layout_height="wrap_content"
             android:layout_weight="20"
             android:onClick="producerLogin"
             android:text="@string/login"
-            android:textSize="15sp"/>
+            android:textSize="15sp"/-->
 
-        <Button
+        <!--Button
             android:id="@+id/singUpButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="10"
             android:onClick="signUp"
             android:text="@string/create_new_producer"
-            android:textSize="15sp"/>
+            android:textSize="15sp"/-->
     </TableRow>
 
 </RelativeLayout>

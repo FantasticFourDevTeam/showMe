@@ -10,64 +10,69 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.example.events.TicketsMoreDetailes"
     android:contextClickable="true"
-    android:clickable="true">
-
-    <TableLayout
-        android:id="@+id/ticketMoreDetailesTable"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="10dp">
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_column="1"
-                android:layout_alignParentStart="true"
-                android:textSize="18sp"
-                android:layout_marginRight="5dp"
-                android:textStyle="bold"
-                android:text="@string/purchase_date"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/dateRow"
-                android:padding="5dp"
-                android:textSize="14sp"
-                android:text="Purchase Date:"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </TableRow>
-    </TableLayout>
+    android:clickable="true"
+    >
+    <TextView
+        android:layout_column="1"
+        android:textSize="18sp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginRight="5dp"
+        android:textStyle="bold"
+        android:text="@string/purchase_date"
+        android:layout_width="match_parent"
+        android:gravity="start"
+        android:id="@+id/purchaseDateTitle"
+        android:layout_gravity="start"
+        android:layout_height="wrap_content" />
 
      <TextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:id="@+id/linkEventRow"
-          android:paddingTop="15dp"
+          android:paddingTop="10dp"
           android:clickable="true"
           android:autoLink="all"
           android:linksClickable="true"
-          android:textSize="18dp"
+          android:textStyle="bold"
+         android:textSize="18sp"
+         android:gravity="start"
+         android:layout_gravity="start"
           android:text="@string/ticketLinkEvent"
-         android:layout_below="@+id/ticketMoreDetailesTable"
+         android:layout_below="@+id/dateRow"
          android:layout_alignParentLeft="true"
-         android:layout_alignParentStart="true" />
+         android:layout_alignParentStart="true"
+         android:layout_alignParentEnd="true"
+         android:layout_alignParentRight="true" />
 
     <ImageView
         android:layout_width="300dp"
         android:layout_height="300dp"
         android:id="@+id/qrTicketImage"
-        android:layout_below="@+id/linkEventRow"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="38dp" />
+        android:layout_centerVertical="true"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/sendTicketToMail"
+        android:layout_centerHorizontal="true" />
 
     <Button
         android:layout_width="wrap_content"
         android:id="@+id/sendTicketToMail"
-        android:layout_below="@+id/qrTicketImage"
         android:text="@string/sendMail"
-        android:layout_height="wrap_content"/>
-    </RelativeLayout>
+        android:gravity="start"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/linkEventRow"
+        android:layout_alignEnd="@+id/linkEventRow"
+        android:layout_alignRight="@+id/linkEventRow"
+        android:layout_marginTop="10dp"
+         />
+
+    <TextView
+        android:id="@+id/dateRow"
+        android:padding="5dp"
+        android:textSize="14sp"
+        android:text="Purchase Date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/purchaseDateTitle"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+</RelativeLayout>

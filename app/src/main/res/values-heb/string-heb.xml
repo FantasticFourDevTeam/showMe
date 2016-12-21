@@ -187,21 +187,18 @@
     <string name="tickets">כרטיסי האירועים שלי</string>
     <string name="title_activity_events_tickets">EventsTickets</string>
     <string name="title_activity_mipo">Mipo</string>
-
-
-<string name="event_image_upload">Event Image Upload</string>
-
-
+    <string name="update_picture">עדכן תמונה</string>
+    <string name="event_image_upload">העלה תמונת נושא</string>
     <string name="create_event">צור אירוע</string>
-  <string name="name">שם*:</string>
+  <string name="name">שם*</string>
     <string name="pick_date">בחר תאריך</string>
-    <string name="artist">אמנים</string>
-   <string name="description">תיאור*:</string>
+    <string name="artist">אמן</string>
+   <string name="description">תיאור*</string>
     <string name="next">הבא</string>
     <string name="user_name">שם משתמש:</string>
-    <string name="email_address"></string>
+    <string name="email_address">כתובת מייל</string>
     <string name="select_picture">בחר תמונה:</string>
-
+    <string name="enter_valid_date">הזן בבקשה תאריך ושעה תקינים</string>
     <string name="image_upload">העלה תמונת פרופיל</string>
     <string name="submit">שמור עדכון</string>
     <string name="what_to_share">מה תרצה לשתף?</string>
@@ -211,7 +208,7 @@
     <string name="gust_entered">אורח רשום:</string>
     <string name="qr_scanner">סורק QR</string>
     <string name="push">התראות:</string>
-    v
+    <string name="limited_free_seats">עבור אירוע עם מספר מקומות מוגבל</string>
     <string name="edit_event">ערוך אירוע</string>
     <string name="food_drink_convention">#אוכל #שתייה #שיחות</string>
     <string name="fundigo">מיקום נוכחי</string>
@@ -229,9 +226,10 @@
     <string name="menu">תפריט</string>
     <string name="no_user">אין משתמש</string>
     <string name="Send_push">שלח התראות</string>
-    <string name="sms_verification">אימות sms</string>
+    <string name="sms_verification">יצירת משתמש</string>
     <string name="phone_number">מספר טלפון:</string>
-
+    <string name="schedule">רשום ביומן</string>
+    <string name="register">הירשם</string>
     <string name="new_text">טקסט חדש</string>
     <string name="massage">הודעה</string>
     <string name="date">תאריך</string>
@@ -248,22 +246,22 @@
     <string name="signup">הרשם</string>
     <string name="upload">העלה</string>
     <string name="optional">(אופציונלי)</string>
-    <string name="your_first_use">אורח יקר, מלא בבקשה את השדות הנדרשים לרישום ל WhoGO, בשלב הראשון הזן בבקשה מספר טלפון אשר יעבור תהליך אימות, הודעת טקסט עם קוד אימות ישלח אליך</string>
+    <string name="your_first_use">אורח יקר, ברוך הבא ל WhoGO.  בשלב הראשון יתבצע אימות של מספר הטלפון שברשותך. הודעת סמס עם קוד אישור ישלח אליך</string>
     <string name="adir_miler">אדיר מילר</string>
     <string name="sum_income">סכום הכנסות:</string>
     <string name="sum_tickets">סכום כרטיסים</string>
-    <string name="past_events">אירועים שעברו:</string>
-    <string name="upcoming_events">אירועים עתידיים::</string>
+    <string name="past_events">אירועים שעברו</string>
+    <string name="upcoming_events">אירועים עתידיים</string>
     <string name="all_tickets">כל הכרטיסים</string>
     <string name="all_tickets_value">ערך כל הכרטיסים</string>
-    <string name="ticket_price_avg">ממחיר ממוצע כרטיס: </string>
-    <string name="upcoming_tickets_price_avg">מחיר ממוצע אירועים עתידים</string>
+    <string name="ticket_price_avg">ממוצע מחיר כרטיסים שנמכרו</string>
+    <string name="upcoming_tickets_price_avg">ממוצע מחיר כרטיסים שטרם נמכרו</string>
     <string name="ibn_gabirol_tel_aviv">אבן גבירול תל אביב"</string>
     <string name="validate_address">אמת כתובת</string>
-    <string name="place">מקום*:</string>
-    <string name="hall_capacity">תכולת אולם: </string>
-    <string name="parking">חניה: </string>
-    <string name="toilet">שירותים: </string>
+    <string name="place">מקום*</string>
+    <string name="hall_capacity">תכולת אולם</string>
+    <string name="parking">חניה</string>
+    <string name="toilet">שירותים</string>
     <string name="atm">כספומט</string>
     <string name="finish">סיים</string>
     <string name="ok">אישור</string>
@@ -284,7 +282,7 @@
     <string name="user_updated_and_now_it_is">פרטי המשתמש עודכנו</string>
     <string name="picture_updated">העלה תמונה</string>
     <string name="nothing_selected_to_update">שדה אחד או יותר ריקים</string>
-    <string name="no_tickets_to_display">אין כרטיסים להצגה</string>
+    <string name="no_tickets_to_display">לא נמצאו כרטיסים הניתנים להצגה</string>
     <string name="you_logged_in_as">מחובר כ- </string>
     <string name="canceled_logging_facebook">בוטלה הרשמה דרך פייסבוק</string>
     <string name="error_logging_facebook">שגיאה בהתחברות לפייסבוק</string>
@@ -318,11 +316,11 @@
     <string name="scan_didnt_finish">סריקה לא הסתיימה</string>
     <string name="my_content_title">כותרת התוכן שלי</string>
     <string name="my_content_description">הזמנה להרשמה לאירוע</string>
-    <string name="tickets_sold">כרטיסים שנמכרו: </string>
-    <string name="tickets_left">כרטיסים שנותרו: </string>
-    <string name="future_income">הכנסות עתדיות: </string>
+    <string name="tickets_sold">כרטיסים שנמכרו</string>
+    <string name="tickets_left">כרטיסים זמינים</string>
+    <string name="future_income">סך הכנסה צפויה</string>
     <string name="sales_avg">ממוצע מכירות: </string>
-    <string name="so_far_income">הכנסות עד עכשיו: </string>
+    <string name="so_far_income">הכנסות</string>
     <string name="tickets_for_sale">כרטיסים למכירה: </string>
     <string name="mum_of_events">מספר כרטיסים:</string>
     <string name="num_of_artists">מספר אמנים</string>
@@ -337,14 +335,12 @@
     <string name="card_valid_and_complete">כרטיס קיים ומושלם</string>
     <string name="enjoy_yout_ticket">תהנה מהכרטיסים שלך</string>
     <string name="guest_login">כניסת אורח</string>
-    <string name="verify_email">ודא אימייל</string>
+    <string name="verify_email">טרם אישרת את כתובת המייל שלך, מייל נשלח אליך בתהליך הרישום</string>
     <string name="successfully_logged_in_as_producer">התחבר בהצלחה כמפיק</string>
     <string name="wrong_password_try_again">סיסמה לא נכונה, נסה שוב :)</string>
     <string name="this_user_does_not_exist_try_again">משתמש זה אינו קיים, נסה שוב </string>
     <string name="successfully_logged_in_as_customer">התחבר בהצלחה כלקוח</string>
-    <string name="account_created_successfully_verification_mail">חשבון נוצר בהצלחה!
-        אימייל אימות נשלח לתיבת הדואר הנכנס שלך
-        אנא ודא אימייל והתחבר </string>
+    <string name="account_created_successfully_verification_mail">להשלמת תהליך ההרשמה, אשר בבקשה את כתובת המייל שלך באמצעות המייל שנשלח אליך</string>
     <string name="successfully_signed_up">תהליך ההרשמה הסתיים בהצלחה</string>
     <string name="Registration_failure">תהליך ההרשמה נכשל ולא הושלם בהצלחה</string>
     <string name="invalid_phone_number_try_again">מספר טלפון לא קיים נסה שוב</string>
@@ -378,10 +374,6 @@
     <string name="class_event">קלאסיקה</string>
     <string name="lecture">הרצאות</string>
     <string name="other">אחר</string>
-
-
-
-
     <string name="filter_page">סנן עמודים</string>
     <string name="can_choice_one_category">אפשר לבחור קטגוריה אחת</string>
     <string name="stats">מצב</string>
@@ -391,7 +383,8 @@
     <string name="producer_login">התחברות מפיק</string>
     <string name="customer_log_in">התחברות לקוח:</string>
     <string name="money">ש\"ח</string>
-
+    <string name="email_address_missing">כתובת מייל חסרה</string>
+    <string name="user_name_missing">שם משתמש חסר</string>
     <string name="cancel_push">בטל התראות</string>
     <string name="get_push">קבל התראות</string>
     <string name="sen_push">שלח התראות</string>
@@ -415,14 +408,14 @@
     <string name="log_out_from_facebook">התנתק מפייסבוק</string>
     <string name="guest">אורח</string>
     <string name="producer_are_you_sure_you_want_to_exit">האם ברצונך לצאת מאיזור המפיק?</string>
+    <string name="email_updated">כתובת המייל התעדכנה, מייל אימות נשלח אליך</string>
+    <string name="please_fill_empty_forms">השלם נתונים חסרים</string>
 
-	<string name="please_fill_empty_forms">השלם נתונים חסרים</string>
-
-<string name="price">מחיר*:</string>
+<string name="price">מחיר*</string>
 <string name="event_name">שם*:</string>
-<string name="quantity">כמות*:</string>
-<string name="address">כתובת מלאה*:</string>
-<string name="tags">תגיות*:</string>
+<string name="quantity">כמות כרטיסים/מקומות ישיבה*</string>
+<string name="address">כתובת מלאה*</string>
+<string name="tags">תגיות*</string>
 <string name ="event_expiration">אירוע עבר</string>
 <string name="fromDate">מתאריך</string>
 <string name="toDate">עד תאריך</string>
@@ -430,8 +423,46 @@
 <string name="address_found">הכתובת שהמערכת קלטה היא: </string>
 <string name="price_per_seat">מחיר לפי מושב</string>
 <string name="sendMail">שלח כרטיס למייל שלך</string>
-<string name="upload_picture">תמונה הועלתה בהצלחה</string>
+<string name="upload_picture">תמונה הועלתה בהצלחה, מספר התמונות המקסימלי הוא:</string>
 <string name="upload_picture_failure">העלאת תמונה נכשלה</string>
+<string name="no_gps">זוהתה תקלה בחיבור ל GPS לפיכך מידע המבוסס מיקום לא יוצג</string>
+<string name="gotIt">הבנתי</string>
+<string name="no_tickets">כרטיסים אזלו</string>
+<string name="event_date">תאריך אירוע</string>
+<string name="event_price">מחיר כרטיס</string>
+<string name="Order_Date">תאריך הזמנה</string>
+<string name="more_details">פרטים נוספים</string>
+<string name="eventName">שם האירוע</string>
+<string name="seat_number">מספר מושב</string>
+<string name="verification">החל תהליך אימות מספר...</string>
+<string name="enter_email_address">הכנס כתובת מייל</string>
+<string name="num_events">מספר אירועים:</string>
+<string name="please_register">הכניסה לאיזור זה דורש רישום או הזדהות</string>
+<string name="user_exist">כתובת במייל שההזנת נמצאת בשימוש על ידי משתמש אחר, בצע רישום מחדש</string>
+<string name="error">נמצאה תקלה, פעולה לא הושלמה נסה שוב</string>
+<string name="verification_failed">תהליך האימות נכשל נסה שוב בעוד מספר דקות</string>
+<string name="are_you_sure">אתה בטוח שברצונך לבטל את האירוע? לא ניתן לשחזר אירוע שבוטל. שלח הודעת עידכון למשתתפי האירוע לפני פעולת ביטול</string>
+<string name="going_to_delete">אתה עומד לבטל אירוע: </string>
+<string name="yes">כן</string>
+<string name="no">לא</string>
+<string name="push_successfully_sent"> הודעה נשלחה בהצלחה</string>
+<string name="send_push">שלח הודעה</string>
+<string name="cancel_event">בטל אירוע</string>
+<string name="are_you_sure_edit_event">אתה עומד לערוך אירוע. שלח הודעת עדכון למשתתפי האירוע אודות העדכון</string>
+<string name="Number_of_Guests_Entered">מספר משתתפים שנכנסו לאירוע</string>
+<string name="Handicap_toilets">שירותי נכים</string>
+<string name="select_more_tags">בחר נושא אירוע, תוכל להוסיף עוד בחלק של התגיות</string>
+<string name="Pick_filter">בחר נושא אירוע*</string>
+<string name="Add_tags">הוסף תגיות מופרדות ע"י פסיק לשיפור תוצאות חיפוש אירוע</string>
+<string name="enter_valid_quantity">הזן בבקשה כמות כרטיסים או מושבים</string>
+<string name="enter_valid_quantity_price">הזן בבקשה מספר תקין מחיר כרטיס ומספר תקין של כמות כרטיסים או מושבים</string>
+<string name="choose_a_filter">בחר בבקשה נושא אירוע</string>
+<string name="Event_Address_is_empty">כתובת מקום האירוע ריקה או לא תקינה</string>
+<string name="validation_failed">אימות כתובת לא תקין , תקן ונסה שוב</string>
+<string name="upload_a_picture">בחר בבקשה תמונת נושא לאירוע</string>
+<string name="upload_pictures">העלה תמונות</string>
+<string name="view_pictures">צפה בתמונות</string>
+<string name="max_images">מספר התמונות המקסימלי הוא:</string>
 
 </resources>
 

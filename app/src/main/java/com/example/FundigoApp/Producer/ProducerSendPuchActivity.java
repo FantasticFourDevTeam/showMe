@@ -19,7 +19,7 @@ public class ProducerSendPuchActivity extends AppCompatActivity implements View.
     EditText editText;
     Button send;
     String eventObjectId;
-
+	CheckBox buyOnly,everyOne;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate (savedInstanceState);
@@ -27,6 +27,8 @@ public class ProducerSendPuchActivity extends AppCompatActivity implements View.
         eventObjectId = getIntent ().getExtras ().get ("id").toString ();
         editText = (EditText) findViewById (R.id.editTextPush);
         send = (Button) findViewById (R.id.sendPush);
+		buyOnly = (CheckBox)findViewById(R.id.checkbox_forPeopleBuyTickets);
+        everyOne = (CheckBox)findViewById(R.id.checkbox_forEveryone);
         send.setOnClickListener (this);
     }
 
@@ -34,12 +36,13 @@ public class ProducerSendPuchActivity extends AppCompatActivity implements View.
     public void onClick(View v) {
         switch (v.getId ()) {
             case R.id.sendPush:
-                if (editText.getText ().length () != 0) {
+				if((!buyOnly.isChecked() && !everyOne.isChecked())|| (buyOnly.isChecked() && everyOne.isChecked()))Toast.makeText (this, "choose one of checkBox", Toast.LENGTH_SHORT).show ();
+                else if (editText.getText ().length () != 0) {
                     SimpleDateFormat sdf = new SimpleDateFormat ("dd/MM/yyyy_HH:mm:ss");
                     String currentDateandTime = sdf.format (new Date ());
                     ParsePush.subscribeInBackground ("a" + eventObjectId);
                     ParsePush push = new ParsePush ();
-                    push.setChannel ("a" + eventObjectId);
+                    if(buyOnly.isChecked() && !everyOne.isChecked())push.setChannel (eventObjectId);
                     ParseObject query = new ParseObject ("Push");
                     push.setMessage (editText.getText () + "(" + currentDateandTime + ")");
                     try {
@@ -49,12 +52,12 @@ public class ProducerSendPuchActivity extends AppCompatActivity implements View.
                         query.put ("EvendId", eventObjectId);
                         query.save();
                         ParsePush.unsubscribeInBackground("a" + eventObjectId);
-                        Toast.makeText (this, editText.getText () + " message, was successfully sent", Toast.LENGTH_LONG).show();
+                        Toast.makeText (this, editText.getText () + getString(R.string.push_successfully_sent), Toast.LENGTH_LONG).show();
                     } catch (com.parse.ParseException e) {
                         e.getStackTrace ();
                     }
                 } else {
-                    Toast.makeText (this, "Enter text", Toast.LENGTH_SHORT).show ();
+                    Toast.makeText (this, getString(R.string.please_fill_empty_forms), Toast.LENGTH_SHORT).show ();
                 }
                 break;
         }

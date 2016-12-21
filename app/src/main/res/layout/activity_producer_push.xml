@@ -14,14 +14,47 @@
         android:layout_marginTop="120dp"
         android:maxLength="45"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
-
+        android:layout_centerHorizontal="true"
+        android:hint="Write something "
+        />
+    <TextView
+        android:id="@+id/TextViewOfCheckBoxForEveryoneInSendPushActivity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Send push for Everyone:"
+        android:layout_below="@+id/editTextPush"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="10dp"
+        />
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/checkbox_forEveryone"
+        android:layout_below="@+id/editTextPush"
+        android:layout_centerHorizontal="true"
+        />
+    <TextView
+        android:id="@+id/TextViewOfCheckBoxForPeopleBuyTicketsInSendPushActivity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Send push for buyerOnly:"
+        android:layout_below="@+id/TextViewOfCheckBoxForEveryoneInSendPushActivity"
+        android:layout_marginTop="13dp"
+        android:layout_marginLeft="10dp"
+        />
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/checkbox_forPeopleBuyTickets"
+        android:layout_below="@+id/checkbox_forEveryone"
+        android:layout_centerHorizontal="true"
+        />
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="@string/send"
-        android:layout_below="@+id/editTextPush"
+        android:layout_below="@+id/checkbox_forPeopleBuyTickets"
         android:layout_centerHorizontal="true"
         android:id="@+id/sendPush"
         />

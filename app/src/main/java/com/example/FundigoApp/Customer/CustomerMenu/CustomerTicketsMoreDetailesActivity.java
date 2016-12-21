@@ -17,6 +17,7 @@ import com.example.FundigoApp.GlobalVariables;
 import com.example.FundigoApp.R;
 import com.example.FundigoApp.StaticMethod.EventDataMethods;
 import com.example.FundigoApp.StaticMethod.FileAndImageMethods;
+import com.example.FundigoApp.StaticMethod.GeneralStaticMethods;
 import com.example.FundigoApp.StaticMethod.UserDetailsMethod;
 import com.example.FundigoApp.Tickets.EventsSeatsInfo;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -96,11 +97,15 @@ public class CustomerTicketsMoreDetailesActivity extends AppCompatActivity {
     Button.OnClickListener sendTicketMailClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
             try {
-                CustomerDetails customerDetails = UserDetailsMethod.getUserDetailsFromParseInMainThread(GlobalVariables.CUSTOMER_PHONE_NUM);
-                emailTo = customerDetails.getEmail();
-                sendTicketParseMail(v);
+
+               if(GeneralStaticMethods.EmailAddressVerified(GlobalVariables.CUSTOMER_PHONE_NUM)) {
+                   CustomerDetails customerDetails = UserDetailsMethod.getUserDetailsFromParseInMainThread(GlobalVariables.CUSTOMER_PHONE_NUM);
+                   emailTo = customerDetails.getEmail();
+                   sendTicketParseMail(v);
+               }
+               else
+                   Toast.makeText(context,R.string.verify_email,Toast.LENGTH_LONG).show();
             }
             catch (Exception ex){
                 ex.printStackTrace();
@@ -140,8 +145,10 @@ public class CustomerTicketsMoreDetailesActivity extends AppCompatActivity {
                 Log.e("send mail response", "response: " + response);
                 if (exc!=null)
                     exc.printStackTrace();
-                if (response.equals("Email sent!")) {
-                    Toast.makeText(context, "Your ticket was sent to: " + emailTo, Toast.LENGTH_LONG).show();
+                if (response!=null) {
+                    if (response.equals("Email sent!")) {
+                        Toast.makeText(context, "Your ticket was sent to: " + emailTo, Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         });

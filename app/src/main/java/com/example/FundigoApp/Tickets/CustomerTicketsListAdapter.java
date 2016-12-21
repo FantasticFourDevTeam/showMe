@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.FundigoApp.R;
@@ -38,7 +38,7 @@ public class CustomerTicketsListAdapter extends ArrayAdapter<EventsSeatsInfo> {
                 Button listViewButton = (Button) convertView.findViewById (R.id.moreDetailesButton);
                 Button eventEndedButton = (Button) convertView.findViewById (R.id.eventEnded);
                 TextView purchaseDate = (TextView) convertView.findViewById (R.id.purchaseDate);
-                LinearLayout seatLayout = (LinearLayout)convertView.findViewById(R.id.seatLinearLayout);
+                RelativeLayout seatLayout = (RelativeLayout)convertView.findViewById(R.id.seatLinearLayout);
 
                 String priceString = String.valueOf (eventsSeatsInfo.getPrice ());
                 eventName.setText (eventsSeatsInfo.getEventInfo().getName());

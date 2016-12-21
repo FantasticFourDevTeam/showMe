@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -49,14 +50,17 @@ public class FileAndImageMethods {
             } else
                 number = myData;
         }
-        //return number;
-        return "0545262140";
+        return number;
+        //return "0545262140";
     }
 
     public static Bitmap getImageFromDevice(Intent data, Context context) { //14.10 assaf updated for prevent outpfmemory exceptions
 
         Uri selectedImage = data.getData();
-      //  Bitmap rotatedBitmap=null;
+        Matrix matrix = new Matrix();
+        int angleToRotate = getOrientation(selectedImage, context);
+        matrix.postRotate(angleToRotate);
+        Bitmap rotatedBitmap;
        // ParcelFileDescriptor parcelFileDescriptor =
          //       null;
       //  try {
@@ -72,24 +76,24 @@ public class FileAndImageMethods {
            // Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
 
            // parcelFileDescriptor.close();
-          //  Matrix matrix = new Matrix();
-          //  int angleToRotate = getOrientation(selectedImage, context);
-            //matrix.postRotate(angleToRotate);
-            //rotatedBitmap = Bitmap.createBitmap(image,
-              //      0,
-                //    0,
-                  //  image.getWidth(),
-                    //image.getHeight(),
-                   // matrix,
-                   // true);
-            return image;
+
+
+              rotatedBitmap = Bitmap.createBitmap(image,
+                    0,
+                    0,
+                    image.getWidth(),
+                    image.getHeight(),
+                    matrix,
+                    true);
+
+           // return image;
+            return rotatedBitmap;
 
         } catch (Exception e) { //14.10 - assaf added exceptiosn handling
             e.printStackTrace();
         } catch (OutOfMemoryError err) {
             err.printStackTrace();
         }
-        //return rotatedBitmap;
         return null;
     }
 

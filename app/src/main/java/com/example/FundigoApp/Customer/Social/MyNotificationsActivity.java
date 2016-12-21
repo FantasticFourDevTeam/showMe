@@ -43,7 +43,7 @@ public class MyNotificationsActivity extends AppCompatActivity implements Adapte
         setContentView (R.layout.activity_my_notification);
         notificationList = (ListView) findViewById (R.id.listViewNotification);
         massage = (ImageButton) findViewById (R.id.Message_itemPush);
-        mipo = (ImageButton) findViewById (R.id.Mipo_Push);
+      //  mipo = (ImageButton) findViewById (R.id.Mipo_Push);  // 09.12 aaaf - access to MIPO caneled for now
         unreadMessage = (EditText)findViewById(R.id.Message_unread_MyNotificationActivity);
         unreadPushMessage = (EditText)findViewById(R.id.Push_Message_unread_MyNotificationActivity);
 
@@ -61,7 +61,7 @@ public class MyNotificationsActivity extends AppCompatActivity implements Adapte
             ex.printStackTrace();
         }
         massage.setOnClickListener (this);
-        mipo.setOnClickListener (this);
+       // mipo.setOnClickListener (this);// accees to Mipo was canceleed for now
     }
 
     @Override
@@ -69,10 +69,12 @@ public class MyNotificationsActivity extends AppCompatActivity implements Adapte
         if (v.getId () == massage.getId ()) {
             Intent MessageIntent = new Intent (MyNotificationsActivity.this, CustomerMessageConversationsListActivity.class);
             startActivity (MessageIntent);
-        } else if (v.getId () == mipo.getId ()) {
+
+            //Access to MIPO was canceled for now
+       /* } else if (v.getId () == mipo.getId ()) {
             Intent mipoIntent = new Intent (MyNotificationsActivity.this, MipoActivity.class);
             startActivity (mipoIntent);
-        }
+        */}
     }
 
     public void getNotification() {
@@ -130,5 +132,11 @@ public class MyNotificationsActivity extends AppCompatActivity implements Adapte
         super.onResume();
         MyServices.checkVisibilityForUnreadPushMessage(this.unreadPushMessage, getApplicationContext());
         MyServices.checkVisibilityForUnreadCustomerAndProducerMessage(this.unreadMessage,getApplicationContext());
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        MyNotificationsActivity.this.finish();
     }
 }

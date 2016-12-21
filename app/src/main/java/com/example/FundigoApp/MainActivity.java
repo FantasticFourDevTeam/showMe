@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -52,6 +53,7 @@ import com.example.FundigoApp.Verifications.SmsSignUpActivity;
 import com.example.events.ActivityFacebook;
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParsePush;
@@ -66,6 +68,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import io.branch.referral.Branch;
 import io.branch.referral.BranchError;
@@ -95,7 +98,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     AlertDialog.Builder builder;
     public static EditText unreadMessage;
     int unreadMessageAndPushNumber;
-	
+    ArrayList<String> _mainFilterForFilter = new ArrayList<>();//assaf - 02.12 assaf
+    Boolean IsLocationSavedInParse = false;
+    Boolean  swipeDetected = false;// detect if swipe to left on Event
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,66 +117,67 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             createCustomerMainPage();
             EXIT = false;
         }*/
-		customerLogin();
+        customerLogin();
         createCustomerMainPage();
         EXIT = false;
-		startService( new Intent(this,checkMessageUnreadChats.class));
+        startService(new Intent(this, checkMessageUnreadChats.class));
     }
-/*
-    public void createProducerMainPage() {
-        setContentView(R.layout.producer_avtivity_main);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        if (Locale.getDefault().getDisplayLanguage().equals("עברית")) {
-            tabLayout.addTab(tabLayout.newTab().setText("אמנים"));
-            tabLayout.addTab(tabLayout.newTab().setText("מידע"));
-        } else {
-            tabLayout.addTab(tabLayout.newTab().setText("Artists"));
-            tabLayout.addTab(tabLayout.newTab().setText("State"));
+    /*
+        public void createProducerMainPage() {
+            setContentView(R.layout.producer_avtivity_main);
+
+            TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+            if (Locale.getDefault().getDisplayLanguage().equals("עברית")) {
+                tabLayout.addTab(tabLayout.newTab().setText("אמנים"));
+                tabLayout.addTab(tabLayout.newTab().setText("מידע"));
+            } else {
+                tabLayout.addTab(tabLayout.newTab().setText("Artists"));
+                tabLayout.addTab(tabLayout.newTab().setText("State"));
+            }
+
+            tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+            final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+            final TabPagerAdapter adapter = new TabPagerAdapter
+                    (getSupportFragmentManager(), tabLayout.getTabCount());
+            qr_scan_icon = (ImageView) findViewById(R.id.qr_scan_produ);
+            viewPager.setAdapter(adapter);
+            viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+
+            tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+
+                @Override
+                public void onTabSelected(TabLayout.Tab tab) {
+                    if (tab.getPosition() == 1 && dialogCounter == 0) {
+                        dialog = new ProgressDialog(MainActivity.this);
+                        dialog.setMessage("Loading...");
+                        dialog.show();
+                    }
+                    viewPager.setCurrentItem(tab.getPosition());
+                }
+
+                @Override
+                public void onTabUnselected(TabLayout.Tab tab) {
+                    if (tab.getPosition() == 1) {
+                        dialogCounter++;
+                    }
+                    viewPager.setCurrentItem(tab.getPosition());
+                }
+
+                @Override
+                public void onTabReselected(TabLayout.Tab tab) {
+                }
+            });
+
+            qr_scan_icon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getApplicationContext(), QR_producer.class);
+                    startActivity(intent);
+                }
+            });
         }
-
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        final TabPagerAdapter adapter = new TabPagerAdapter
-                (getSupportFragmentManager(), tabLayout.getTabCount());
-        qr_scan_icon = (ImageView) findViewById(R.id.qr_scan_produ);
-        viewPager.setAdapter(adapter);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-
-        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                if (tab.getPosition() == 1 && dialogCounter == 0) {
-                    dialog = new ProgressDialog(MainActivity.this);
-                    dialog.setMessage("Loading...");
-                    dialog.show();
-                }
-                viewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-                if (tab.getPosition() == 1) {
-                    dialogCounter++;
-                }
-                viewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-            }
-        });
-
-        qr_scan_icon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), QR_producer.class);
-                startActivity(intent);
-            }
-        });
-    }
-*/
+    */
     public void createCustomerMainPage() {
         setContentView(R.layout.activity_main);
 
@@ -179,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         savedEvent = (Button) findViewById(R.id.BarSavedEvent_button);
         realTime = (Button) findViewById(R.id.BarRealTime_button);
         notification = (ImageView) findViewById(R.id.notification_item);
-        unreadMessage = (EditText)findViewById(R.id.Message_unread);
+        unreadMessage = (EditText) findViewById(R.id.Message_unread);
 
         notification.setOnClickListener(this);
         context = this;
@@ -197,6 +204,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         list_view.setAdapter(eventsListAdapter);
         list_view.setSelector(new ColorDrawable(Color.TRANSPARENT));
         list_view.setOnItemClickListener(this);
+      //  list_view.setOnTouchListener(OnTouchListener); // 16.12 - assaf to swipe list item to thr left
+
 
         if (GlobalVariables.ALL_EVENTS_DATA.size() == 0) {
             Intent intent = new Intent(this, EventPageActivity.class);
@@ -255,7 +264,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
 
         // dialog that popup if NO gps after 2 minutes that user logged
-        builder = new AlertDialog.Builder (context);
+        builder = new AlertDialog.Builder(context);
         gpsMessageHandler = new Handler();
         gpsMessageHandler.postDelayed(gpsRunnable, 300000);// 26.09 assaf - check each 5 minutes from the moment this page uploaded-- if no GPS location then show a message
     }
@@ -277,18 +286,51 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     public void gpsCallback() {
-        if ((GlobalVariables.MY_LOCATION == null|| !GPSMethods.isLocationEnabled(context)) && GlobalVariables.IS_PRODUCER == false) {
-            gpsMessageHandler.postDelayed(gpsRunnable, 5);// check after 1 minutes from the moment GPS updates method  called-- if no GPS location then show a message
+        if ((GlobalVariables.MY_LOCATION == null || !GPSMethods.isLocationEnabled(context)) && !GlobalVariables.IS_PRODUCER) {
+            gpsMessageHandler.postDelayed(gpsRunnable, 5);// check after 5 minutes from the moment GPS updates method  called-- if no GPS location then show a message
         }
 
-        if (GlobalVariables.CITY_GPS != null &&!GlobalVariables.CITY_GPS.isEmpty()&& GlobalVariables.MY_LOCATION!=null) {
-              GlobalVariables.cityMenuInstance = new CityMenu(GlobalVariables.ALL_EVENTS_DATA, this);
-              GlobalVariables.namesCity = GlobalVariables.cityMenuInstance.getCityNames();
+
+        //Save User location once login done and GPS is open- done only one time
+        if (GlobalVariables.MY_LOCATION != null && !IsLocationSavedInParse && GlobalVariables.CUSTOMER_PHONE_NUM != null) {
+            ParseQuery<Profile> query = ParseQuery.getQuery("Profile");
+            query.whereEqualTo("number", GlobalVariables.CUSTOMER_PHONE_NUM);
+            query.setLimit(100000);
+            try {
+                query.findInBackground(new FindCallback<Profile>() {
+                    @Override
+                    public void done(List<Profile> objects, ParseException e) {
+
+                        if (e == null) {
+                            for (Profile userProfile : objects) {
+                                ParseGeoPoint parseGeoPoint = new ParseGeoPoint(GlobalVariables.MY_LOCATION.getLatitude(),
+                                        GlobalVariables.MY_LOCATION.getLongitude());
+                                userProfile.setLocation(parseGeoPoint);
+                                try {
+                                    userProfile.save();
+                                    IsLocationSavedInParse = true;
+                                } catch (ParseException e1) {
+                                    e1.printStackTrace();
+                                }
+                            }
+                        } else {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        if (GlobalVariables.CITY_GPS != null && !GlobalVariables.CITY_GPS.isEmpty() && GlobalVariables.MY_LOCATION != null) {
+            GlobalVariables.cityMenuInstance = new CityMenu(GlobalVariables.ALL_EVENTS_DATA, this);
+            GlobalVariables.namesCity = GlobalVariables.cityMenuInstance.getCityNames();
             inflateCityMenu();
             int indexCityGps = GPSMethods.getCityIndexFromName(GlobalVariables.CITY_GPS);
 
             if (indexCityGps >= 0) {
-               // popup.getMenu().getItem(GlobalVariables.indexCityGPS).setTitle(GlobalVariables.namesCity[GlobalVariables.indexCityGPS]);
+                // popup.getMenu().getItem(GlobalVariables.indexCityGPS).setTitle(GlobalVariables.namesCity[GlobalVariables.indexCityGPS]);
                 GlobalVariables.indexCityGPS = indexCityGps;
                 popup.getMenu().getItem(GlobalVariables.indexCityGPS).setTitle(GlobalVariables.CITY_GPS + "(GPS)");
                 if (!GlobalVariables.USER_CHOSEN_CITY_MANUALLY) {
@@ -306,8 +348,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     currentCityButton.setText(GlobalVariables.CITY_GPS + "(GPS)");
                 }
 
-             }
-            else { // ASSAF :08/09 to support a case that GPS location updated but not found in the list of Cities
+            } else { // ASSAF :08/09 to support a case that GPS location updated but not found in the list of Cities
                 if (!GlobalVariables.USER_CHOSEN_CITY_MANUALLY) {
                     ArrayList<EventInfo> tempEventsList =
                             FilterMethods.filterByCityAndFilterName(
@@ -348,17 +389,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     protected void onResume() {
         super.onResume();
+
         FilterMethods.setContext(getApplicationContext());//for Intilaize FilterMethods Context to getData static method.
-		unreadMessageAndPushNumber = Integer.parseInt(MyServices.getFromSharedPreferences("push",getApplicationContext()) + MyServices.getFromSharedPreferences("unreadMessageFromCustomer",getApplicationContext()) + MyServices.getFromSharedPreferences("unreadMessageFromProducer",getApplicationContext()));
-        if(unreadMessageAndPushNumber > 0) {
-            if (unreadMessage.getVisibility() != View.VISIBLE)
-            {
+        unreadMessageAndPushNumber = Integer.parseInt(MyServices.getFromSharedPreferences("push", getApplicationContext()) + MyServices.getFromSharedPreferences("unreadMessageFromCustomer", getApplicationContext()) + MyServices.getFromSharedPreferences("unreadMessageFromProducer", getApplicationContext()));
+        if (unreadMessageAndPushNumber > 0) {
+            if (unreadMessage.getVisibility() != View.VISIBLE) {
                 unreadMessage.setVisibility(View.VISIBLE);
-                unreadMessage.setText(""+unreadMessageAndPushNumber);
+                unreadMessage.setText("" + unreadMessageAndPushNumber);
             }
-        }
-        else
-        {
+        } else {
             unreadMessage.setVisibility(View.INVISIBLE);
         }
 
@@ -444,8 +483,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
                         if (GlobalVariables.CITY_GPS != null &&
                                 GlobalVariables.namesCity[GlobalVariables.indexCityChosen].equals(GlobalVariables.CITY_GPS) &&
-                                GPSMethods.getCityIndexFromName(GlobalVariables.CITY_GPS) >= 0)
-                        {
+                                GPSMethods.getCityIndexFromName(GlobalVariables.CITY_GPS) >= 0) {
                             currentCityButton.setText(GlobalVariables.namesCity[GlobalVariables.indexCityChosen] + "(GPS)");
                         } else {
                             currentCityButton.setText(GlobalVariables.namesCity[GlobalVariables.indexCityChosen]);
@@ -477,9 +515,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         try {
             super.onPrepareOptionsMenu(menu);
             //int maxMenuLength = 51; //    //Was relevant when MENU_LENGTH supposed to display part of cities only. we changed it to display all cities sorted.
-            int maxMenuLength = GlobalVariables.namesCity.length+1;
-          //  int numOfItemsToRemove = maxMenuLength - GlobalVariables.namesCity.length;         //Was relevant when MENU_LENGTH supposed to display part of cities only. we changed it to display all cities sorted.
-            int numOfItemsToRemove = (maxMenuLength+1) - GlobalVariables.namesCity.length;
+            int maxMenuLength = GlobalVariables.namesCity.length + 1;
+            //  int numOfItemsToRemove = maxMenuLength - GlobalVariables.namesCity.length;         //Was relevant when MENU_LENGTH supposed to display part of cities only. we changed it to display all cities sorted.
+            int numOfItemsToRemove = (maxMenuLength + 1) - GlobalVariables.namesCity.length;
             while (numOfItemsToRemove > 0) {
                 menu.getItem(maxMenuLength - 1).setVisible(false);
                 numOfItemsToRemove--;
@@ -503,11 +541,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 if (i == GlobalVariables.indexCityGPS &&
                         GlobalVariables.CITY_GPS != null &&
                         GPSMethods.getCityIndexFromName(GlobalVariables.CITY_GPS) >= 0) {
-                   // popup.getMenu().getItem(i).setTitle(GlobalVariables.namesCity[i] + "(GPS)");
-                    popup.getMenu().add(Menu.NONE,i,Menu.NONE,GlobalVariables.namesCity[i] + "(GPS)"); // create menu items dynamically
+                    // popup.getMenu().getItem(i).setTitle(GlobalVariables.namesCity[i] + "(GPS)");
+                    popup.getMenu().add(Menu.NONE, i, Menu.NONE, GlobalVariables.namesCity[i] + "(GPS)"); // create menu items dynamically
                 } else {
                     //popup.getMenu().getItem(i).setTitle(GlobalVariables.namesCity[i]);
-                    popup.getMenu().add(Menu.NONE,i,Menu.NONE,GlobalVariables.namesCity[i]); // create menu items dynamically
+                    popup.getMenu().add(Menu.NONE, i, Menu.NONE, GlobalVariables.namesCity[i]); // create menu items dynamically
                 }
                 GlobalVariables.popUpIDToCityIndex.put(popup.getMenu().getItem(i).getItemId(), i);
                 if (!GlobalVariables.CURRENT_CITY_NAME.isEmpty() &&
@@ -567,12 +605,19 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     @Override
-    public void onItemClick(AdapterView<?> av, View view, int i, long l) {
-        Bundle b = new Bundle();
-        Intent intent = new Intent(this, EventPageActivity.class);
-        EventDataMethods.onEventItemClick(i, filtered_events_data, intent);
-        intent.putExtras(b);
-        startActivity(intent);
+    public void onItemClick(AdapterView<?> av, View view, int i, long l) { //Assaf 16.12 - changed ot support onClick and OnItemTouch
+     //   if (swipeDetected) { // swipe event to left and open customer chats  messages page directly
+     //       Intent MessageIntent = new Intent (MainActivity.this, CustomerMessageConversationsListActivity.class);
+     //       startActivity (MessageIntent);
+
+       //     }
+      //  else {
+            Bundle b = new Bundle();
+            Intent intent = new Intent(this, EventPageActivity.class);
+            EventDataMethods.onEventItemClick(i, filtered_events_data, intent);
+            intent.putExtras(b);
+            startActivity(intent);
+      //  }
     }
 
     @Override
@@ -673,11 +718,36 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         try {
             super.onDestroy();
             _sharedPref = getSharedPreferences("filterInfo", MODE_PRIVATE); // 24.09- assaf: to Edit the Shared P. and delete the price and date form filter
-            _sharedPref.edit().putString("date","").commit();// 24.09- assaf:
+            _sharedPref.edit().putString("date", "").commit();// 24.09- assaf:
             _sharedPref.edit().putString("price", "").commit();// 24.09- assaf:
-            _sharedPref.edit().putString("dateFrom","").commit();// 18.10- assaf:
+            _sharedPref.edit().putString("dateFrom", "").commit();// 18.10- assaf:
             _sharedPref.edit().putString("dateTo", "").commit();// 18.10- assaf:
+
+            //Save Filters Choice in Parse for Future use. if not empty or null
+
+            if (GlobalVariables.CURRENT_FILTER_NAME != null && !GlobalVariables.CURRENT_FILTER_NAME.isEmpty()) {
+                ParseQuery<Profile> query = ParseQuery.getQuery("Profile");
+                query.whereEqualTo("number", GlobalVariables.CUSTOMER_PHONE_NUM);
+                query.setLimit(100000);
+                try {
+                    List<Profile> listNumbers = query.find();
+                    for (Profile userProfile : listNumbers) {
+                        userProfile.put("prefferedTopics", GlobalVariables.CURRENT_FILTER_NAME);
+                        userProfile.save();
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
             //    _sharedPref.edit().clear().commit(); //// 24.-9 Assaf: this is destroy the filter banner selected by a user. was marked so filter will be save
+            System.runFinalization();
+
+            int currentApiVersion = android.os.Build.VERSION.SDK_INT;
+            if (currentApiVersion >= Build.VERSION_CODES.JELLY_BEAN) { //chekc that API version greater then 15
+                finishAffinity();
+            } else {
+                finish();
+            }
             System.exit(0);     // for kill  background Threads that operate the Endless loop of present the push messages
         } catch (Exception ex) {
             Log.e(ex.getMessage(), "onDestroy exception");
@@ -689,16 +759,20 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     {
         _sharedPref = getSharedPreferences("filterInfo", MODE_PRIVATE);
         String _date = _sharedPref.getString("date", "");
-        String _dateFrom = _sharedPref.getString ("dateFrom", ""); //18.10 assaf
-        String _dateTo =  _sharedPref.getString ("dateTo", "");//18.10 - assaf
+        String _dateFrom = _sharedPref.getString("dateFrom", ""); //18.10 assaf
+        String _dateTo = _sharedPref.getString("dateTo", "");//18.10 - assaf
         String _price = _sharedPref.getString("price", "");
         String _mainfilter = _sharedPref.getString("mainFilter", "");
         String _subfilter = _sharedPref.getString("subFilter", "");
-        String _mainFilterForFilter = _sharedPref.getString("mainFilterForFilter","");//24.09
-        String _subFilterForFilter = _sharedPref.getString("subFilterForFilter",""); //24.09
+        Set<String> _mainFilterForFilterSet = _sharedPref.getStringSet("mainFilterForFilter", null); // Assaf 02.12 support multiple filter choice
+        if (_mainFilterForFilterSet != null) {
+            _mainFilterForFilter.clear();
+            _mainFilterForFilter.addAll(_mainFilterForFilterSet);
+        }
+        String _subFilterForFilter = _sharedPref.getString("subFilterForFilter", ""); //24.09
         Integer _priceForFilter = _sharedPref.getInt("priceFilterForFilter", -2); //24.09
         String _dateForFilter = _sharedPref.getString("dateFilterForFilter", "");
-        String[] _results = {_mainfilter, _subfilter, _date, _price,_mainFilterForFilter,_subFilterForFilter,Integer.toString(_priceForFilter),_dateForFilter,_dateFrom,_dateTo};//24.09
+        String[] _results = {_mainfilter, _subfilter, _date, _price, "", _subFilterForFilter, Integer.toString(_priceForFilter), _dateForFilter, _dateFrom, _dateTo};//24.09
 
         return _results;
     }
@@ -756,6 +830,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             GlobalVariables.IS_CUSTOMER_REGISTERED_USER = true;
             ParseQuery<Profile> query = ParseQuery.getQuery("Profile");
             query.whereEqualTo("number", GlobalVariables.CUSTOMER_PHONE_NUM);
+            query.setLimit(100000);
             query.findInBackground(new FindCallback<Profile>() {
                 @Override
                 public void done(List<Profile> objects, ParseException e) {
@@ -781,27 +856,28 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         GlobalVariables.IS_PRODUCER = false;
         GlobalVariables.PRODUCER_PARSE_OBJECT_ID = null;
         GlobalVariables.ALL_EVENTS_DATA.clear();
+
     }
 
     @Override
     public void onBackPressed() {//prevent the back Button to the Activities that sent intents to the Main Activity
         //super.onBackPressed();
-		AlertDialog.Builder builder = new AlertDialog.Builder (this);
-            builder.setMessage (R.string.are_you_sure_you_want_to_exit)
-                    .setCancelable (false)
-                    .setPositiveButton ("Yes", new DialogInterface.OnClickListener () {
-                        public void onClick(DialogInterface dialog, int id) {
-                            EXIT = true; //a flag close all activities that opened in the stack
-                            MainActivity.this.finish ();
-                        }
-                    })
-                    .setNegativeButton ("No", new DialogInterface.OnClickListener () {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel ();
-                        }
-                    });
-            AlertDialog alert = builder.create ();
-            alert.show ();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.are_you_sure_you_want_to_exit)
+                .setCancelable(false)
+                .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        EXIT = true; //a flag close all activities that opened in the stack
+                        MainActivity.this.finish();
+                    }
+                })
+                .setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
 
@@ -836,12 +912,17 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     }
                 }
                 filterTextView.setVisibility(View.VISIBLE);
-                filterTextView.setText(results[0] + " " + results[1] + " " + results[2] + " " + results[3] + " " + toFromDates);
+                //filterTextView.setText(results[0] + " " + results[1] + " " + results[2] + " " + results[3] + " " + toFromDates);
+
+                //04.12 - assaf -- canceling the presentation of Main and Sub filters for now
+                filterTextView.setText("" + " " + "" + " " + results[2] + " " + results[3] + " " + toFromDates);
 
                 ///intial filters 24.09 - keep main Filter and sub filter - so after relogin filter will save
-                GlobalVariables.CURRENT_FILTER_NAME = results[4]; // 24.09 assaf
+
+                GlobalVariables.CURRENT_FILTER_NAME = _mainFilterForFilter; // 02.12 - assaf support multiple filter choice
+
                 GlobalVariables.CURRENT_SUB_FILTER = results[5]; // 24.09 assaf
-                //   GlobalVariables.CURRENT_PRICE_FILTER=Integer.parseInt(results[6]);// 24.09 assaf not present price after exit
+                //   GlobalVariables.CURRENT_PRICE_FILTER=Integer.parseInt(results[6]);// 24.09 assaf canceled present price after exit
 
                 //24.09 assaf marked it not present date after exit
                 //   if(results[7]!=null){
@@ -852,9 +933,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 //  }
                 /////////
             }
-        }
-             catch (Exception ex) {
-                ex.printStackTrace();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -863,26 +943,50 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         @Override
         public void run() {
 
-                if ((GlobalVariables.MY_LOCATION == null || !GPSMethods.isLocationEnabled(context)) && GlobalVariables.IS_PRODUCER == false)
-                {
-                    try {
-                        builder.setMessage("WhoGO best service is based on GPS , a problem with GPS connection was found");
-                        builder.setCancelable(true);
-                        builder.setNeutralButton("Got It",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                });
+            if ((GlobalVariables.MY_LOCATION == null || !GPSMethods.isLocationEnabled(context)) && GlobalVariables.IS_PRODUCER == false) {
+                try {
+                    builder.setMessage(getString(R.string.no_gps));
+                    builder.setCancelable(true);
+                    builder.setNeutralButton(R.string.gotIt,
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
 
-                        AlertDialog alert = builder.create();
-                        alert.show();
-                    }
-                    catch (Exception ex)
-                    {
-                        ex.printStackTrace();
-                    }
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
             }
-          };
-      }
+        }
+    };
+
+  /*  View.OnTouchListener OnTouchListener = new View.OnTouchListener() { // 16.12 - assaf - added to support swipe to Left
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+             if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                swipeDetected = false;
+                final int MIN_DISTANCE = 100;
+                float leftX = 0;
+                float currentX;
+                currentX = event.getX();
+                float deltaX = leftX - currentX;
+                if (Math.abs(deltaX) < MIN_DISTANCE) {
+                    // swipe to left side
+                    if (deltaX < 0) {
+                        swipeDetected = true;
+                        return true;
+                    } else
+                        return false;
+                } else
+                    return false;
+            }
+            else
+            return false;
+        }
+
+    }; */
+}
+

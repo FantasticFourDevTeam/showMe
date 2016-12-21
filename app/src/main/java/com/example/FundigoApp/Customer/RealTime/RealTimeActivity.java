@@ -169,8 +169,7 @@ public class RealTimeActivity extends AppCompatActivity implements View.OnClickL
                 return 0;
             }
         });
-         //Log.i("TAG", "sort" + Double.toString(GlobalVariables.MY_LOCATION.getLongitude()));///check
-         //Log.i("TAG", "sort" + arr.get(0).getAddress() + arr.get(1).getAddress());///check
+
         return arr;
     }
 
@@ -304,7 +303,11 @@ public class RealTimeActivity extends AppCompatActivity implements View.OnClickL
                     }
                 }
                 filterTextView.setVisibility (View.VISIBLE);
-                filterTextView.setText (results[0] + " " + results[1] + " " + results[2] + " " + results[3] + " " + toFromDates);
+
+                // Main filter and Sub filter not pesented in Bar - for now it was cnacled - Assaf 04.12
+                //filterTextView.setText (results[0] + " " + results[1] + " " + results[2] + " " + results[3] + " " + toFromDates);
+                filterTextView.setText (""+ " " + "" + " " + results[2] + " " + results[3] + " " + toFromDates);
+
             }
         } catch (Exception ex) {
             Log.e ("TAG", ex.getMessage ());

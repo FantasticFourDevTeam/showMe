@@ -59,6 +59,7 @@ public class ArtistAdapter extends BaseAdapter {
             //12.10 Assaf added to presnt only artists with real name (no artist not present)
             mViewHolder.tvTitle.setText(artist.getName());
             mViewHolder.numOfArtistEvents.setText(Integer.toString(getArtistEvents()));
+            mViewHolder.numOfEventsTitle.setVisibility(View.VISIBLE);
         }
         return convertView;
     }
@@ -66,11 +67,12 @@ public class ArtistAdapter extends BaseAdapter {
     private class MyViewHolder {
         TextView tvTitle;
         TextView numOfArtistEvents;
-
+        TextView numOfEventsTitle;
 
         public MyViewHolder(View item) {
             tvTitle = (TextView) item.findViewById(R.id.artistName);
             numOfArtistEvents = (TextView)item.findViewById(R.id.numOfArtistEvents);
+            numOfEventsTitle = (TextView) item.findViewById(R.id.numOfEventsTitle);
         }
     }
 

@@ -22,6 +22,7 @@ import com.example.FundigoApp.R;
 import com.example.FundigoApp.StaticMethod.EventDataMethods;
 import com.example.FundigoApp.StaticMethod.FileAndImageMethods;
 import com.google.gson.Gson;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.parse.GetCallback;
 import com.parse.GetDataCallback;
 import com.parse.ParseException;
@@ -81,6 +82,7 @@ public class EditEventActivity extends AppCompatActivity implements AdapterView.
     private String region2="";
     private static HashMap<String,String> addressPerLanguage = new HashMap<>();
     private static HashMap<String,String> cityPerLanguage = new HashMap<>();
+    ImageLoader loader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +101,7 @@ public class EditEventActivity extends AppCompatActivity implements AdapterView.
         query.getInBackground (eventObjectId, new GetCallback<ParseObject> () {
             @Override
             public void done(ParseObject object, ParseException e) {
+
                 if (e == null) {
                     event = (Event) object;
                     ParseFile file = (ParseFile) object.get ("ImageFile");
@@ -106,8 +109,18 @@ public class EditEventActivity extends AppCompatActivity implements AdapterView.
                         @Override
                         public void done(byte[] data, ParseException e) {
                             if (e == null) {
-                                bmp = BitmapFactory.decodeByteArray (data, 0, data.length);
-                                img.setImageBitmap (bmp);
+                                try {
+                                    bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
+                                    Bitmap bmpImage = Bitmap.createScaledBitmap(bmp, 50 , 50 , true);
+                                    img.setImageBitmap(bmpImage);
+                                }
+                                catch (Exception ex)
+                                {
+                                    ex.printStackTrace();
+                                }
+                                catch (OutOfMemoryError err){
+                                    err.printStackTrace();
+                                }
                             } else {
                                 e.printStackTrace ();
                             }
@@ -403,7 +416,7 @@ public class EditEventActivity extends AppCompatActivity implements AdapterView.
             }
 
             event.put("eventToiletService", numOfToilets + ", Handicapped " + numOfHandicapToilets);
-
+            event.setDescription(et_description.getText().toString());
             event.put("place", et_place.getText().toString());
             if (et_parking_edit.getText().toString().equals("")) {
                 eventParkingService = "";

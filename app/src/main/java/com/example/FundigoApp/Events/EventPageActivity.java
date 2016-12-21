@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -87,10 +88,12 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
     private int walkValue = -1;
     EventInfo eventInfo;
     String i = "";
-    private Button eventPicsUpload;
+    private static Button eventPicsUpload;
+    private static Button eventPicsView;
 	long mLastClickTime=0;
     private String faceBookUrl;
     ImageLoader loader;
+    private static Button findLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,25 +110,34 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
         eventInfo.setIsFutureEvent (eventDate.after (currentDate));
         saveOrPushBotton = (ImageView) findViewById (R.id.imageEvenetPageView3);
         eventPicsUpload = (Button) findViewById(R.id.uploadPics);//04.11 assaf updated to upload pics of events by prodcuer
+        eventPicsView = (Button) findViewById(R.id.viewPics);
+        findLocation = (Button) findViewById(R.id.findLocation);
+        findLocation.setOnClickListener(this);
+
         if (!GlobalVariables.IS_PRODUCER) //29.09 - support free and fix logic
         {
-            if(eventInfo.getNumOfTickets()==0)// in case by mistake someone filled 0 mainly in case of Free events
+			if(eventInfo.getIsCanceled())
             {
-                getTicketsButton.setText("No Tickets Left");
+                getTicketsButton.setText("Event Canceled");
+                getTicketsButton.setClickable(false);
+            }
+            else if(eventInfo.getNumOfTickets()==0)// in case by mistake someone filled 0 mainly in case of Free events
+            {
+                getTicketsButton.setText(getString(R.string.no_tickets));
                 getTicketsButton.setClickable(false);
             }
             else if (eventInfo.getPrice().equals("FREE") && eventInfo.getNumOfTickets() > 0 && eventInfo.isFutureEvent()) { //29.09 - assaf to suport free events
                 //getTicketsButton.setText("Free Event");
-                 getTicketsButton.setText("Register"); //09.08 - Assaf changed for the option to register also fr Free events
+                 getTicketsButton.setText(getString(R.string.register)); //09.08 - Assaf changed for the option to register also fr Free events
                 getTicketsButton.setClickable(true);
                 checkIfTicketsLeft();
                 //getTicketsButton.setClickable (false);
             } else if (eventInfo.getPrice().equals("FREE") && eventInfo.getNumOfTickets() < 0 && eventInfo.isFutureEvent()) {
                 //getTicketsButton.setText("Free Event");
-                getTicketsButton.setText("Schedule"); //29.09 - Assaf changed for the option to register also fr Free events
+                getTicketsButton.setText(getString(R.string.schedule)); //29.09 - Assaf changed for the option to register also fr Free events
                 getTicketsButton.setClickable(true);
             } else if (!GlobalVariables.IS_PRODUCER && !eventInfo.isFutureEvent()) {
-                getTicketsButton.setText(R.string.event_expiration);
+                getTicketsButton.setText(getString(R.string.event_expiration));
                 getTicketsButton.setClickable(false);
             } else {
                 if (eventInfo.isFutureEvent()&& !(eventInfo.getPrice().equals("FREE") && eventInfo.getNumOfTickets() < 0)) {
@@ -133,6 +145,9 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
                     checkIfTicketsLeft();
                 }
             }
+
+            eventPicsView.setVisibility(View.VISIBLE); // 18.12 - assaf - view pictures uploaded by producer
+            eventPicsView.setOnClickListener(this);
         }
 
         else if (GlobalVariables.IS_PRODUCER) {
@@ -141,20 +156,14 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
             saveOrPushBotton.setImageResource(R.drawable.ic_micro_send_push_frame);
             eventPicsUpload.setVisibility(View.VISIBLE);
             eventPicsUpload.setOnClickListener(this);
-           }
+          }
         faceBookUrl = intent.getStringExtra ("fbUrl");//get link from the Intent
         GlobalVariables.deepLinkEventObjID = "";
         GlobalVariables.deepLink_params = "";
         ImageView event_image = (ImageView) findViewById (R.id.eventPage_image);
         loader = FileAndImageMethods.getImageLoader (this);
         loader.displayImage (eventInfo.getPicUrl(), event_image);
-       /* if (GeneralStaticMethods.getLanguage()) //25.10 assaf for presnet Date in Hebrew
-        {
-            date = GeneralStaticMethods.getDateToStringConversion(eventInfo.getDate());
-        } */
-       // else {
         date = eventInfo.getDateAsString();
-       // }
         TextView event_date = (TextView) findViewById (R.id.eventPage_date);
         event_date.setText (date);
         eventName = intent.getStringExtra ("eventName");
@@ -167,9 +176,13 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
         String eventPrice = intent.getStringExtra ("eventPrice");
         TextView event_price = (TextView) findViewById (R.id.priceEventPage);
         if (GlobalVariables.IS_PRODUCER) {
-            event_price.setText ("Edit Event");
+            event_price.setText (getString(R.string.edit_event));
         } else {
-            event_price.setText (EventDataMethods.getDisplayedEventPrice (eventPrice));
+            if (!eventInfo.getPrice().equals("FREE"))
+                event_price.setText (EventDataMethods.getDisplayedEventPrice (eventPrice));
+            else{
+                event_price.setText (getString(R.string.free));
+            }
         }
         String eventDescription = intent.getStringExtra ("eventInfo");
         TextView event_info = (TextView) findViewById (R.id.eventInfoEventPage);
@@ -180,6 +193,7 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
         iv_share = (ImageView) findViewById (R.id.imageEvenetPageView2);
         iv_share.setOnClickListener (this);
         iv_chat = (ImageView) findViewById (R.id.imageEvenetPageView5);
+
         iv_chat.setOnClickListener (this);
 
         ImageView imageEvenetPageView4 = (ImageView) findViewById (R.id.imageEvenetPageView4);
@@ -385,6 +399,13 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
             case R.id.uploadPics:
                 picturesTakeAndUpload();
                 break;
+
+            case R.id.viewPics:
+                viewPictures();
+                break;
+            case R.id.findLocation:
+                navigateToEventLocation();
+                break;
         }
     }
 
@@ -512,9 +533,9 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
     public boolean dialogForGuestToRegister() {
         //Assaf:show dialog in case  Guest want to Chat
         final AlertDialog.Builder builder = new AlertDialog.Builder (this);
-        builder.setMessage ("In order to Chat or Send Message you have to pass Registration First")
+        builder.setMessage (getString(R.string.please_register))
                 .setCancelable (true)
-                .setNeutralButton ("Register by SMS", new DialogInterface.OnClickListener () {
+                .setNeutralButton (getString(R.string.register), new DialogInterface.OnClickListener () {
                     public void onClick(DialogInterface dialog, int id) {
 
                         Intent smsRegister = new Intent (EventPageActivity.this, SmsSignUpActivity.class);
@@ -522,7 +543,7 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
                     }
                 });
 
-        builder.setPositiveButton ("Cancel", new DialogInterface.OnClickListener () {
+        builder.setPositiveButton (getString(R.string.cancel), new DialogInterface.OnClickListener () {
             public void onClick(DialogInterface dialog, int id) {
                 dialog.cancel ();
             }
@@ -682,9 +703,40 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
 
     public void editEvent(View view) {
         if (GlobalVariables.IS_PRODUCER) {
-            Intent intent = new Intent (this, EditEventActivity.class);
-            intent.putExtra (GlobalVariables.OBJECTID, eventInfo.getParseObjectId ());
-            startActivity (intent);
+
+            DialogInterface.OnClickListener listenerEdit = new DialogInterface.OnClickListener () { //01.12 - assaf -added dialog before Edit
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which) {
+                        case DialogInterface.BUTTON_POSITIVE:
+                            Intent intent = new Intent (EventPageActivity.this, EditEventActivity.class);
+                            intent.putExtra(GlobalVariables.OBJECTID, eventInfo.getParseObjectId ());
+                            startActivity(intent);
+                            GlobalVariables.refreshArtistsList = true;
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            dialog.dismiss ();
+                            break;
+                        case DialogInterface.BUTTON_NEUTRAL: // open Push notifications to users before event delete
+                            Intent intentPush = new Intent(EventPageActivity.this, ProducerSendPuchActivity.class);
+                            intentPush.putExtra("id",eventInfo.getParseObjectId ());
+                            startActivity(intentPush);
+                            break;
+                    }
+                }
+            };
+            AlertDialog.Builder builderEdit = new AlertDialog.Builder (this);
+            builderEdit.setIcon(R.drawable.warning);
+            builderEdit.setMessage(getString(R.string.are_you_sure_edit_event));
+            builderEdit.setPositiveButton(getString(R.string.yes), listenerEdit);
+            builderEdit.setNegativeButton(getString(R.string.no), listenerEdit);
+            builderEdit.setNeutralButton(getString(R.string.send_push), listenerEdit);
+            AlertDialog dialogEdit = builderEdit.create ();
+            dialogEdit.show();
+//
+//            Intent intent = new Intent (this, EditEventActivity.class);
+//            intent.putExtra (GlobalVariables.OBJECTID, eventInfo.getParseObjectId ());
+//            startActivity (intent);
         }
     }
 
@@ -696,7 +748,7 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
             public void done(List<EventsSeats> eventsSeatsList, ParseException e) {
                 if (e == null) {
                     if (eventsSeatsList.size () >= eventInfo.getNumOfTickets ()) {
-                        getTicketsButton.setText ("No Tickets Left");
+                        getTicketsButton.setText (getString(R.string.no_tickets));
                         getTicketsButton.setClickable (false);
                     }
                 } else {
@@ -739,28 +791,76 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
     }
 
     private void saveImageToParse(Bitmap eventPicture) { // save event picture to Parse , evnets pictirses table with pointer to Event
-
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        if (eventPicture!=null) {
-            eventPicture.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-            byte[] eventPicData = stream.toByteArray();
-
-            try {
-                final ParseFile pictureFile = new ParseFile("picture.jpeg", eventPicData);
-
-                pictureFile.saveInBackground(new SaveCallback() {
-                    public void done(ParseException e) {
-                        ParseObject eventsPictures = new ParseObject("EventMultiMedia");
-                        eventsPictures.put("eventPointer", ParseObject.createWithoutData("Event", eventInfo.getParseObjectId()));
-                        eventsPictures.put("MultiMedia", pictureFile);
-                        eventsPictures.saveInBackground();
-                    }
-                });
-                Toast.makeText(this, getString(R.string.upload_picture), Toast.LENGTH_SHORT).show();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                Toast.makeText(this, getString(R.string.upload_picture_failure), Toast.LENGTH_SHORT).show();
+        int MAX_IMAGES = 4;
+        if (checkNumberOfImages() <MAX_IMAGES) {
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            if (eventPicture != null) {
+                eventPicture.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                byte[] eventPicData = stream.toByteArray();
+                try {
+                    final ParseFile pictureFile = new ParseFile("picture.jpeg", eventPicData);
+                    pictureFile.saveInBackground(new SaveCallback() {
+                        public void done(ParseException e) {
+                            ParseObject eventsPictures = new ParseObject("EventMultiMedia");
+                            eventsPictures.put("eventPointer", ParseObject.createWithoutData("Event", eventInfo.getParseObjectId()));
+                            eventsPictures.put("MultiMedia", pictureFile);
+                            eventsPictures.saveInBackground();
+                        }
+                    });
+                    Toast.makeText(this, getString(R.string.upload_picture) + " " + String.valueOf(MAX_IMAGES), Toast.LENGTH_SHORT).show();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    Toast.makeText(this, getString(R.string.upload_picture_failure), Toast.LENGTH_SHORT).show();
+                }
             }
         }
+        else {
+            Toast.makeText(this, getString(R.string.max_images) + " " + String.valueOf(MAX_IMAGES), Toast.LENGTH_SHORT).show();
+        }
     }
+
+      private void viewPictures()
+      {
+          Intent intent = new Intent(this, EventPicturesGridView.class);
+          intent.putExtra("eventID", eventInfo.getParseObjectId());
+          startActivity(intent);
+      }
+
+    private int checkNumberOfImages()
+    {
+        int NumOfImagesInParse =0;
+        try {
+            ParseQuery innerQuery = new ParseQuery("Event");
+            innerQuery.whereEqualTo("objectId", eventInfo.getParseObjectId());
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("EventMultiMedia");
+            query.whereMatchesQuery("eventPointer", innerQuery);
+            List<ParseObject> list = query.find();
+            NumOfImagesInParse = list.size();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+       return NumOfImagesInParse;
+    }
+
+    private void navigateToEventLocation()
+    {
+		// final String url = String.format("waze://?ll=%f,%f&navigate=yes", eventInfo.getX(),eventInfo.getY());
+		// final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+		//  startActivity(intent);
+		try 
+		{
+			String uri = "http://maps.google.com/maps?q=loc:" + eventInfo.getX() + "," + eventInfo.getY() + " (" + eventInfo.getAddress() + ")";
+			Intent navigateIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+			navigateIntent.setData(Uri.parse(uri));
+			startActivity(navigateIntent);
+		}
+		catch (Exception ex)
+		{
+			ex.printStackTrace();
+		}
+    }
+	
+   
 }

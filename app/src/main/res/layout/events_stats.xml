@@ -10,22 +10,36 @@
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
+            android:layout_gravity="start"
             android:layout_marginTop="20dp">
             <TextView
                 android:id="@+id/incomeSoFarTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Income so far"
+                android:text="@string/so_far_income"
                 android:textSize="20sp"
                 android:layout_weight="3"
-                android:layout_marginLeft="5dp" />
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+           >
 
             <TextView
                 android:id="@+id/incomeSoFar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp"
                 android:textSize="20sp"
                 android:textColor="#000000"
                 android:layout_weight="2" />
@@ -34,41 +48,61 @@
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal">
+            android:layout_gravity="start">
 
             <TextView
                 android:id="@+id/numberTicketsSoldTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tickets Sold"
+                android:text="@string/tickets_sold"
                 android:textSize="20sp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp"
                 android:layout_weight="3"
-                android:layout_marginLeft="5dp" />
+                />
 
-            <TextView
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start">
+           <TextView
                 android:id="@+id/numberTicketsSold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
                 android:textSize="20sp"
                 android:textColor="#000000"
+               android:layout_marginLeft="10dp"
+               android:layout_marginStart="10dp"
+               android:layout_marginRight="10dp"
+               android:layout_marginEnd="10dp"
                 android:layout_weight="2" />
         </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal" >
+            android:layout_gravity="start">
 
             <TextView
                 android:id="@+id/textView16"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Past Events"
+                android:text="@string/past_events"
                 android:textSize="20sp"
                 android:layout_weight="3"
-                android:layout_marginLeft="5dp" />
-
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp" />
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start" >
             <TextView
                 android:id="@+id/numberOfPastEvents"
                 android:layout_width="wrap_content"
@@ -76,77 +110,116 @@
                 android:text="0"
                 android:textSize="20sp"
                 android:textColor="#000000"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp"
                 android:layout_weight="2" />
         </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal" >
+            android:layout_gravity="start" >
 
             <TextView
                 android:id="@+id/textView18"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sold Ticket Price Avg"
+                android:text="@string/ticket_price_avg"
                 android:textSize="20sp"
                 android:layout_weight="3"
-                android:layout_marginLeft="5dp" />
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp" />
 
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start" >
             <TextView
                 android:id="@+id/soldTicketPriceAvg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp"
                 android:textSize="20sp"
                 android:textColor="#000000"
                 android:layout_weight="4" />
         </TableRow>
-
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal" >
+            android:layout_gravity="start" >
 
             <TextView
                 android:id="@+id/textView23"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Upcoming Income"
+                android:text="@string/future_income"
                 android:textSize="20sp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp"
                 android:layout_weight="3"
-                android:layout_marginLeft="5dp" />
+                />
 
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start" >
             <TextView
                 android:id="@+id/incomeUpcoming"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp"
                 android:textSize="20sp"
                 android:textColor="#000000"
                 android:layout_weight="2" />
         </TableRow>
-
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal" >
+            android:layout_gravity="start" >
 
             <TextView
                 android:id="@+id/textView25"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Upcoming Events"
+                android:text="@string/upcoming_events"
                 android:textSize="20sp"
                 android:layout_weight="3"
-                android:layout_marginLeft="5dp" />
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp" />
 
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start" >
             <TextView
                 android:id="@+id/numberOfUpcomingEvents"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
                 android:textSize="20sp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp"
                 android:textColor="#000000"
                 android:layout_weight="2" />
         </TableRow>
@@ -154,47 +227,70 @@
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal" >
+            android:layout_gravity="start" >
 
             <TextView
                 android:id="@+id/textView27"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Upcoming Tickets"
+                android:text="@string/tickets_left"
                 android:textSize="20sp"
                 android:layout_weight="3"
-                android:layout_marginLeft="5dp" />
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp"
+                />
 
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start">
             <TextView
                 android:id="@+id/numberTicketsUpcoming"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
                 android:textSize="20sp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp"
                 android:textColor="#000000"
                 android:layout_weight="2" />
         </TableRow>
-
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal" >
+            android:layout_gravity="start" >
 
             <TextView
                 android:id="@+id/textView17"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Upcoming Tickets Price Avg"
+                android:text="@string/upcoming_tickets_price_avg"
                 android:textSize="20sp"
                 android:layout_weight="3"
-                android:layout_marginLeft="5dp" />
-
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp"/>
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start" >
             <TextView
                 android:id="@+id/upcomingTicketPriceAvg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
                 android:textSize="20sp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp"
                 android:textColor="#000000"
                 android:layout_weight="3" />
         </TableRow>

@@ -8,10 +8,12 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.example.FundigoApp.Events.CreateEventActivity;
+import com.example.FundigoApp.GlobalVariables;
 import com.example.FundigoApp.Producer.Artists.QR_producer;
 import com.example.FundigoApp.Producer.TabPagerAdapter;
 import com.example.FundigoApp.R;
@@ -30,13 +32,13 @@ private static ImageView qr_scan_icon;
         setContentView (R.layout.producer_avtivity_main);
         TabLayout tabLayout = (TabLayout) findViewById (R.id.tab_layout);
         if (Locale.getDefault ().getDisplayLanguage ().equals ("עברית")) {
-            tabLayout.addTab (tabLayout.newTab ().setText ("אומנים"));
-            tabLayout.addTab (tabLayout.newTab ().setText ("ללא אומן"));
-            tabLayout.addTab (tabLayout.newTab ().setText ("מדדי אירועים"));
+            tabLayout.addTab (tabLayout.newTab ().setText ("אירועים עם אמן"));
+            tabLayout.addTab (tabLayout.newTab ().setText ("אירועים ללא אמן"));
+            tabLayout.addTab (tabLayout.newTab ().setText ("סיכום מדדי אירועים"));
         } else {
-            tabLayout.addTab (tabLayout.newTab ().setText ("Artists"));
-            tabLayout.addTab(tabLayout.newTab().setText("No Artist"));//12.10 assaf
-            tabLayout.addTab (tabLayout.newTab().setText("Events State"));
+            tabLayout.addTab (tabLayout.newTab ().setText ("Artists Events"));
+            tabLayout.addTab(tabLayout.newTab().setText("No Artist Events"));//12.10 assaf
+            tabLayout.addTab (tabLayout.newTab().setText("Events State Summary"));
         }
         dialogCounter =0;
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);//12.10 assaf
@@ -45,31 +47,33 @@ private static ImageView qr_scan_icon;
         final TabPagerAdapter adapter = new TabPagerAdapter
                 (getSupportFragmentManager (), tabLayout.getTabCount ());
         viewPager.setAdapter (adapter);
-        viewPager.addOnPageChangeListener (new TabLayout.TabLayoutOnPageChangeListener (tabLayout));
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         viewPager.setOffscreenPageLimit(2);//assaf: 13.10: keep the fragments in Memory and prevent refresh the page each time swipe to it , it takes time
        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
+           @Override
+           public void onTabSelected(TabLayout.Tab tab) {
 
-                if (tab.getPosition() == 2 && dialogCounter == 2) {
-                    dialog = new ProgressDialog(ProducerActivity.this);
-                    dialog.setMessage("Loading...");
-                    dialog.show();
-                }
-                viewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-                if (tab.getPosition() == 1 || tab.getPosition() == 0 ) {
-                    dialogCounter++;
-                }
+               if (tab.getPosition() == 2 && dialogCounter == 2) {
+                   dialog = new ProgressDialog(ProducerActivity.this);
+                   dialog.setMessage(getString((R.string.Loading)));
+                   dialog.show();
+                   if (GlobalVariables.ALL_EVENTS_DATA.isEmpty())//06.12 assaf added in case no events for the prodcuer
+                       dialog.dismiss();
                }
+               viewPager.setCurrentItem(tab.getPosition());
+           }
 
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-            }
-        });
+           @Override
+           public void onTabUnselected(TabLayout.Tab tab) {
+               if (tab.getPosition() == 1 || tab.getPosition() == 0) {
+                   dialogCounter++;
+               }
+           }
+
+           @Override
+           public void onTabReselected(TabLayout.Tab tab) {
+           }
+       });
 
 
         qr_scan_icon =(ImageView)findViewById (R.id._qr_scan_producer);
@@ -80,12 +84,21 @@ private static ImageView qr_scan_icon;
                 startActivity(intent);
             }
         });
+
+         ///for debig only
+        Log.i("prodProdcuerMainCreate", "ID" + GlobalVariables.PRODUCER_PARSE_OBJECT_ID);
+
     }
 
     public void createEvent(View view) {
-        Intent intent = new Intent (this, CreateEventActivity.class);
-        intent.putExtra("create", "true");
-        startActivity(intent);
+       // String customerPhone = getIntent().getStringExtra("customerPhone");// intent from Login.java for verify if mail approved already
+      //  if (GeneralStaticMethods.EmailAddressVerified(customerPhone)) {
+        Intent intent = new Intent(this, CreateEventActivity.class);
+            intent.putExtra("create", "true");
+            startActivity(intent);
+      //  }
+        //else
+          //  Toast.makeText(getApplicationContext(),R.string.verify_email,Toast.LENGTH_LONG).show();
     }
 
 
@@ -95,12 +108,13 @@ private static ImageView qr_scan_icon;
         AlertDialog.Builder builder = new AlertDialog.Builder (this);
         builder.setMessage (R.string.producer_are_you_sure_you_want_to_exit)
                 .setCancelable (false)
-                .setPositiveButton ("Yes", new DialogInterface.OnClickListener () {
+                .setPositiveButton (getString(R.string.yes), new DialogInterface.OnClickListener () {
                     public void onClick(DialogInterface dialog, int id) {
+                        GlobalVariables.ALL_EVENTS_DATA.clear();//assaf 28.11 - clear it , for the case that back from Producer page
                         ProducerActivity.this.finish ();
                     }
                 })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
                     }

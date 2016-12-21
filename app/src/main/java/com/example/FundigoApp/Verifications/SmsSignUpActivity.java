@@ -85,10 +85,11 @@ public class SmsSignUpActivity extends AppCompatActivity {
     Bitmap image;
     private Profile profileParseObject;
     ProgressDialog smsDialog;
+    String currentEmailAddress = "";
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void forceRTLIfSupported() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             getWindow ().getDecorView ().setLayoutDirection (View.LAYOUT_DIRECTION_LTR);
         }
     }
@@ -133,11 +134,11 @@ public class SmsSignUpActivity extends AppCompatActivity {
                  if (!phoneET.getText().toString().equals("") && phoneET.getText() != null) {
                    username = usernameTE.getText().toString();
                    smsDialog = new ProgressDialog(SmsSignUpActivity.this);
-                   smsDialog.setTitle("Verification is in progress...");
+                   smsDialog.setTitle(getString(R.string.verification));
                    smsDialog.show();
                    smsVerify(area + phoneET.getText().toString());
                } else {
-                   Toast.makeText(SmsSignUpActivity.this, "Please fill phone number", Toast.LENGTH_SHORT).show();
+                   Toast.makeText(SmsSignUpActivity.this, getString(R.string.enter_phone_number), Toast.LENGTH_SHORT).show();
                }
 
               }
@@ -149,6 +150,7 @@ public class SmsSignUpActivity extends AppCompatActivity {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if ((event != null && (event.getKeyCode () == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
                     username = usernameTE.getText().toString();
+                    currentEmailAddress = emailAddress.getText().toString();
                     if (!username.equals("") && username!=null) {
                         usernameTE.setVisibility(View.INVISIBLE);
                         usernameTV.setVisibility(View.INVISIBLE);
@@ -157,7 +159,7 @@ public class SmsSignUpActivity extends AppCompatActivity {
                     }
                     else
                     {
-                        Toast.makeText(SmsSignUpActivity.this,"Please fill user name",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SmsSignUpActivity.this,getString(R.string.user_name_missing),Toast.LENGTH_SHORT).show();
                     }
 
                 }
@@ -182,7 +184,7 @@ public class SmsSignUpActivity extends AppCompatActivity {
                         //optionalTV.setVisibility(View.VISIBLE);
                     }
                     else
-                        Toast.makeText(SmsSignUpActivity.this,"Please fill email address",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SmsSignUpActivity.this,getString(R.string.email_address_missing),Toast.LENGTH_SHORT).show();
                 }
                 return false;
             }
@@ -190,12 +192,29 @@ public class SmsSignUpActivity extends AppCompatActivity {
     }
 
     public void Signup(View view) {
+
+        Boolean setUserDone = false;
         if (previousDataFound != null) {
             profileParseObject = previousDataFound;
             GlobalVariables.CUSTOMER_PHONE_NUM = previousDataFound.getNumber ();
             ParseUser.logOut ();
-            try {
-                ParseUser.logIn (GlobalVariables.CUSTOMER_PHONE_NUM, GlobalVariables.CUSTOMER_PHONE_NUM);
+            try { // 29.11 - assaf updated to support both new and existing users
+                //save the user in User Table as well
+                ParseUser _user = ParseUser.logIn (GlobalVariables.CUSTOMER_PHONE_NUM, GlobalVariables.CUSTOMER_PHONE_NUM);
+                String currentEmail = _user.getEmail();
+                ParseACL parseUserAcl = new ParseACL();
+                parseUserAcl.setPublicReadAccess(true);
+                parseUserAcl.setWriteAccess(_user, true);
+                _user.setACL(parseUserAcl);
+                if (!currentEmail.equals(emailAddress.getText().toString())) {// assaf-  update mail in User table only if email address changed
+                    _user.put("email", emailAddress.getText().toString());
+                    _user.save();
+                }
+                //save the user in Profile Table as well
+                profileParseObject.setName (username);
+                profileParseObject.setEmail(emailAddressValue);
+
+                setUserDone = true;
             } catch (ParseException e) {
                 e.printStackTrace ();
             }
@@ -214,90 +233,103 @@ public class SmsSignUpActivity extends AppCompatActivity {
             profileParseObject = new Profile ();
             ParseUser user = new ParseUser ();
             user.setUsername (area + phoneET.getText ().toString ());
-            user.setPassword (area + phoneET.getText ().toString ());
+            user.setPassword(area + phoneET.getText().toString());
+            user.setEmail(emailAddressValue);//19.11 - assaf added
+
             try {
-                user.signUp ();
-            } catch (ParseException e) {
+                user.signUp ();  // save the user in "User table and make email verification"
+                 profileParseObject.setUser (user); //save the user in Profile Table as well
+                 profileParseObject.setName (username);
+                 profileParseObject.setEmail(emailAddressValue);
+                 setUserDone = true; // if userSign up is successfull - assaf 19.11
+           } catch (ParseException e) {
                 e.printStackTrace ();
+                Toast.makeText(getApplicationContext(),getString(R.string.user_exist),Toast.LENGTH_LONG).show();
             }
-            profileParseObject.setUser (user);
         }
-        profileParseObject.setName (username);
-        profileParseObject.setEmail(emailAddressValue);
-        if (imageSelected) {
-            customerImageView.buildDrawingCache ();
-            Bitmap bitmap = image;
-            byte[] image;
-            if(bitmap.getByteCount () > 500000) {
-                ByteArrayOutputStream stream = new ByteArrayOutputStream ();
-                bitmap.compress (CompressFormat.JPEG, 100, stream);
-                image = stream.toByteArray ();
-            } else{
-                ByteArrayOutputStream stream = new ByteArrayOutputStream ();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                image = stream.toByteArray ();
+
+        if (setUserDone) // if user signUp is ok - 19.11 - assaf
+        {
+           if (imageSelected) {
+                customerImageView.buildDrawingCache();
+                Bitmap bitmap = image;
+                byte[] image;
+                if (bitmap.getByteCount() > 500000) {
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    bitmap.compress(CompressFormat.JPEG, 100, stream);
+                    image = stream.toByteArray();
+                } else {
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                    image = stream.toByteArray();
+                }
+                ParseFile file = new ParseFile("picturePath", image);
+                try {
+                    file.save();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                ParseACL parseAcl = new ParseACL();
+                parseAcl.setPublicReadAccess(true);
+                parseAcl.setPublicWriteAccess(true);
+                profileParseObject.setACL(parseAcl);
+                profileParseObject.put("pic", file);
+            } else if (!image_was_before) {
+                Bitmap bmp = BitmapFactory.decodeResource(this.getResources(),
+                        R.drawable.no_image_icon_md);
+                customerImageView.setImageBitmap(bmp);
+                customerImageView.buildDrawingCache();
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bmp.compress(CompressFormat.PNG, 100, stream);
+                byte[] image = stream.toByteArray();
+                ParseFile file = new ParseFile("picturePath", image);
+                try {
+                    file.save();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                ParseACL parseAcl = new ParseACL();
+                parseAcl.setPublicReadAccess(true);
+                parseAcl.setPublicWriteAccess(true);
+                profileParseObject.setACL(parseAcl);
+                profileParseObject.put("pic", file);
             }
-            ParseFile file = new ParseFile ("picturePath", image);
+            profileParseObject.setNumber(area + phoneET.getText().toString());
+            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(SmsSignUpActivity.this);
+            String fbId = sp.getString(GlobalVariables.FB_ID, null);
+            if (fbId != null) {
+                profileParseObject.setFbId(fbId);
+            }
+            String fbUrl = sp.getString(GlobalVariables.FB_PIC_URL, null);
+            if (fbUrl != null) {
+                profileParseObject.setFbUrl(fbUrl);
+            }
+            if (GlobalVariables.MY_LOCATION != null) {
+                ParseGeoPoint parseGeoPoint = new ParseGeoPoint(GlobalVariables.MY_LOCATION.getLatitude(),
+                        GlobalVariables.MY_LOCATION.getLongitude());
+                profileParseObject.setLocation(parseGeoPoint);
+            } else {
+                ParseGeoPoint parseGeoPoint = new ParseGeoPoint(31.8971205,
+                        34.8136008);
+                profileParseObject.setLocation(parseGeoPoint);
+            }
             try {
-                file.save();
-            } catch (ParseException e) {
-                e.printStackTrace ();
+                profileParseObject.saveInBackground();
+
+                if (!emailAddress.getText().toString().equals(currentEmailAddress))
+                   Toast.makeText(getApplicationContext(), R.string.account_created_successfully_verification_mail, Toast.LENGTH_LONG).show();
+                else
+                   Toast.makeText(getApplicationContext(), R.string.successfully_signed_up, Toast.LENGTH_SHORT).show();
+
+                saveToFile(area + phoneET.getText().toString());
+                GlobalVariables.CUSTOMER_PHONE_NUM = area + phoneET.getText().toString();
+                GlobalVariables.IS_CUSTOMER_REGISTERED_USER = true;
+                GlobalVariables.IS_CUSTOMER_GUEST = false;
+                finish();
+            } catch (Exception e) {
+                Toast.makeText(getApplicationContext(), getString(R.string.error), Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
             }
-            ParseACL parseAcl = new ParseACL ();
-            parseAcl.setPublicReadAccess (true);
-            parseAcl.setPublicWriteAccess (true);
-            profileParseObject.setACL (parseAcl);
-            profileParseObject.put ("pic", file);
-        } else if(!image_was_before) {
-            Bitmap bmp = BitmapFactory.decodeResource (this.getResources (),
-                                                       R.drawable.no_image_icon_md);
-            customerImageView.setImageBitmap (bmp);
-            customerImageView.buildDrawingCache ();
-            ByteArrayOutputStream stream = new ByteArrayOutputStream ();
-            bmp.compress (CompressFormat.PNG, 100, stream);
-            byte[] image = stream.toByteArray ();
-            ParseFile file = new ParseFile ("picturePath", image);
-            try {
-                file.save ();
-            } catch (ParseException e) {
-                e.printStackTrace ();
-            }
-            ParseACL parseAcl = new ParseACL ();
-            parseAcl.setPublicReadAccess (true);
-            parseAcl.setPublicWriteAccess (true);
-            profileParseObject.setACL (parseAcl);
-            profileParseObject.put ("pic", file);
-        }
-        profileParseObject.setNumber (area + phoneET.getText ().toString ());
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences (SmsSignUpActivity.this);
-        String fbId = sp.getString (GlobalVariables.FB_ID, null);
-        if (fbId != null) {
-            profileParseObject.setFbId (fbId);
-        }
-        String fbUrl = sp.getString (GlobalVariables.FB_PIC_URL, null);
-        if (fbUrl != null) {
-            profileParseObject.setFbUrl (fbUrl);
-        }
-        if (GlobalVariables.MY_LOCATION != null) {
-            ParseGeoPoint parseGeoPoint = new ParseGeoPoint (GlobalVariables.MY_LOCATION.getLatitude (),
-                                                                    GlobalVariables.MY_LOCATION.getLongitude ());
-            profileParseObject.setLocation (parseGeoPoint);
-        } else {
-            ParseGeoPoint parseGeoPoint = new ParseGeoPoint (31.8971205,
-                                                                    34.8136008);
-            profileParseObject.setLocation (parseGeoPoint);
-        }
-        try {
-            profileParseObject.saveInBackground();
-            Toast.makeText (getApplicationContext (), R.string.successfully_signed_up, Toast.LENGTH_SHORT).show ();
-            saveToFile (area + phoneET.getText ().toString ());
-            GlobalVariables.CUSTOMER_PHONE_NUM = area + phoneET.getText ().toString ();
-            GlobalVariables.IS_CUSTOMER_REGISTERED_USER = true;
-            GlobalVariables.IS_CUSTOMER_GUEST = false;
-            finish ();
-        } catch (Exception e) {
-            Toast.makeText (getApplicationContext (), "Error during registration ", Toast.LENGTH_SHORT).show ();
-            e.printStackTrace ();
         }
     }
 
@@ -351,7 +383,7 @@ public class SmsSignUpActivity extends AppCompatActivity {
         String phoneNumberInE164 = PhoneNumberUtils.formatNumberToE164(phone_number, defaultRegion);
         Verification verification = SinchVerification.createSmsVerification(config, phoneNumberInE164, listener);
         verification.initiate();
-       // onVer(); //  //just for test, DON"T Expose THIS METHOD
+        //onVer(); //  //just for test, DON"T Expose THIS METHOD
     }
 
     class MyVerificationListener implements VerificationListener {
@@ -404,21 +436,21 @@ public class SmsSignUpActivity extends AppCompatActivity {
                 e.printStackTrace ();
             }
             smsDialog.dismiss();
-            Toast.makeText(SmsSignUpActivity.this,"Verification was failed please try later again",Toast.LENGTH_LONG).show();
+            Toast.makeText(SmsSignUpActivity.this,getString(R.string.verification_failed),Toast.LENGTH_LONG).show();
         }
     }
-//    public void onVer () //just for test, DON"T Expose THIS METHOD
-//    {
-//        // Verification successful
-//        smsDialog.dismiss();
-//        usernameTV.setVisibility (View.VISIBLE);
-//        usernameTE.setVisibility (View.VISIBLE);
-//        phoneET.setVisibility (View.INVISIBLE);
-//        phoneTV.setVisibility (View.INVISIBLE);
-//        expTV = (TextView) findViewById (R.id.explanationTV);
-//        expTV.setVisibility (View.INVISIBLE);
-//        s.setVisibility (View.INVISIBLE);
-//    }
+   /* public void onVer () //just for test, DON"T Expose THIS METHOD
+    {
+        // Verification successful
+        smsDialog.dismiss();
+        usernameTV.setVisibility (View.VISIBLE);
+        usernameTE.setVisibility (View.VISIBLE);
+        phoneET.setVisibility (View.INVISIBLE);
+        phoneTV.setVisibility (View.INVISIBLE);
+        expTV = (TextView) findViewById (R.id.explanationTV);
+        expTV.setVisibility (View.INVISIBLE);
+        s.setVisibility (View.INVISIBLE);
+    } */
 
     void saveToFile(String phone_number) {
         phone_number = phone_number + " isFundigo";

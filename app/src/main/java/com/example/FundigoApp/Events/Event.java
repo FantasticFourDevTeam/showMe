@@ -5,8 +5,6 @@ import com.parse.ParseFile;
 import com.parse.ParseObject;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 @ParseClassName("Event")
 public class Event extends ParseObject {
@@ -33,6 +31,22 @@ public class Event extends ParseObject {
 
     public void setNumOfTickets(int numOfTickets) {
         put ("NumOfTickets", numOfTickets);
+    }
+
+    public int getAttending_count() {
+        return getInt ("attending_count");
+    }
+
+    public void setAttending_count(int  attending_count) {
+        put ("attending_count",  attending_count);
+    }
+
+    public int getInterested_count() {
+        return getInt ("interested_count");
+    }
+
+    public void setInterested_count(int interested_count) {
+        put ("interested_count", interested_count);
     }
 
     public String getPrice() {
@@ -138,7 +152,9 @@ public class Event extends ParseObject {
     public void setEventATMService(String eventATMService) {
         put ("eventATMService", eventATMService);
     }
-
+    public void setFbUrl(String faceBookUrl) { //link saved in Parse for link to Even FB page
+        put("FaceBookUrl",faceBookUrl);
+    }
     public String getFilterName() {
         return getString ("filterName");
     }
@@ -183,34 +199,16 @@ public class Event extends ParseObject {
         put ("subFilterName", subFilterName);
     }
 
-    public Map<String, String> getAddressPerLanguage(){ //28.10 assaf - get address per Lanugauge
-        try {
+    public boolean getEventFromFacebook(){return getBoolean("eventFromFacebook");}
 
-            return getMap("addressInLanguage");
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-            return null;
-        }
-    }
-    public Map<String, String> getCityPerLanguage(){ //28.10 assaf - get city names in otyher lAnguage
-        try {
+    public void setEventFromFacebook(boolean eventFromFacebook){put("eventFromFacebook",eventFromFacebook);}
 
-            return getMap("cityInLanguage");
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-            return null;
-        }
-    }
-    public void setAddressPerLanguage(HashMap address){ //28.10 assaf
-        put ("addressInLanguage",address);
-    }
+    public boolean getCancelEvent(){return getBoolean("canceled");}
 
-    public void setCityPerLanguage(HashMap city){ //28.10 assaf
-        put ("cityInLanguage",city);
-    }
+    public void setCancelEventFromFacebook(boolean canceled){put("canceled",canceled);}
+
+    public void setAccessToken(String accessToken){put("accessToken",accessToken);}
+
+    public String getAccessToken(){return getString("accessToken");}
 
 }

@@ -7,10 +7,9 @@ import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.net.Uri;
+import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -41,14 +40,10 @@ import com.example.FundigoApp.StaticMethod.EventDataMethods;
 import com.example.FundigoApp.StaticMethod.FileAndImageMethods;
 import com.example.FundigoApp.Tickets.TicketsPriceActivity;
 import com.google.gson.Gson;
-import com.parse.FindCallback;
 import com.parse.FunctionCallback;
-import com.parse.GetCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFile;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 
 import java.io.ByteArrayOutputStream;
@@ -112,7 +107,7 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
     private String region2="";
     private Button btn_date;
     private TextView tv_date_new;
-    private String date;
+    private String date="";
     int year;
     int monthOfYear;
     int dayOfMonth;
@@ -149,6 +144,7 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
 	long mLastClickTime=0;
     int IMAGE_MAX_SIZE = 650;
     private static Bitmap image;
+    private Boolean toSaveEvent = false; // 17.11 assaf - check if vdlaidation pass before save event to Parse
 
 
     @Override
@@ -170,61 +166,71 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
     protected void onResume() {
         super.onResume();
         seats = sp.getBoolean(GlobalVariables.SEATS, false);
+		//condition for after share event and save. this condition return to list of producer event
+        if(SHARE)
+        {
+            SHARE = false;
+            finish();
+        }
 
+        //for debugging
+        Log.i ("prodCretae" , "ID" + GlobalVariables.PRODUCER_PARSE_OBJECT_ID);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_next:
+            case R.id.btn_next: // NOT Relevant Button was remarked
                 if (timeOk) {
-                    showSecondStage();
+                  //  showSecondStage();
                 } else {
-                    Toast.makeText(CreateEventActivity.this, "Please enter valid date", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CreateEventActivity.this, getString(R.string.enter_valid_date), Toast.LENGTH_SHORT).show();
                 }
                 break;
-            case R.id.btn_next1:
+            case R.id.btn_next1:  // NOT Relevant Button was remarked
                 if (freeEvent) { //29.09 -Assaf - quantity is not mandatory for Free event
-                  //  if (!validateQuantity()) {
-                   //     Toast.makeText(CreateEventActivity.this, "Please enter valid quantity", Toast.LENGTH_SHORT).show();
-                  //  }
-                    //else if (address_ok) {
-                    if (address_ok && et_place.length()!= 0)
+                     if (address_ok && et_place.length()!= 0)
                     {
-                        showThirdStage();
+                       // showThirdStage(); 16.11 assaf - not in use anymore
                     } else {
                         Toast.makeText(CreateEventActivity.this, R.string.please_enter_valid_address, Toast.LENGTH_SHORT).show();
+                    }
+
+                    if (!validateQuantity()) {
+                        Toast.makeText(CreateEventActivity.this, getString(R.string.enter_valid_quantity), Toast.LENGTH_SHORT).show();
                     }
                 }
                 if (seats) {
                     if (!validateQuantity()) {
-                        Toast.makeText(CreateEventActivity.this, "Please enter valid quantity", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CreateEventActivity.this, getString(R.string.enter_valid_quantity), Toast.LENGTH_SHORT).show();
                     }else if (address_ok) {
-                        showThirdStage();
+                       // showThirdStage(); 16.11 assaf - not in use anymore
                     } else {
                         Toast.makeText(CreateEventActivity.this, R.string.please_enter_valid_address, Toast.LENGTH_SHORT).show();
                     }
                 } else if (!seats && !freeEvent) {
                     if (!validatePrice() || !validateQuantity()) {
-                        Toast.makeText(CreateEventActivity.this, "Please enter valid price and quantity", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CreateEventActivity.this,  getString(R.string.enter_valid_quantity_price), Toast.LENGTH_SHORT).show();
                     } else {
                         if (address_ok) {
-                            showThirdStage();
+                          //  showThirdStage();  16.11 assaf - not in use anymore
                         } else {
-                            Toast.makeText(CreateEventActivity.this, "Please enter valid address", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CreateEventActivity.this, R.string.please_enter_valid_address, Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
                 break;
-            case R.id.btn_validate_address:
+            case R.id.btn_validate_address: // SAVE Event Button
                 validateAddress();
                 break;
             case R.id.btn_next2:
-                if (filter != null) {
-                    seats = sp.getBoolean(GlobalVariables.SEATS, false);
-                    saveEvent();
-                } else {
-                    Toast.makeText(CreateEventActivity.this, "Please choose a filter", Toast.LENGTH_SHORT).show();
+                if (validateBeforeSaveEvent()) {
+                    if (filter != null && filter!="") {   // 16.11 - assaf added for validation of Information before save event in Parse
+                        seats = sp.getBoolean(GlobalVariables.SEATS, false);
+                        saveEvent();
+                    } else {
+                        Toast.makeText(CreateEventActivity.this, getString(R.string.choose_a_filter), Toast.LENGTH_SHORT).show();
+                    }
                 }
                 break;
             case R.id.btn_pic:
@@ -241,6 +247,9 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
             case R.id.btn_price_details:
                 Intent intent = new Intent(this, TicketsPriceActivity.class);
                 startActivity(intent);
+                break;
+			case R.id.btn_pickContact:
+                saveAndShare();
                 break;
         }
     }
@@ -262,17 +271,21 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
 
     public boolean validateQuantity() {
         String str = et_quantity.getText().toString();
-        if (str.equals("0")) {
-            return false;
-        }
+        if (str.equals("")&& freeEvent)
+            return true;
         try {
-            Integer.parseInt(str);
-        } catch (NumberFormatException e) {
-            return false;
-        } catch (NullPointerException e) {
-            return false;
-        }
-        return true;
+            if (Integer.parseInt(str) <= 0) {
+                return false;
+            }
+            else if (Integer.parseInt(str) >0)
+               return true;
+          }
+        catch(Exception ex)
+          {
+            ex.printStackTrace();
+              return false;
+          }
+        return false;
     }
 
     DatePickerDialog.OnDateSetListener listener = new DatePickerDialog.OnDateSetListener() {
@@ -311,7 +324,7 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
             realDate = new Date(cal.getTimeInMillis());
 
             if (cal.getTimeInMillis() <= System.currentTimeMillis()) {
-                Toast.makeText(CreateEventActivity.this, "please select a valid date", Toast.LENGTH_LONG).show();
+                Toast.makeText(CreateEventActivity.this, getString(R.string.enter_valid_date), Toast.LENGTH_LONG).show();
                 timeOk = false;
                 ISOpened = false;
             } else {
@@ -347,33 +360,19 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
         }
     }
 
-    public int getOrientation(Uri selectedImage) {
-        int orientation = 0;
-        final String[] projection = new String[]{MediaStore.Images.Media.ORIENTATION};
-        final Cursor cursor = this.getContentResolver().query(selectedImage, projection, null, null, null);
-        if (cursor != null) {
-            final int orientationColumnIndex = cursor.getColumnIndex(MediaStore.Images.Media.ORIENTATION);
-            if (cursor.moveToFirst()) {
-                orientation = cursor.isNull(orientationColumnIndex) ? 0 : cursor.getInt(orientationColumnIndex);
-            }
-            cursor.close();
-        }
-        return orientation;
-    }
-
-    private void showSecondStage() {
-        if (et_name.length() != 0 && date.length() != 0 && et_description.length() != 0) {
-            tv_create.setVisibility(View.GONE);
-            ll_name.setVisibility(View.GONE);
-            ll_date.setVisibility(View.GONE);
-            ll_artist.setVisibility(View.GONE);
-            ll_description.setVisibility(View.GONE);
-            btn_next.setVisibility(View.GONE);
-            create_event2.setVisibility(View.VISIBLE);
-        } else {
-            Toast.makeText(CreateEventActivity.this, R.string.please_fill_empty_forms, Toast.LENGTH_SHORT).show();
-        }
-    }
+ //    private void showSecondStage() { //16.11 not in use any more
+//        if (et_name.length() != 0 && date.length() != 0 && et_description.length() != 0) {
+//            tv_create.setVisibility(View.GONE);
+//            ll_name.setVisibility(View.GONE);
+//            ll_date.setVisibility(View.GONE);
+//            ll_artist.setVisibility(View.GONE);
+//            ll_description.setVisibility(View.GONE);
+//            btn_next.setVisibility(View.GONE);
+//            create_event2.setVisibility(View.VISIBLE);
+//        } else {
+//            Toast.makeText(CreateEventActivity.this, R.string.please_fill_empty_forms, Toast.LENGTH_SHORT).show();
+//        }
+//    }
 
     private void validateAddress() {
         address = et_address.getText().toString();
@@ -383,35 +382,42 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
                 iv_val_add.setVisibility(View.INVISIBLE);
                 new ValidateAddress().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, GlobalVariables.GEO_API_ADDRESS);
             } else {
-                Toast.makeText(CreateEventActivity.this, "Event Address is empty", Toast.LENGTH_SHORT).show();
+                Toast.makeText(CreateEventActivity.this, getString(R.string.Event_Address_is_empty), Toast.LENGTH_SHORT).show();
             }
         }
         catch (Exception ex)
         {
             ex.printStackTrace();
-            Toast.makeText(CreateEventActivity.this, "Validation was failed please try again", Toast.LENGTH_SHORT).show();
+            Toast.makeText(CreateEventActivity.this, getString(R.string.validation_failed), Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void showThirdStage() {
-        if (freeEvent && address_ok && et_place.length() != 0) {//29.09 assaf updated to support free event with no place limit
-            create_event2.setVisibility(View.GONE);
-            create_event3.setVisibility(View.VISIBLE);
-        } else if (seats) {
-            if (address_ok && et_place.length() != 0) {
-                create_event2.setVisibility(View.GONE);
-                create_event3.setVisibility(View.VISIBLE);
-            } else {
-                Toast.makeText(CreateEventActivity.this, R.string.please_fill_empty_forms, Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            if (et_quantity.length() != 0 && et_price.length() != 0 && address_ok && et_place.length() != 0) {
-                create_event2.setVisibility(View.GONE);
-                create_event3.setVisibility(View.VISIBLE);
-            } else {
-                Toast.makeText(CreateEventActivity.this, R.string.please_fill_empty_forms, Toast.LENGTH_SHORT).show();
-            }
-        }
+//    private void showThirdStage() { // assaf - 16.11 - not in use anymore
+//        if (freeEvent && address_ok && et_place.length() != 0) {//29.09 assaf updated to support free event with no place limit
+//            create_event2.setVisibility(View.GONE);
+//            create_event3.setVisibility(View.VISIBLE);
+//        } else if (seats) {
+//            if (address_ok && et_place.length() != 0) {
+//                create_event2.setVisibility(View.GONE);
+//                create_event3.setVisibility(View.VISIBLE);
+//            } else {
+//                Toast.makeText(CreateEventActivity.this, R.string.please_fill_empty_forms, Toast.LENGTH_SHORT).show();
+//            }
+//        } else {
+//            if (et_quantity.length() != 0 && et_price.length() != 0 && address_ok && et_place.length() != 0) {
+//                create_event2.setVisibility(View.GONE);
+//                create_event3.setVisibility(View.VISIBLE);
+//            } else {
+//                Toast.makeText(CreateEventActivity.this, R.string.please_fill_empty_forms, Toast.LENGTH_SHORT).show();
+//            }
+//        }
+ //   }
+
+ 
+    public void saveAndShare()
+    {
+        SHARE = true;
+        saveEvent();
     }
 
     public void saveEvent() {
@@ -423,101 +429,105 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
             return;
         }
         else {
+         try
+            {
             mLastClickTime = SystemClock.elapsedRealtime();
-        if (freeEvent) {
-            event.setPrice("FREE"); // 29.09- assaf to support free events without minimal quantity
-            if(et_quantity.length() ==0) {
-                et_quantity.setText("-1"); // -1 means no minimal quantitiy- free entry to the free event
-            }
-             event.setNumOfTickets(Integer.parseInt(et_quantity.getText().toString()));
-            //event.setNumOfTickets (99999);  Assaf removed the hardcoded amount oכ tickets
-        } else if (!seats) {
-            event.setNumOfTickets(Integer.parseInt(et_quantity.getText().toString()));
-            event.setPrice(et_price.getText().toString());
-        } else if (seats) {
-            List<Integer> sum = new ArrayList<>();
-            sum.add(sp.getInt(GlobalVariables.ORANGE, 0));
-            sum.add(sp.getInt(GlobalVariables.PINK, 0));
-            sum.add(sp.getInt(GlobalVariables.BLUE, 0));
-            sum.add(sp.getInt(GlobalVariables.YELLOW, 0));
-            sum.add(sp.getInt(GlobalVariables.GREEN, 0));
-            int max = Collections.max(sum);
-            int min = Collections.min(sum);
-            event.setPrice("" + min + "-" + max + "");
-            //event.setNumOfTickets (101);// Assaf removed the hardcoded amount of tickets
-            event.setNumOfTickets(Integer.parseInt(et_quantity.getText().toString()));
-        }
-        event.setAddress(valid_address);
-        event.setAddressPerLanguage(addressPerLanguage); //assaf - 28.10 save address per Lnagauge as an object in Parse
-        event.setCity(city);
-        event.setCityPerLanguage(cityPerLanguage);//assaf - 28.10 save city name per Lanagauge as an object in Parse
-        event.setX(lat);
-        event.setY(lng);
-        //===========================Setting tags the right way==============
-        StringBuilder stringBuilder = new StringBuilder();
-        if (et_tags.length() == 0) {
-            event.setTags("#" + filter);
-        } else {
-            stringBuilder.append("#" + filter);
-            String str = et_tags.getText().toString();
-            str = str.replaceAll(",", " ");
-            str = str.replaceAll("#", "");
-            String[] arr = str.split(" ");
 
-            for (String ss : arr) {
-                if (!ss.equals(" ") && !ss.equals("")) {
-                    stringBuilder.append(" #" + ss);
+
+            event.setAddress(valid_address);
+            event.setAddressPerLanguage(addressPerLanguage); //assaf - 28.10 save address per Lnagauge as an object in Parse
+            event.setCity(city);
+            event.setCityPerLanguage(cityPerLanguage);//assaf - 28.10 save city name per Lanagauge as an object in Parse
+            event.setX(lat);
+            event.setY(lng);
+            //===========================Setting tags the right way==============
+            StringBuilder stringBuilder = new StringBuilder();
+            if (et_tags.length() == 0) {
+                event.setTags("#" + filter);
+            } else {
+                stringBuilder.append("#" + filter);
+                String str = et_tags.getText().toString();
+                str = str.replaceAll(",", " ");
+                str = str.replaceAll("#", "");
+                String[] arr = str.split(" ");
+
+                for (String ss : arr) {
+                    if (!ss.equals(" ") && !ss.equals("")) {
+                        stringBuilder.append(" #" + ss);
+                    }
+                }
+                String finalString = stringBuilder.toString();
+                // finalString.replaceAll("# ","");
+                event.setTags(finalString);
+
+            }
+            //===================================================================
+            if (seats) {
+                blueIncome = 4 * sp.getInt(GlobalVariables.BLUE, 0);
+                orangeIncome = 17 * sp.getInt(GlobalVariables.ORANGE, 0);
+                pinkIncome = 17 * sp.getInt(GlobalVariables.PINK, 0);
+                pinkIncome = pinkIncome + 16 * sp.getInt(GlobalVariables.PINK, 0);
+                yellowIncome = 17 * sp.getInt(GlobalVariables.YELLOW, 0);
+                yellowIncome = yellowIncome + 16 * sp.getInt(GlobalVariables.YELLOW, 0);
+                greenIncome = 7 * sp.getInt(GlobalVariables.GREEN, 0);
+                greenIncome = greenIncome + 7 * sp.getInt(GlobalVariables.GREEN, 0);
+                totalIncome = pinkIncome + yellowIncome + greenIncome + blueIncome + orangeIncome;
+
+            } else {
+                if (!freeEvent) {
+                    totalIncome = Integer.parseInt(et_price.getText().toString()) * Integer.parseInt(et_quantity.getText().toString());
+                } else {
+                    totalIncome = 0;
                 }
             }
-            String finalString = stringBuilder.toString();
-            // finalString.replaceAll("# ","");
-            event.setTags(finalString);
-
-        }
-        //===================================================================
-        if (seats) {
-            blueIncome = 4 * sp.getInt(GlobalVariables.BLUE, 0);
-            orangeIncome = 17 * sp.getInt(GlobalVariables.ORANGE, 0);
-            pinkIncome = 17 * sp.getInt(GlobalVariables.PINK, 0);
-            pinkIncome = pinkIncome + 16 * sp.getInt(GlobalVariables.PINK, 0);
-            yellowIncome = 17 * sp.getInt(GlobalVariables.YELLOW, 0);
-            yellowIncome = yellowIncome + 16 * sp.getInt(GlobalVariables.YELLOW, 0);
-            greenIncome = 7 * sp.getInt(GlobalVariables.GREEN, 0);
-            greenIncome = greenIncome + 7 * sp.getInt(GlobalVariables.GREEN, 0);
-            totalIncome = pinkIncome + yellowIncome + greenIncome + blueIncome + orangeIncome;
-
-        } else {
-            if (!freeEvent) {
-                totalIncome = Integer.parseInt(et_price.getText().toString()) * Integer.parseInt(et_quantity.getText().toString());
+            event.setFilterName(filter);
+            event.setProducerId(GlobalVariables.PRODUCER_PARSE_OBJECT_ID);
+            event.setRealDate(realDate);
+            event.setPlace(et_place.getText().toString());
+            event.setArtist(et_artist.getText().toString());
+            event.setEventToiletService(numOfToilets + ", Handicapped " + numOfHandicapToilets);
+            String eventParkingService;
+            if (et_parking.getText().toString().equals("")) {
+                eventParkingService = "";
             } else {
-                totalIncome = 0;
+                eventParkingService = "Up To " + et_parking.getText().toString();
             }
-        }
-        event.setFilterName(filter);
-        event.setProducerId(GlobalVariables.PRODUCER_PARSE_OBJECT_ID);
-        event.setRealDate(realDate);
-        event.setPlace(et_place.getText().toString());
-        event.setArtist(et_artist.getText().toString());
-        event.setEventToiletService(numOfToilets + ", Handicapped " + numOfHandicapToilets);
-        String eventParkingService;
-        if (et_parking.getText().toString().equals("")) {
-            eventParkingService = "";
-        } else {
-            eventParkingService = "Up To " + et_parking.getText().toString();
-        }
-        event.setEventParkingService(eventParkingService);
-        String eventCapacityService;
-        if (et_capacity.getText().toString().equals("")) {
-            eventCapacityService = "";
-        } else {
-            eventCapacityService = "Up To " + et_capacity.getText().toString();
-        }
-        event.setEventCapacityService(eventCapacityService);
-        event.setEventATMService(atmStatus);
-        try {
+            event.setEventParkingService(eventParkingService);
+            String eventCapacityService;
+            if (et_capacity.getText().toString().equals("")) {
+                eventCapacityService = "";
+            } else {
+                eventCapacityService = "Up To " + et_capacity.getText().toString();
+            }
+            event.setEventCapacityService(eventCapacityService);
+            event.setEventATMService(atmStatus);
+
         if (pictureSelected) {
-            //pic.buildDrawingCache(); //assaf - 15.10
-            //Bitmap bitmap = pic.getDrawingCache(); //asaf 15.10
+
+            if (freeEvent) {
+                event.setPrice("FREE"); // 29.09- assaf to support free events without minimal quantity
+                if(et_quantity.length() ==0) {
+                    et_quantity.setText("-1"); // -1 means no minimal quantitiy- free entry to the free event
+                }
+                event.setNumOfTickets(Integer.parseInt(et_quantity.getText().toString()));
+                //event.setNumOfTickets (99999);  Assaf removed the hardcoded amount oכ tickets
+            } else if (!seats) {
+                event.setNumOfTickets(Integer.parseInt(et_quantity.getText().toString()));
+                event.setPrice(et_price.getText().toString());
+            } else if (seats) {
+                List<Integer> sum = new ArrayList<>();
+                sum.add(sp.getInt(GlobalVariables.ORANGE, 0));
+                sum.add(sp.getInt(GlobalVariables.PINK, 0));
+                sum.add(sp.getInt(GlobalVariables.BLUE, 0));
+                sum.add(sp.getInt(GlobalVariables.YELLOW, 0));
+                sum.add(sp.getInt(GlobalVariables.GREEN, 0));
+                int max = Collections.max(sum);
+                int min = Collections.min(sum);
+                event.setPrice("" + min + "-" + max + "");
+                //event.setNumOfTickets (101);// Assaf removed the hardcoded amount of tickets
+                event.setNumOfTickets(Integer.parseInt(et_quantity.getText().toString()));
+            }
+
             Bitmap bitmap = image; //15.10 assaf changed
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
@@ -529,22 +539,6 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
                 e.printStackTrace();
             }
             event.put("ImageFile", file);
-       // } //else {
-            //Event Picture is mandatory
-            //Default Picture in case that No picture selected
-//            Bitmap bitmap = BitmapFactory.decodeResource(this.getResources(),
-//                    R.drawable.event);
-//            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-//            byte[] image = stream.toByteArray();
-//            ParseFile file = new ParseFile("picturePath", image);
-//            try {
-//                file.saveInBackground();
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//            event.put("ImageFile", file);
-            //   }
                 if (seats) {
                     event.setIsStadium(true);
                 } else {
@@ -560,13 +554,12 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
                         totalIncome = Integer.parseInt(et_price.getText().toString()) * Integer.parseInt(et_quantity.getText().toString());
                     }
                     Snackbar snackbar = Snackbar
-                            .make(linearLayout, "Expected income:" + totalIncome, Snackbar.LENGTH_LONG)
-                            .setAction("UNDO", new View.OnClickListener() {
+                            .make(linearLayout, getString(R.string.future_income) + totalIncome, Snackbar.LENGTH_LONG)
+                            .setAction("", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    deleteEvent(eventObjectId);
-
-                                }
+                                    //deleteEvent(eventObjectId); 01.12 - assaf - cancled thsi option
+                                 }
                             });
                     snackbar.setActionTextColor(Color.YELLOW);
                     View snackbarView = snackbar.getView();
@@ -587,7 +580,14 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
                         if (e == null) {
                             GlobalVariables.refreshArtistsList = true;
                             Toast.makeText(CreateEventActivity.this, R.string.event_has_created_successfully, Toast.LENGTH_LONG).show();//TODO
-                            finish();
+                            if(SHARE)
+                            {
+                                shareDeepLink(et_name.getText().toString(),file.getUrl(),event.getObjectId());//benjamin add
+                            }
+                            else
+                            {
+                                finish();
+                            }
                         } else {
                             Toast.makeText(CreateEventActivity.this, R.string.event_hasnot_created_successfully, Toast.LENGTH_LONG).show();//TODO
                         }
@@ -596,15 +596,16 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
             }
             else
             {
-                Toast.makeText(this,"Please upload a picture",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,getString(R.string.upload_a_picture),Toast.LENGTH_SHORT).show();
             }
         }catch (Exception e) {
             e.printStackTrace();
+             Toast.makeText(CreateEventActivity.this, getString(R.string.error), Toast.LENGTH_SHORT).show();
         }
 	}
     }
 
-    public void deleteEvent(final String objectId) {
+    /*public void deleteEvent(final String objectId) { 01.12 - assaf cnacled this option
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Event");
         query.whereEqualTo("objectId", objectId);
         query.orderByDescending("createdAt");
@@ -655,7 +656,7 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
             //===================================================================
         }
         finish();
-    }
+    }*/
 
     @Override
     public void onBackPressed() {
@@ -787,7 +788,7 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
                     et_price.setVisibility(View.GONE);
                     btn_price_details.setVisibility(View.GONE);
                     checkBoxPrice.setVisibility(View.GONE);
-                    et_quantity.setHint("for limited number of seats"); //29.09 assaf added
+                    et_quantity.setHint(getString(R.string.limited_free_seats)); //29.09 assaf added
                 } else {
                     freeEvent = false;
                     et_quantity.setVisibility(View.VISIBLE);
@@ -795,13 +796,14 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
                     tv_price.setVisibility(View.VISIBLE);
                     et_price.setVisibility(View.VISIBLE);
                     et_quantity.setHint(""); //29.09 assaf added
-                    //     if (!checkBoxPrice.isChecked ()) {
+
                     btn_price_details.setVisibility(View.GONE);
                     //   }
-                    checkBoxPrice.setVisibility(View.VISIBLE);
+                   // checkBoxPrice.setVisibility(View.VISIBLE); //Assaf 16.11 - for now ticket per Price was hidden
+                    // need to think about this feature
                 }
                 break;
-            case R.id.checkBoxPrice:
+            case R.id.checkBoxPrice: // assaf - 16.11 this option of ticket per price was hidden for now (in Layout)
                 if (isChecked) {
                     et_quantity.setVisibility(View.VISIBLE);
                     tv_quantity.setVisibility(View.VISIBLE);
@@ -933,9 +935,10 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
                     case 30:
                         filter = FILTERS[30];
                         break;
-
+                    default:
+                        filter ="";
                 }
-                et_tags.setHint("tag is " + filter + '\n' + " edit to add more");
+                et_tags.setHint(getString(R.string.Add_tags));
                 break;
 
             case R.id.atmSpinner:
@@ -1266,6 +1269,103 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
             editor.apply();
         }
 
-    }
+    private boolean validateBeforeSaveEvent()
+    {
+        if (timeOk) {
+                 //do nothing
+        } else {
+            Toast.makeText(CreateEventActivity.this,getString(R.string.enter_valid_date), Toast.LENGTH_SHORT).show();
+            toSaveEvent = false;
+        }
+
+        if (et_name.length() != 0) {
+            // do nothing
+            et_name .getBackground().clearColorFilter();
+        } else {
+            et_name .getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+            toSaveEvent = false;
+        }
+
+         if (date.length() != 0) {
+                // do nothing
+            } else {
+                Toast.makeText(CreateEventActivity.this, getString(R.string.enter_valid_date), Toast.LENGTH_SHORT).show();
+                toSaveEvent = false;
+          }
+
+        if (et_description.length() != 0) {
+            et_description .getBackground().clearColorFilter();
+        } else {
+            et_description .getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+            toSaveEvent = false;
+        }
+
+        if (address_ok)
+        {
+            et_address .getBackground().clearColorFilter();
+        } else {
+            et_address .getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+            toSaveEvent = false;
+        }
+
+        if (et_place.length()!= 0)
+        {
+            et_place .getBackground().clearColorFilter();
+        } else {
+            et_place .getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+            toSaveEvent = false;
+        }
+
+        if (freeEvent) { //29.09 -Assaf - quantity is not mandatory for Free event
+            if (!validateQuantity()) {
+                et_quantity.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+                toSaveEvent = false;
+            }
+            else if (validateQuantity()){
+                et_quantity.getBackground().clearColorFilter();
+            }
+        }
+        if (seats) {
+            if (!validateQuantity()) {
+                et_quantity .getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+                toSaveEvent = false;
+            } else if (validateQuantity()) {
+                et_quantity .getBackground().clearColorFilter();
+            }
+        } else if (!seats && !freeEvent) {
+            if (!validatePrice()) {
+                et_price .getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+                toSaveEvent = false;
+            }
+            else{
+                et_price .getBackground().clearColorFilter();
+            }
+            if (!validateQuantity()) {
+                et_quantity.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+                toSaveEvent = false;
+            }
+            else{
+                et_quantity.getBackground().clearColorFilter();
+              }
+            }
+
+        if (timeOk && et_place.length()!= 0&& et_description.length() != 0 && et_name.length() != 0 &&
+                date.length() != 0 && address_ok && (filter!=null || !filter.isEmpty()))
+            {
+              if (seats && validateQuantity() || ((!seats && !freeEvent)&& validatePrice()&&validateQuantity()) || freeEvent&&validateQuantity()) {
+                  toSaveEvent = true;
+                  return toSaveEvent;
+            }
+              else
+                  Toast.makeText(CreateEventActivity.this,getString(R.string.please_fill_empty_fields), Toast.LENGTH_SHORT).show();
+            }
+          else
+               Toast.makeText(CreateEventActivity.this,getString(R.string.please_fill_empty_fields), Toast.LENGTH_SHORT).show();
+
+
+        return toSaveEvent;
+      }
+
+ }
 
 

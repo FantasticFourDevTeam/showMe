@@ -61,6 +61,8 @@ public class SavedEventActivity extends AppCompatActivity implements View.OnClic
     private static TextView pushViewText; //assaf: Text view for present the Push messages
     private static SharedPreferences _sharedPref;
     private static TextView filterTextView;
+    ArrayList<String> _mainFilterForFilter = new ArrayList<>();//assaf - 02.12 assaf
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,7 +106,11 @@ public class SavedEventActivity extends AppCompatActivity implements View.OnClic
 
     @Override
     protected void onResume() {
-        super.onResume();
+
+         super.onResume();
+         displayFilterBanner();
+
+
         if (GlobalVariables.ALL_EVENTS_DATA.size () != 0) {
             if (GlobalVariables.USER_CHOSEN_CITY_MANUALLY) {
                 ArrayList<EventInfo> tempEventsListFiltered =
@@ -160,7 +166,7 @@ public class SavedEventActivity extends AppCompatActivity implements View.OnClic
                 eventsListAdapter.notifyDataSetChanged ();
             }
         }
-        displayFilterBanner();
+
     }
 
     @Override
@@ -512,8 +518,12 @@ public class SavedEventActivity extends AppCompatActivity implements View.OnClic
                         }
                     }
                 }
-                filterTextView.setVisibility(View.VISIBLE);
-                filterTextView.setText(results[0] + " " + results[1] + " " + results[2] + " " + results[3] + " " + toFromDates);
+
+                 filterTextView.setVisibility(View.VISIBLE);
+                //filterTextView.setText(results[0] + " " + results[1] + " " + results[2] + " " + results[3] + " " + toFromDates);
+                //Main and sub filter prestig was canceled - assaf 04/12
+                 filterTextView.setText("" + " " + " " + "" + results[2] + " " + results[3] + " " + toFromDates);
+
 
             }
         } catch (Exception ex) {

@@ -18,7 +18,7 @@
         android:textSize="30sp"
         android:textStyle="bold" />
 
-    <include
+    <!--include
         android:id="@+id/create_event2"
         layout="@layout/create_event2"
         android:layout_width="match_parent"
@@ -30,27 +30,29 @@
         layout="@layout/create_event3"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone" />
+        android:visibility="gone" /-->
 
     <LinearLayout
         android:id="@+id/ll_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_margin="5dp"
         android:weightSum="100.0"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/tv_name"
             android:textSize="15sp"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="20"
+            android:layout_gravity="center_horizontal"
             android:text="@string/name" />
 
         <EditText
             android:id="@+id/et_name"
-            android:layout_width="0dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_weight="80"
             android:imeActionLabel="Done" />
@@ -58,17 +60,16 @@
 
     <LinearLayout
         android:id="@+id/ll_date"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/btn_date"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="2.37"
-            android:inputType="date"
+            android:layout_gravity="center_horizontal"
             android:text="@string/pick_date" />
 
         <TextView
@@ -87,21 +88,21 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:weightSum="100.0">
 
         <LinearLayout
-            android:layout_width="0dp"
-            android:layout_gravity="bottom"
+            android:layout_width="wrap_content"
             android:orientation="vertical"
             android:layout_weight="20"
+            android:layout_gravity="center_horizontal"
             android:layout_height="wrap_content">
             <TextView
                 android:id="@+id/tv_artist"
                 android:textSize="15sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Artist:" />
+                android:text="@string/artist" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -112,9 +113,10 @@
 
         <EditText
             android:id="@+id/et_artist"
-            android:layout_width="0dp"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_weight="80"
+            android:layout_gravity="center_horizontal"
             android:imeActionLabel="Done" />
     </LinearLayout>
 
@@ -123,22 +125,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:weightSum="100.0">
 
         <TextView
             android:id="@+id/tv_description"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="30"
             android:textSize="15sp"
+            android:layout_gravity="center_horizontal"
             android:text="@string/description"
             android:gravity="center_vertical"/>
 
         <EditText
             android:id="@+id/et_description"
-            android:layout_width="0dp"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:layout_gravity="center_horizontal"
             android:layout_weight="70"
             android:imeActionLabel="Done" />
     </LinearLayout>
@@ -149,7 +154,22 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="10dp"
+        android:visibility="gone"
         android:text="@string/next" />
+
+    <include
+        android:id="@+id/create_event2"
+        layout="@layout/create_event2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible" />
+
+    <include
+        android:id="@+id/create_event3"
+        layout="@layout/create_event3"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible" />
 
 </LinearLayout>
 </ScrollView>

@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,8 +25,11 @@ import com.example.FundigoApp.R;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 public class FilterPageActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, Serializable, AdapterView.OnItemSelectedListener {
     Integer[] Images = {
@@ -81,7 +85,7 @@ public class FilterPageActivity extends AppCompatActivity implements AdapterView
     private static DatePickerDialog datePickerDialog;
     private static Spinner dateSpinner;
     private static Spinner priceSpinner;
-    private static String filter;
+    private static ArrayList<String> filter = new ArrayList<>();
     GridView gridView;
     private static String dateFilterSelected;
     private static String dateFilterFromSelected=""; //18.10 assaf: support from to date Range
@@ -96,7 +100,7 @@ public class FilterPageActivity extends AppCompatActivity implements AdapterView
     private String subFilterNameToPresentInEventPage;
     Button fromButton;
     Button toButton ;
-
+    ArrayList<String> _mainFilterForFilter = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -308,13 +312,14 @@ public class FilterPageActivity extends AppCompatActivity implements AdapterView
 
     @Override
     public void onItemClick(AdapterView<?> av, View view, int i, long l) { // click the grid and selct category for filter
-        if (filter == null || filter == "") {//24.09 assaf fixed
-            filter = num[i];
-            filterNameToPresentInEventPage = Names[i];// main filter name to present
-            GlobalVariables.CURRENT_FILTER_NAME = filter;
-            view.setBackgroundColor (Color.RED);
-            saveInfo ();
 
+        if (!GlobalVariables.CURRENT_FILTER_NAME.contains(num[i])) {//01.12 assaf chmaged to support moire then one filter
+            GlobalVariables.CURRENT_FILTER_NAME.add(num[i]);
+            filterNameToPresentInEventPage = Names[i];// main filter name to present
+           // GlobalVariables.CURRENT_FILTER_NAME = filter;
+            view.setBackgroundColor(Color.RED);
+            saveInfo();
+        }
             //31.08 This Dialog open the SubFilter page - for now it was remarked...
             /*AlertDialog.Builder _builder = new AlertDialog.Builder (this);
             _builder.setPositiveButton (R.string.advanced_filter, new DialogInterface.OnClickListener () {
@@ -336,21 +341,22 @@ public class FilterPageActivity extends AppCompatActivity implements AdapterView
             AlertDialog _alert = _builder.create ();
             _alert.show ();*/
 
-        } else {
-            if (filter.equals(num[i])) { // cancel filter selection - reset mainFilter and subFilter
-                filter = null;
+     //   }
+        else if (GlobalVariables.CURRENT_FILTER_NAME.contains(num[i])&& !GlobalVariables.CURRENT_FILTER_NAME.isEmpty()) { // cancel filter selection - reset mainFilter and subFilter
+                GlobalVariables.CURRENT_FILTER_NAME.remove(num[i]);
                 filterNameToPresentInEventPage = null;// main filter name to present
-                GlobalVariables.CURRENT_FILTER_NAME = "";
+                //GlobalVariables.CURRENT_FILTER_NAME = filter;
                 GlobalVariables.CURRENT_SUB_FILTER = "";
                 subFilter = null;
                 subFilterNameToPresentInEventPage = null;
                 view.setBackgroundColor (Color.TRANSPARENT);
-                saveInfo ();  // assaf added for open Intent to subcategory activity
+                saveInfo();  // assaf added for open Intent to subcategory activity
             }
-            else {
-                Toast.makeText (this, R.string.can_choice_one_category, Toast.LENGTH_SHORT).show();
-            }
-        }
+
+        //for debug
+        for(int j=0 ; j<GlobalVariables.CURRENT_FILTER_NAME.size();j++)
+            Log.i("filterFilterPageClick", GlobalVariables.CURRENT_FILTER_NAME.get(j));
+
     }
 
     @Override
@@ -370,6 +376,9 @@ public class FilterPageActivity extends AppCompatActivity implements AdapterView
 
     private void saveInfo() { // save the filter info.
         _sharedPref = getSharedPreferences ("filterInfo", MODE_PRIVATE);
+
+        Set<String> setForFilterArraySave  = new HashSet<>();
+        setForFilterArraySave.addAll(GlobalVariables.CURRENT_FILTER_NAME);   // the way to save arraylist in SP
         SharedPreferences.Editor editor = _sharedPref.edit ();
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");//assaf - 24.09
         editor.putString ("mainFilter", filterNameToPresentInEventPage);
@@ -378,7 +387,7 @@ public class FilterPageActivity extends AppCompatActivity implements AdapterView
         editor.putString("dateFrom",dateFilterFromSelected);
         editor.putString("dateTo",dateFilterToSelected);
         editor.putString("price", priceFilterSelected);
-        editor.putString("mainFilterForFilter", filter); //24.09 assaf
+        editor.putStringSet("mainFilterForFilter", setForFilterArraySave); //01.12 - TEMP SOLUTION
         editor.putString("subFilterForFilter", GlobalVariables.CURRENT_SUB_FILTER); //24.09 assaf
         editor.putInt("priceFilterForFilter", GlobalVariables.CURRENT_PRICE_FILTER); //24.09 assaf
         if (GlobalVariables.CURRENT_DATE_FILTER!=null) {//24.09 assaf
@@ -387,13 +396,14 @@ public class FilterPageActivity extends AppCompatActivity implements AdapterView
          else {
             editor.putString("dateFilterForFilter", null);
         }        ///
-         editor.apply();
+         editor.commit();
     }
 
 
     public String[] getData()
-    // display the filter info.
+    // get SP data of the filter info.
     {
+
         _sharedPref = getSharedPreferences("filterInfo", Context.MODE_PRIVATE);
         String _filterName = _sharedPref.getString("mainFilter", "");
         String _date = _sharedPref.getString ("date", "");
@@ -401,19 +411,22 @@ public class FilterPageActivity extends AppCompatActivity implements AdapterView
         String _dateTo =  _sharedPref.getString ("dateTo", "");
         String _price = _sharedPref.getString ("price", "");
         String _subFilter = _sharedPref.getString("subFilter","");
-        String _mainFilterForFilter = _sharedPref.getString("mainFilterForFilter","");
-        String _subFilterForFilter = _sharedPref.getString("subFilterForFilter","");
+        Set<String> _mainFilterForFilterSet = _sharedPref.getStringSet("mainFilterForFilter", null);
+        if (_mainFilterForFilterSet!=null)
+           _mainFilterForFilter.addAll(_mainFilterForFilterSet);
+        String _subFilterForFilter = _sharedPref.getString("subFilterForFilter", "");
         Integer _priceForFilter = _sharedPref.getInt("priceFilterForFilter", -5);
         String _dateForFilter = _sharedPref.getString("dateFilterForFilter", "");
 
-        String[] values = {_date, _price,_subFilter,_filterName,_mainFilterForFilter,_subFilterForFilter,Integer.toString(_priceForFilter),_dateForFilter,_dateFrom,_dateTo};
+
+        String[] values = {_date, _price,_subFilter,_filterName,"",_subFilterForFilter,Integer.toString(_priceForFilter),_dateForFilter,_dateFrom,_dateTo};
 
         return values;
     }
 
     private void openSubCategory() { // for open the Sub filter page. for now it was remarked
         Intent intent = new Intent (this, FilterPageActivity2.class);
-        intent.putExtra ("mainFilter", filter);
+        intent.putExtra ("mainFilter", GlobalVariables.CURRENT_FILTER_NAME);
         intent.putExtra ("date", dateFilterSelected);
         intent.putExtra("price", priceFilterSelected);
 
@@ -422,13 +435,11 @@ public class FilterPageActivity extends AppCompatActivity implements AdapterView
 
     @Override
     protected void onResume() {
-
         //when back from subfilter setup activity or back from Events list
         super.onResume ();
         subFilter = GlobalVariables.CURRENT_SUB_FILTER;// otherwsie subfilter will be null/empty althigh no chnages done
         String[] results = getData();
-        filter = results[4];//24.09 - assaf - to save the last filter slected by user
-        GlobalVariables.CURRENT_FILTER_NAME = filter;////24.09 - assaf - to save the last filter selected by user
+        GlobalVariables.CURRENT_FILTER_NAME = _mainFilterForFilter;////24.09 - assaf - to save the last filter selected by user
         filterNameToPresentInEventPage = results[3];//get the mainfilter set
         subFilterNameToPresentInEventPage = results[2];//get the subfilter set in subfilter activity
         if (!results[0].equals ("") || !results[1].equals ("")) {
@@ -535,6 +546,5 @@ public class FilterPageActivity extends AppCompatActivity implements AdapterView
         else {
             this.finish();
         }
-
     }
 }

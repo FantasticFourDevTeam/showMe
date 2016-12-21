@@ -43,11 +43,11 @@ public class CustomerMessageConversationsListActivity extends AppCompatActivity 
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate (savedInstanceState);
+        super.onCreate(savedInstanceState);
         setContentView (R.layout.activity_message_producer);
         listView = (ListView) findViewById (R.id.listView_massge_producer);
 
-        mipo = (ImageButton) findViewById (R.id.mipo_MassageProducer);
+       // mipo = (ImageButton) findViewById (R.id.mipo_MassageProducer); // accees to Mipo was canceleed for now
         notification = (ImageView) findViewById (R.id.notification_MassageProducer);
 		unreadPushMessage = (EditText)findViewById(R.id.Push_Message_unread_CustomerMessageConversationsListActivity);
         unreadMessage = (EditText)findViewById(R.id.Message_unread_CustomerMessageConversationsListActivity);
@@ -61,7 +61,7 @@ public class CustomerMessageConversationsListActivity extends AppCompatActivity 
             getMassage ();
             handler.postDelayed (runnable, 500);
         }
-        mipo.setOnClickListener (this);
+       // mipo.setOnClickListener (this); // accees to Mipo was canceleed for now
         notification.setOnClickListener (this);
     }
 
@@ -69,11 +69,13 @@ public class CustomerMessageConversationsListActivity extends AppCompatActivity 
     public void onClick(View v) {
         if (v.getId () == R.id.notification_MassageProducer) {
             finish();
-        } else if (v.getId () == R.id.mipo_MassageProducer) {
+
+        // accees to Mipo was canceleed for now
+        /*} else if (v.getId () == R.id.mipo_MassageProducer) {
             Intent mipoIntent = new Intent (CustomerMessageConversationsListActivity.this, MipoActivity.class);
             startActivity (mipoIntent);
             finish();
-        }
+      */  }
     }
 
     private void getMassage() {
@@ -204,5 +206,11 @@ public class CustomerMessageConversationsListActivity extends AppCompatActivity 
         super.onResume();
         MyServices.checkVisibilityForUnreadCustomerAndProducerMessage(this.unreadMessage,getApplicationContext());
         MyServices.checkVisibilityForUnreadPushMessage(this.unreadPushMessage,getApplicationContext());
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+         this.finish();
     }
 }

@@ -7,119 +7,157 @@
                 android:layout_alignParentTop="true"
                 android:orientation="vertical"
                 android:padding="5dp"
+                android:layout_gravity="start"
+                android:gravity="start"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 tools:context="com.example.events.EventsTickets">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <RelativeLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_margin="5dp"
         android:orientation="horizontal"
+        android:layout_gravity="start"
         android:weightSum="100.0">
 
         <TextView
             android:id="@+id/eventNameTitle"
-            android:layout_width="18dp"
-            android:layout_weight="20"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Event Name:"
+            android:text="@string/eventName"
             android:textStyle="bold"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:gravity="start"
             android:textSize="15sp"/>
 
         <TextView
             android:id="@+id/eventName"
-            android:layout_width="0dp"
-            android:layout_weight="80"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="test"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/eventNameTitle"
             android:textSize="15sp"
-            android:layout_gravity="center_vertical"/>
+            android:paddingLeft="5dp"
+            android:paddingStart="5dp"
+            android:paddingRight="5dp"
+            android:paddingEnd="5dp"/>
 
-    </LinearLayout>
+    </RelativeLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_margin="5dp"
         android:orientation="horizontal"
         android:id="@+id/seatLinearLayout"
         android:weightSum="100.0">
 
         <TextView
             android:id="@+id/seatNameTitle"
-            android:layout_width="18dp"
-            android:layout_weight="20"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Seat:"
+            android:text="@string/seat_number"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:textStyle="bold"
+            android:gravity="start"
             android:textSize="15sp"/>
 
         <TextView
             android:id="@+id/ticketName"
-            android:layout_width="0dp"
-            android:layout_weight="80"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="test"
             android:textSize="15sp"
-            android:layout_gravity="center_vertical"/>
+            android:paddingLeft="5dp"
+            android:paddingStart="5dp"
+            android:paddingRight="5dp"
+            android:paddingEnd="5dp"
+            android:layout_below="@+id/seatNameTitle"
+            />
 
-    </LinearLayout>
+    </RelativeLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_margin="5dp"
         android:orientation="horizontal"
         android:weightSum="100.0">
 
         <TextView
             android:id="@+id/eventDateTitle"
-            android:layout_width="18dp"
-            android:layout_weight="20"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Event Date:"
+            android:text="@string/event_date"
             android:textStyle="bold"
+            android:gravity="start"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:textSize="15sp"/>
 
         <TextView
             android:id="@+id/eventDate"
-            android:layout_width="0dp"
-            android:layout_weight="80"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="fgfg"
             android:textSize="15sp"
-            android:layout_gravity="center_vertical"/>
+            android:paddingLeft="5dp"
+            android:paddingStart="5dp"
+            android:paddingRight="5dp"
+            android:paddingEnd="5dp"
+            android:layout_below="@+id/eventDateTitle"
+            />
 
-    </LinearLayout>
+    </RelativeLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_margin="5dp"
         android:orientation="horizontal"
         android:weightSum="100.0">
 
         <TextView
             android:id="@+id/priceTitle"
-            android:layout_width="18dp"
-            android:layout_weight="20"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Price:"
+            android:text="@string/event_price"
             android:textStyle="bold"
+            android:gravity="start"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:textSize="15sp"/>
 
         <TextView
             android:id="@+id/price"
-            android:layout_width="0dp"
-            android:layout_weight="80"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="fgfg"
+            android:paddingLeft="5dp"
+            android:paddingStart="5dp"
+            android:paddingRight="5dp"
+            android:paddingEnd="5dp"
             android:textSize="15sp"
-            android:layout_gravity="center_vertical"/>
+            android:layout_below="@+id/priceTitle"
+           />
 
-    </LinearLayout>
+    </RelativeLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
@@ -128,45 +166,49 @@
 
         <TextView
             android:id="@+id/textView11"
-            android:layout_width="18dp"
-            android:layout_weight="20"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Order Date:"
+            android:text="@string/Order_Date"
             android:textStyle="bold"
+            android:gravity="start"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:textSize="15sp"/>
 
         <TextView
             android:id="@+id/purchaseDate"
-            android:layout_width="0dp"
-            android:layout_weight="80"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="fgfg"
             android:textSize="15sp"
-            android:layout_gravity="center_vertical"
-            android:paddingLeft="5dp"/>
+            android:layout_below="@+id/textView11"
+            android:paddingRight="5dp"
+            android:paddingEnd="5dp"
+            android:paddingLeft="5dp"
+            android:paddingStart="5dp"/>
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <Button
         android:id="@+id/moreDetailesButton"
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
         android:layout_below="@+id/ticketName"
         android:onClick="onClickButton"
-        android:text="more detailes"/>
+        android:gravity="start|fill_horizontal"
+        android:text="@string/more_details"/>
 
     <Button
         android:id="@+id/eventEnded"
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
         android:layout_below="@+id/moreDetailesButton"
-        android:text="Event Expired"
+        android:layout_gravity="start"
+        android:text="@string/event_expiration"
         android:background="#f15d60"
         android:textColor="#ffffff"
         android:visibility="gone"/>

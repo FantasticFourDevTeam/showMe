@@ -53,10 +53,8 @@ public class ProducerMainActivity extends android.support.v4.app.Fragment implem
     public void onResume() {
         super.onResume();
         if(GlobalVariables.refreshArtistsList){
-             GlobalVariables.refreshArtistsList = false;
              Intent intent = new Intent (this.getActivity (), EventPageActivity.class);
-             EventDataMethods.downloadEventsData (this, GlobalVariables.PRODUCER_PARSE_OBJECT_ID, this.getContext (), intent);
+             EventDataMethods.downloadEventsData (ProducerMainActivity.this, GlobalVariables.PRODUCER_PARSE_OBJECT_ID, this.getContext (), intent);
         }
     }
-
 }

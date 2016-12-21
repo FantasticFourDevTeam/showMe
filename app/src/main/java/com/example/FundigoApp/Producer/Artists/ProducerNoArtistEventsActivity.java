@@ -20,11 +20,11 @@ import com.example.FundigoApp.Events.EventInfo;
 import com.example.FundigoApp.Events.EventPageActivity;
 import com.example.FundigoApp.Events.EventsListAdapter;
 import com.example.FundigoApp.GlobalVariables;
+import com.example.FundigoApp.Producer.ProducerSendPuchActivity;
 import com.example.FundigoApp.R;
 import com.example.FundigoApp.StaticMethod.EventDataMethods;
 import com.example.FundigoApp.StaticMethod.FilterMethods;
 import com.example.FundigoApp.StaticMethod.GeneralStaticMethods;
-import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -87,22 +87,27 @@ public class ProducerNoArtistEventsActivity extends android.support.v4.app.Fragm
         //The menu Appear when Prodcuer stand on the Event frame and press the Event long time
         super.onCreateContextMenu(menu, v, menuInfo);
         getActivity().getMenuInflater().inflate(R.menu.context_menu, menu);
-
     }
 
 
     @Override
     public void onResume() {
         super.onResume();
-        eventsListAdapter.notifyDataSetChanged();
-
         if(GlobalVariables.refreshArtistsList){
             GlobalVariables.refreshArtistsList = false;
             Intent intent = new Intent (this.getActivity (), EventPageActivity.class);
-            EventDataMethods.downloadEventsData (this, GlobalVariables.PRODUCER_PARSE_OBJECT_ID, this.getContext (), intent);
+            EventDataMethods.downloadEventsData(ProducerNoArtistEventsActivity.this, GlobalVariables.PRODUCER_PARSE_OBJECT_ID, this.getContext(), intent);
         }
     }
 
+    @Override
+    public void eventDataCallback() {
+        EventDataMethods.uploadArtistData();
+        eventsList.clear();
+        FilterMethods.filterEventsByArtist(GlobalVariables.No_Artist_Events,
+                eventsList);
+        eventsListAdapter.notifyDataSetChanged();
+    }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
@@ -118,39 +123,84 @@ public class ProducerNoArtistEventsActivity extends android.support.v4.app.Fragm
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
                             case DialogInterface.BUTTON_POSITIVE:
-                                deleteEvent(eventObjectId);
+                                //deleteEvent(eventObjectId);
+                                cancelEvent(eventObjectId);
                                 GlobalVariables.refreshArtistsList = true;
                                 break;
                             case DialogInterface.BUTTON_NEGATIVE:
                                 dialog.dismiss();
                                 break;
+                            case DialogInterface.BUTTON_NEUTRAL: // open Push notifications to users before event delete
+                                Intent intent = new Intent(getActivity(), ProducerSendPuchActivity.class);
+                                intent.putExtra("id",eventObjectId);
+                                startActivity(intent);
+                                break;
                         }
                     }
                 };
                 AlertDialog.Builder builder = new AlertDialog.Builder (this.getActivity());
-                builder.setTitle("You are going to delete " + eventsList.get(pos).getName() + " event");
+                builder.setTitle (getString(R.string.going_to_delete)+ eventsList.get(pos).getName());
                 builder.setIcon(R.drawable.warning);
-                builder.setMessage("Are you sure? This event could not be resume after deleting it");
-                builder.setPositiveButton("Yes", listener);
-                builder.setNegativeButton("No", listener);
+                builder.setMessage(getString(R.string.are_you_sure));
+                builder.setPositiveButton(getString(R.string.yes), listener);
+                builder.setNegativeButton(getString(R.string.no), listener);
+                builder.setNeutralButton(getString(R.string.send_push), listener);
                 AlertDialog dialog = builder.create ();
                 dialog.show ();
                 return true;
             case R.id.edit_event:
                 eventObjectId = eventsList.get (pos).getParseObjectId ();
-                Intent intent = new Intent (getActivity(), EditEventActivity.class);
-                intent.putExtra(GlobalVariables.OBJECTID, eventObjectId);
-                startActivity (intent);
+                DialogInterface.OnClickListener listenerEdit = new DialogInterface.OnClickListener () {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case DialogInterface.BUTTON_POSITIVE:
+                                Intent intent = new Intent (getActivity(), EditEventActivity.class);
+                                intent.putExtra(GlobalVariables.OBJECTID, eventObjectId);
+                                startActivity(intent);
+                                GlobalVariables.refreshArtistsList = true;
+                                break;
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                dialog.dismiss ();
+                                break;
+                            case DialogInterface.BUTTON_NEUTRAL: // open Push notifications to users before event delete
+                                Intent intentPush = new Intent(getActivity(), ProducerSendPuchActivity.class);
+                                intentPush.putExtra("id",eventObjectId);
+                                startActivity(intentPush);
+                                break;
+                        }
+                    }
+                };
+                AlertDialog.Builder builderEdit = new AlertDialog.Builder (this.getActivity());
+                builderEdit.setIcon(R.drawable.warning);
+                builderEdit.setMessage(getString(R.string.are_you_sure_edit_event));
+                builderEdit.setPositiveButton(getString(R.string.yes), listenerEdit);
+                builderEdit.setNegativeButton(getString(R.string.no), listenerEdit);
+                builderEdit.setNeutralButton(getString(R.string.send_push), listenerEdit);
+                AlertDialog dialogEdit = builderEdit.create ();
+                dialogEdit.show();
                 return true;
-
             default:
                 return super.onContextItemSelected(item);
         }
     }
 
+    public void cancelEvent(final String objectId) {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery ("Event");
+        query.whereEqualTo("objectId", objectId);
+        try {
+            ParseObject parseObject = query.getFirst();
+            parseObject.put("eventCanceled","yes");
+            parseObject.save ();
+        } catch (ParseException e1) {
+            e1.printStackTrace ();
+        }
+        getActivity().finish();
+    }
 
 
-    public void deleteEvent(final String objectId) {
+
+  /*  public void deleteEvent(final String objectId) { // Delet option was canceled for now
         ParseQuery<ParseObject> query = ParseQuery.getQuery ("Event");
         query.whereEqualTo ("objectId", objectId);
         query.orderByDescending("createdAt");
@@ -222,7 +272,7 @@ public class ProducerNoArtistEventsActivity extends android.support.v4.app.Fragm
             }
         });
         getActivity().finish();
-    }
+    }*/
 
 //    @Override
 //    public void setUserVisibleHint(boolean isVisibleToUser) { // refresh the fragment When swipe to it
@@ -243,10 +293,6 @@ public class ProducerNoArtistEventsActivity extends android.support.v4.app.Fragm
 //        }
 //    }
 
-    @Override
-    public void eventDataCallback() {
-        EventDataMethods.uploadArtistData();
-        eventsListAdapter.notifyDataSetChanged();
-    }
+
 
 }

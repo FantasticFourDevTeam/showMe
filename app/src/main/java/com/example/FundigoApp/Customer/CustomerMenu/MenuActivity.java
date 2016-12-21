@@ -18,8 +18,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.FundigoApp.Customer.CustomerDetails;
+import com.example.FundigoApp.Events.CreateEventActivity;
+import com.example.FundigoApp.Events.EventPageActivity;
 import com.example.FundigoApp.GlobalVariables;
 import com.example.FundigoApp.R;
+import com.example.FundigoApp.StaticMethod.EventDataMethods;
 import com.example.FundigoApp.StaticMethod.FileAndImageMethods;
 import com.example.FundigoApp.StaticMethod.UserDetailsMethod;
 import com.example.FundigoApp.Verifications.LoginActivity;
@@ -39,7 +42,7 @@ import com.parse.ParseQuery;
 
 import java.util.ArrayList;
 
-public class MenuActivity extends AppCompatActivity {
+public class MenuActivity extends AppCompatActivity implements EventDataMethods.GetEventsDataCallback {
     LoginButton facebook_login_button;
     CallbackManager callbackManager;
     Button sms_login_button;
@@ -77,6 +80,7 @@ public class MenuActivity extends AppCompatActivity {
             R.drawable.user_signup,
             R.drawable.user_profile_edit_button,
             R.drawable.ticket_icon,
+           // R.drawable.credit_card_icon,
             R.drawable.credit_card_icon,
             R.drawable.producer_icon
     };
@@ -85,7 +89,8 @@ public class MenuActivity extends AppCompatActivity {
             R.string.sms_verification,
             R.string.updateProfile,
             R.string.tickets,
-            R.string.save_credit_card,
+           // R.string.save_credit_card,
+            R.string.create_event,
             R.string.producer_login
     };
 
@@ -125,15 +130,34 @@ public class MenuActivity extends AppCompatActivity {
                         startActivity(intent);
                         break;
                     case R.string.producer_login:
-                        intent = new Intent(MenuActivity.this, LoginActivity.class);
-                        startActivity(intent);
+                        if (GlobalVariables.IS_CUSTOMER_REGISTERED_USER != false && GlobalVariables.CUSTOMER_PHONE_NUM != null) {
+                            intent = new Intent(MenuActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                        } else {
+                            Toast.makeText(context, getString(R.string.please_register), Toast.LENGTH_SHORT).show();
+                        }
                         break;
-                    case R.string.save_credit_card:
+                  /*  case R.string.save_credit_card:
                         intent = new Intent(MenuActivity.this, SaveCreditCard.class);
                         startActivity(intent);
-                        break;
-                    case R.string.delete_credit_card:
+                        break; */
+
+                   /* case R.string.delete_credit_card:
                         deleteCreditCard();
+                        break; */
+
+                    case R.string.create_event: //29.11 - assaf add option of create event from Menu.
+                        if (GlobalVariables.IS_CUSTOMER_REGISTERED_USER != false && GlobalVariables.CUSTOMER_PHONE_NUM != null) {
+                            //if (GeneralStaticMethods.EmailAddressVerified(GlobalVariables.CUSTOMER_PHONE_NUM)) {  //for registered user that approved his mail
+                            intent = new Intent(MenuActivity.this, CreateEventActivity.class);
+                            startActivity(intent);
+                            //   }
+                            // else
+                            //  Toast.makeText(getApplicationContext(),R.string.verify_email,Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(context, getString(R.string.please_register), Toast.LENGTH_SHORT).show();
+                        }
+
                         break;
                     case R.string.updateProfile:
                         try {
@@ -162,7 +186,11 @@ public class MenuActivity extends AppCompatActivity {
 
         // in case that return back from Prodcuer area then need to check if customer registered or not
         GlobalVariables.CUSTOMER_PHONE_NUM = FileAndImageMethods.getCustomerPhoneNumFromFile(this);
-
+        //assaf 28.11 - upload all events data again inin case that revert back from Producer , upload all events again
+        if (GlobalVariables.ALL_EVENTS_DATA.size() == 0) {
+            Intent intent = new Intent(this, EventPageActivity.class);
+            EventDataMethods.downloadEventsData(this, null, this.context, intent);
+        }
         // in case that return back from Prodcuer area then need to check if customer registered or not
         if (GlobalVariables.CUSTOMER_PHONE_NUM == null || GlobalVariables.CUSTOMER_PHONE_NUM.equals("")) {
             GlobalVariables.IS_CUSTOMER_REGISTERED_USER = false;
@@ -239,7 +267,7 @@ public class MenuActivity extends AppCompatActivity {
             });
 
         } else {
-            textViewHader.setText("Your Social Life App");
+            //textViewHader.setText("Your Social Life App");
             userNameTv.setText(R.string.guest);
             user_imageView.setImageResource(R.drawable.avatar);
             for (int i = 0; i < mThumbIds.length; i++) {
@@ -256,7 +284,10 @@ public class MenuActivity extends AppCompatActivity {
      {
        ex.printStackTrace();
      }
-   }
+    //for debug
+        Log.i("prodMenuMainCreate", "ID" + GlobalVariables.PRODUCER_PARSE_OBJECT_ID);
+
+    }
 
 
 
@@ -384,4 +415,15 @@ public class MenuActivity extends AppCompatActivity {
              }
          }
     }
-}
+
+    public void eventDataCallback()
+    {
+         //do nothing
+    }
+
+    @Override
+       public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+   }

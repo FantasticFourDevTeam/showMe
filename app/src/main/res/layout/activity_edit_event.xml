@@ -28,7 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/iv_event_pic"
-            android:text="Change picture"/>
+            android:text="@string/update_picture"/>
     </LinearLayout>
 
     <LinearLayout
@@ -49,31 +49,30 @@
                 android:layout_alignStart="@+id/scrollView2"
                 android:orientation="vertical">
 
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
                     android:layout_marginRight="10dp"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
                     <TextView
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:text="Name*:"/>
-
+                        android:layout_centerHorizontal="true"
+                        android:text="@string/name"/>
 
                     <EditText
                         android:id="@+id/et_name_edit"
-                        android:layout_width="0dp"
+                        android:layout_width="200dp"
+                        android:textSize="16dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"/>
+                        android:layout_marginTop="15dp"
+                        android:layout_centerHorizontal="true"
+                        />
+                </RelativeLayout>
 
-
-                </LinearLayout>
-
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
@@ -81,21 +80,25 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:text="Artist:"/>
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="5dp"
+                        android:text="@string/artist"/>
 
                     <EditText
                         android:id="@+id/et_artist_edit"
-                        android:layout_width="0dp"
+                        android:layout_width="200dp"
+                        android:layout_marginTop="15dp"
+                        android:textSize="16dp"
+
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"/>
+                        android:layout_centerHorizontal="true"
+                       />
 
-                </LinearLayout>
+                </RelativeLayout>
 
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
@@ -103,22 +106,26 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:text="Description*:"/>
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="5dp"
+                        android:text="@string/description"/>
 
 
                     <EditText
                         android:id="@+id/et_description_edit"
-                        android:layout_width="0dp"
+                        android:layout_width="300dp"
+                        android:textSize="16dp"
+                        android:inputType="textMultiLine"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"/>
+                        android:layout_marginTop="15dp"
+                        android:layout_centerHorizontal="true"
+                        />
 
-                </LinearLayout>
+                </RelativeLayout>
 
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
@@ -126,22 +133,26 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:text="Place*:"/>
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="5dp"
+                        android:text="@string/place"/>
 
 
                     <EditText
                         android:id="@+id/et_place_edit"
-                        android:layout_width="0dp"
+                        android:layout_width="200dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"/>
+                        android:layout_marginTop="15dp"
+                        android:textSize="16dp"
+                        android:layout_centerHorizontal="true"
+                        />
 
-                </LinearLayout>
+                </RelativeLayout>
 
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
@@ -149,20 +160,23 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:text="Full Address*:"/>
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="5dp"
+                        android:text="@string/address"/>
 
 
                     <EditText
                         android:id="@+id/et_address_edit"
-                        android:layout_width="0dp"
+                        android:layout_width="200dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"/>
+                        android:layout_marginTop="15dp"
+                        android:textSize="16dp"
+                        android:layout_centerHorizontal="true"
+                        />
 
-                </LinearLayout>
+                </RelativeLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -177,8 +191,8 @@
                         android:layout_margin="10dp"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="Validate Address"
-                        android:textSize="10sp"/>
+                        android:text="@string/validate_address"
+                        android:textSize="12sp"/>
 
                     <ImageView
                         android:id="@+id/iv_val_add_edit"
@@ -319,7 +333,7 @@
                     android:id="@+id/btn_save_edit_event"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Save"/>
+                    android:text="@string/finish"/>
             </LinearLayout>
 
         </ScrollView>

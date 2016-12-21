@@ -10,8 +10,9 @@
         android:layout_height="fill_parent"
         android:layout_alignParentEnd="true"
         android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentLeft="true"
         android:background="#ffffff"
-        android:contextClickable="true"
         android:orientation="vertical"
         android:weightSum="200">
 
@@ -22,8 +23,7 @@
             android:layout_height="0dip"
             android:layout_weight="200"
             android:baselineAligned="false"
-            android:contextClickable="true"
-            android:gravity="center_vertical|left"
+            android:gravity="center_vertical|start"
             android:stretchColumns="*"
             android:transitionGroup="false"
             android:orientation="vertical">
@@ -33,7 +33,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:elegantTextHeight="false"
-                android:gravity="left|fill_vertical"
+                android:gravity="start|fill_vertical"
                 android:paddingLeft="4dp"
                 android:text="@string/date"
                 android:textColor="#454545"
@@ -43,18 +43,18 @@
                 android:id="@+id/MaessagePushList"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:gravity="left|fill_vertical"
+                android:gravity="start|fill_vertical"
                 android:paddingLeft="4dp"
                 android:text="@string/massage"
                 android:textColor="#000000"
-                android:textSize="18dp"
+                android:textSize="18sp"
                 android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/eventNamePushList"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:gravity="left|fill_vertical"
+                android:gravity="start|fill_vertical"
                 android:paddingLeft="4dp"
                 android:text="@string/event_name"
                 android:textColor="#666666"/>

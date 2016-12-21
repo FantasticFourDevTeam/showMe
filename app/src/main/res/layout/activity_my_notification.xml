@@ -73,7 +73,7 @@ tools:context="com.example.events.MyNotification">
         android:visibility="invisible"
         />
 </LinearLayout>
-    <ImageButton
+    <!--ImageButton
         android:id="@+id/Mipo_Push"
         android:layout_width="0dip"
         android:layout_height="match_parent"
@@ -81,7 +81,7 @@ tools:context="com.example.events.MyNotification">
         android:background="#71B7E6"
         android:padding="2dp"
         android:src="@drawable/friends"
-        android:scaleType="fitCenter"/>
+        android:scaleType="fitCenter"/-->
 
 
     <!--<Button

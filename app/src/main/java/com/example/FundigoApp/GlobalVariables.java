@@ -40,7 +40,8 @@ public class GlobalVariables {
     public static List<Artist> artist_list = new ArrayList<> ();
     public static String CITY_GPS = "";
     public static Location MY_LOCATION = null;
-    public static String CURRENT_FILTER_NAME = "";
+    //public static String CURRENT_FILTER_NAME = "";
+    public static ArrayList<String> CURRENT_FILTER_NAME = new ArrayList<>(); //assaf 01.12 changed to arraylist to support several filtetrs
     public static String CURRENT_CITY_NAME = "";
     public static String CURRENT_SUB_FILTER =""; // no sub filter
     public static Date CURRENT_DATE_FILTER = null; //means no date Filter

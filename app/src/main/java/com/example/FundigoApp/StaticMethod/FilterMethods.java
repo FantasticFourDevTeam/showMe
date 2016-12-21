@@ -79,7 +79,9 @@ public class FilterMethods extends Application {
         }
     }
 
-    public static List<EventInfo> filterByFilterName(String currentFilterName,String subFilterName,
+    public static List<EventInfo> filterByFilterName(//String currentFilterName,
+                                                     ArrayList<String> currentFilterName,
+                                                     String subFilterName,
                                                      Date dateFilter, int priceFilter,
                                                      List<EventInfo> eventsListToFilter) {
         ArrayList<EventInfo> tempEventsList = new ArrayList<>();
@@ -147,7 +149,7 @@ public class FilterMethods extends Application {
 
                     //==============Start point of conditions to filters====================== ///
 
-                    if (currentFilterName.equals(filterEvent) & dateFilter != null // All filters
+                    if (mainFilterListFindFilter(currentFilterName, filterEvent) & dateFilter != null // All filters
                             & priceFilter != -1 & subFilterName.equals(subFilterEvent)) {
                         if ((IsDateEqual && priceFilter != 201 && priceFilter >= priceEvent) || (IsDateEqual && tempEventPrice.equals("FREE") && priceFilter == 0)) // NEED to HANDLE EOW
                         {
@@ -170,7 +172,7 @@ public class FilterMethods extends Application {
                         }
 
 
-                    } else if (currentFilterName.equals(filterEvent) & dateFilter != null // main ,Price + date filters. no sub
+                    } else if (mainFilterListFindFilter(currentFilterName, filterEvent) & dateFilter != null // main ,Price + date filters. no sub
                             & priceFilter != -1 & subFilterName.isEmpty()) {
                         if ((IsDateEqual && priceFilter != 201 && priceFilter >= priceEvent) || (IsDateEqual && tempEventPrice.equals("FREE") && priceFilter == 0)) {
                             tempEventsList.add(eventsListToFilter.get(i));
@@ -192,15 +194,15 @@ public class FilterMethods extends Application {
                         }
 
 
-                    } else if (currentFilterName.equals(filterEvent) && dateFilter == null
+                    } else if (mainFilterListFindFilter(currentFilterName, filterEvent) && dateFilter == null
                             && priceFilter == -1 && subFilterName.isEmpty())//only main Filter
                     {
                         tempEventsList.add(eventsListToFilter.get(i));
-                    } else if (currentFilterName.equals(filterEvent) & subFilterName.equals(subFilterEvent)
+                    } else if (mainFilterListFindFilter(currentFilterName, filterEvent) & subFilterName.equals(subFilterEvent)
                             && dateFilter == null && priceFilter == -1) // main + sub and no date filter and no price filters
                     {
                         tempEventsList.add(eventsListToFilter.get(i));
-                    } else if (currentFilterName.equals(filterEvent) & subFilterName.equals(subFilterEvent) &&
+                    } else if (mainFilterListFindFilter(currentFilterName,filterEvent) & subFilterName.equals(subFilterEvent) &&
                             dateFilter != null && priceFilter == -1)// main + sub + date and no Price filter
                     {
                         if (IsDateEqual) // NEED to HANDLE EOW
@@ -215,7 +217,7 @@ public class FilterMethods extends Application {
                         if (ISEventInRange && IsDatesRangeSelected) {
                             tempEventsList.add(eventsListToFilter.get(i));
                         }
-                    } else if (currentFilterName.equals(filterEvent) & subFilterName.equals(subFilterEvent)
+                    } else if (mainFilterListFindFilter(currentFilterName, filterEvent) & subFilterName.equals(subFilterEvent)
                             && dateFilter == null && priceFilter != -1)// main + sub + price and no Date filter
                     {
                         if (((priceFilter >= priceEvent && priceFilter != 201) || (tempEventPrice.equals("FREE")) && priceFilter == 0)) {
@@ -225,7 +227,7 @@ public class FilterMethods extends Application {
                             tempEventsList.add(eventsListToFilter.get(i));
                         }
 
-                    } else if (currentFilterName.equals(filterEvent) & subFilterName.isEmpty() &
+                    } else if (mainFilterListFindFilter(currentFilterName,filterEvent) & subFilterName.isEmpty() &
                             dateFilter != null && priceFilter == -1)// main + date , no sub and no Price filter
                     {
                         if (IsDateEqual) //
@@ -239,7 +241,7 @@ public class FilterMethods extends Application {
                         if (IsDatesRangeSelected && ISEventInRange) {
                             tempEventsList.add(eventsListToFilter.get(i));
                         }
-                    } else if (currentFilterName.equals(filterEvent) & subFilterName.isEmpty()
+                    } else if (mainFilterListFindFilter(currentFilterName,filterEvent) & subFilterName.isEmpty()
                             && dateFilter == null && priceFilter != -1)// main + price, No sub and no Date filter
                     {
                         if (((priceFilter >= priceEvent && priceFilter != 201) || (tempEventPrice.equals("FREE")) && priceFilter == 0)) {
@@ -313,13 +315,15 @@ public class FilterMethods extends Application {
     }
 
     public static ArrayList<EventInfo> filterByCityAndFilterName(String cityName,
-                                                                 String currentFilterName,
+                                                                 //String currentFilterName,
+                                                                 ArrayList <String> currentFilterName,
                                                                  String subFilterName, Date dateFilter, int priceFilter,
                                                                  List<EventInfo> eventsListToFilter) {
         ArrayList<EventInfo> tempEventsList = new ArrayList<>();
         Date _currentDate = new Date();
         String allCitiesFilterString;
         resultsGet = getData(_context);
+
         Date[] datesFilter = getRangeDateForFilter();
 
         try {
@@ -343,8 +347,6 @@ public class FilterMethods extends Application {
                     String tempEventPrice = eventsListToFilter.get(i).getPrice();
                     int priceEvent = -1;
                     boolean IsDateEqual = false;
-//                    resultsGet = getData(_context);
-//                    Date[] datesFilter = getRangeDateForFilter();
                     Date weekEndFilter = FilterPageActivity.addDays(_currentDate, 1000); // for check if weekend filter was activivated
                     boolean IsWeekendFilter = false;
                     boolean IsEventInWeekEnd = false;
@@ -390,7 +392,7 @@ public class FilterMethods extends Application {
                             tempEventsList.add(eventsListToFilter.get(i));
                         }
 
-                        if (currentFilterName.equals(filterEvent) & dateFilter != null // All filters active
+                        if (mainFilterListFindFilter(currentFilterName, filterEvent) & dateFilter != null // All filters active
                                 & priceFilter != -1 & subFilterName.equals(subFilterEvent)) {
                             if ((IsDateEqual && priceFilter != 201 && priceFilter >= priceEvent) || (IsDateEqual && tempEventPrice.equals("FREE") && priceFilter == 0)) {
                                 tempEventsList.add(eventsListToFilter.get(i));
@@ -411,7 +413,7 @@ public class FilterMethods extends Application {
                                 tempEventsList.add(eventsListToFilter.get(i));
                             }
 
-                        } else if (currentFilterName.equals(filterEvent) & dateFilter != null // main ,Price + date filters. no sub
+                        } else if (mainFilterListFindFilter(currentFilterName,filterEvent) & dateFilter != null // main ,Price + date filters. no sub
                                 & priceFilter != -1 & subFilterName.isEmpty()) {
                             if ((IsDateEqual && priceFilter != 201 && priceFilter >= priceEvent) || (IsDateEqual && tempEventPrice.equals("FREE") && priceFilter == 0)) {
                                 tempEventsList.add(eventsListToFilter.get(i));
@@ -433,15 +435,20 @@ public class FilterMethods extends Application {
                             }
 
 
-                        } else if (currentFilterName.equals(filterEvent) && dateFilter == null
+                        }
+
+
+                        else if (mainFilterListFindFilter(currentFilterName,filterEvent) && dateFilter == null
                                 && priceFilter == -1 && subFilterName.isEmpty())//only main Filter
                         {
                             tempEventsList.add(eventsListToFilter.get(i));
-                        } else if (currentFilterName.equals(filterEvent) & subFilterName.equals(subFilterEvent)
+                        }
+
+                        else if (mainFilterListFindFilter(currentFilterName, filterEvent) & subFilterName.equals(subFilterEvent)
                                 && dateFilter == null && priceFilter == -1) // main + sub and no date filter and no price filters
                         {
                             tempEventsList.add(eventsListToFilter.get(i));
-                        } else if (currentFilterName.equals(filterEvent) & subFilterName.equals(subFilterEvent) &&
+                        } else if (mainFilterListFindFilter(currentFilterName, filterEvent) & subFilterName.equals(subFilterEvent) &&
                                 dateFilter != null && priceFilter == -1)// main + sub + date and no Price filter
                         {
                             if (IsDateEqual) // NEED to HANDLE EOW
@@ -457,7 +464,7 @@ public class FilterMethods extends Application {
                                 tempEventsList.add(eventsListToFilter.get(i));
                             }
 
-                        } else if (currentFilterName.equals(filterEvent) & subFilterName.equals(subFilterEvent)
+                        } else if (mainFilterListFindFilter(currentFilterName, filterEvent) & subFilterName.equals(subFilterEvent)
                                 && dateFilter == null && priceFilter != -1)// main + sub + price and no Date filter
                         {
                             if (((priceFilter >= priceEvent && priceFilter != 201) || (tempEventPrice.equals("FREE")) && priceFilter == 0)) {
@@ -467,7 +474,7 @@ public class FilterMethods extends Application {
                                 tempEventsList.add(eventsListToFilter.get(i));
                             }
 
-                        } else if (currentFilterName.equals(filterEvent) & subFilterName.isEmpty() &
+                        } else if (mainFilterListFindFilter(currentFilterName, filterEvent) & subFilterName.isEmpty() &
                                 dateFilter != null && priceFilter == -1)// main + date , no sub and no Price filter
                         {
                             if (IsDateEqual) //
@@ -483,7 +490,7 @@ public class FilterMethods extends Application {
                                 tempEventsList.add(eventsListToFilter.get(i));
                             }
 
-                        } else if (currentFilterName.equals(filterEvent) & subFilterName.isEmpty()
+                        } else if (mainFilterListFindFilter(currentFilterName,filterEvent) & subFilterName.isEmpty()
                                 && dateFilter == null && priceFilter != -1)// main + price, No sub and no Date filter
                         {
                             if (((priceFilter >= priceEvent && priceFilter != 201) || (tempEventPrice.equals("FREE")) && priceFilter == 0)) {
@@ -617,22 +624,24 @@ public class FilterMethods extends Application {
 //      });
 //  }
 
-    private static String[] getData(Context context)
+    private static String[] getData(Context context) // used for get price and date saved filters
     // display the filter info.
     {
+
         SharedPreferences _sharedPref = context.getSharedPreferences("filterInfo", Context.MODE_PRIVATE);
-        String _filterName = _sharedPref.getString("mainFilter", "");
-        String _date = _sharedPref.getString ("date", "");
+      //  String _filterName = _sharedPref.getString("mainFilter", "");
+      //  String _date = _sharedPref.getString ("date", "");
         String _dateFrom = _sharedPref.getString ("dateFrom", "");
         String _dateTo =  _sharedPref.getString ("dateTo", "");
-        String _price = _sharedPref.getString ("price", "");
-        String _subFilter = _sharedPref.getString("subFilter","");
-        String _mainFilterForFilter = _sharedPref.getString("mainFilterForFilter","");
-        String _subFilterForFilter = _sharedPref.getString("subFilterForFilter","");
-        Integer _priceForFilter = _sharedPref.getInt("priceFilterForFilter", -5);
-        String _dateForFilter = _sharedPref.getString("dateFilterForFilter", "");
+      //  String _price = _sharedPref.getString ("price", "");
+      //  String _subFilter = _sharedPref.getString("subFilter","");
+        //String _mainFilterForFilter = _sharedPref.getString("mainFilterForFilter",""); //
+      //  String _subFilterForFilter = _sharedPref.getString("subFilterForFilter","");
+      //  Integer _priceForFilter = _sharedPref.getInt("priceFilterForFilter", -5);
+       // String _dateForFilter = _sharedPref.getString("dateFilterForFilter", "");
 
-        String[] values = {_date, _price,_subFilter,_filterName,_mainFilterForFilter,_subFilterForFilter,Integer.toString(_priceForFilter),_dateForFilter,_dateFrom,_dateTo};
+        //String[] values = {_date, _price,_subFilter,_filterName,"",_subFilterForFilter,Integer.toString(_priceForFilter),_dateForFilter,_dateFrom,_dateTo};
+        String[] values = {_dateFrom,_dateTo};
 
         return values;
     }
@@ -642,10 +651,10 @@ public class FilterMethods extends Application {
         SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM d HH:mm:ss zz yyyy",Locale.ENGLISH);
 
         Date[] rangeDates=null;
-        String fromDate = resultsGet[8];
-        String toDate = resultsGet[9];
+        String fromDate = resultsGet[0];
+        String toDate = resultsGet[1];
         try {
-            if (resultsGet[8] !=null && resultsGet[8] != "" && resultsGet[9] != null && resultsGet[9]!="")
+            if (resultsGet[0] !=null && resultsGet[0] != "" && resultsGet[1] != null && resultsGet[1]!="")
                 rangeDates = new Date[]{dateFormat.parse(fromDate),dateFormat.parse(toDate) };
         } catch (Exception e) {
             e.printStackTrace();
@@ -653,4 +662,11 @@ public class FilterMethods extends Application {
         return rangeDates;
     }
 
+    private static boolean mainFilterListFindFilter(ArrayList <String> mainFiltersList, String eventTopic) // 01,.12 - assaf - method find if filters selected match events
+    {
+       if (mainFiltersList.contains(eventTopic))
+           return true;
+        else
+           return false;
+    }
 }

@@ -50,111 +50,106 @@ public class MyEventsTicketsActivity extends AppCompatActivity {
         my_tickets_events_list.clear();
         my_tickets_list.clear();
         String _userPhoneNumber = GlobalVariables.CUSTOMER_PHONE_NUM;
+        try {
         dialog = new ProgressDialog(this);
-        dialog.setMessage("Loading...");
-        dialog.setIndeterminate(true);
+        dialog.setMessage(getString(R.string.Loading));
         dialog.show();
 
-        try {
             ParseQuery<EventsSeats> query = ParseQuery.getQuery ("EventsSeats");
             query.setLimit(1000);
             query.whereEqualTo ("CustomerPhone", _userPhoneNumber).whereEqualTo ("sold", true).orderByDescending("updatedAt");
             query.findInBackground(new FindCallback<EventsSeats>() {
                 @Override
                 public void done(List<EventsSeats> objects, ParseException e) {
-                    if(e==null) {
+                    if (e == null) {
                         if (objects.size() != 0) {
                             for (EventsSeats eventsSeats : objects) {
-                              //  Bitmap qrCode=null;
-                              //  byte[] data = null;
+                                //  Bitmap qrCode=null;
+                                //  byte[] data = null;
                                 //ParseFile imageFile = (ParseFile) eventsSeats.get("QR_Code");
                                 try {
                                     imageQRFilePath = eventsSeats.getQR_CodeFile().getUrl(); //09.10 Assaf
-                                }
-                                catch (Exception ex)
-                                {
+                                } catch (Exception ex) {
                                     ex.printStackTrace();
                                 }
 
-                               // if (imageFile != null) {
-                             //       try {
-                            //            data = imageFile.getData();
-                                 //   } catch (ParseException e1) {
-                              //          e1.printStackTrace();
-                                  //  }
+                                // if (imageFile != null) {
+                                //       try {
+                                //            data = imageFile.getData();
+                                //   } catch (ParseException e1) {
+                                //          e1.printStackTrace();
+                                //  }
 
 
+                                //        try {//29.09 - Assaf adding try catch and minimize scale
+                                //       Bitmap imageDecode = BitmapFactory.decodeByteArray(data, 0, data.length);
+                                //     qrCode = Bitmap.createScaledBitmap(imageDecode, 200, 200, true);// convert decoded bitmap into well scalled Bitmap format.
+                                //      }
+                                //       catch (Exception ex) {
+                                //           ex.printStackTrace();
+                                //         }
+                                //        catch (OutOfMemoryError err)
+                                //         {
+                                //             err.printStackTrace();
+                                //         }
 
-                            //        try {//29.09 - Assaf adding try catch and minimize scale
-                                 //       Bitmap imageDecode = BitmapFactory.decodeByteArray(data, 0, data.length);
-                                   //     qrCode = Bitmap.createScaledBitmap(imageDecode, 200, 200, true);// convert decoded bitmap into well scalled Bitmap format.
-                              //      }
-                             //       catch (Exception ex) {
-                             //           ex.printStackTrace();
-                           //         }
-                            //        catch (OutOfMemoryError err)
-                           //         {
-                           //             err.printStackTrace();
-                           //         }
 
-
-                               // } else {
-                                 //   qrCode = null;
-                            //    }
+                                // } else {
+                                //   qrCode = null;
+                                //    }
 
 
                                 try { //Assaf - 29.09 -try-catch added
-                                EventInfo eventInfo = EventDataMethods.getEventFromObjID(eventsSeats.getString("eventObjectId"), GlobalVariables.ALL_EVENTS_DATA);
-                                Date current_date = new Date();
-                                Date event_date = eventInfo.getDate();
-                                eventInfo.setIsFutureEvent(event_date.after(current_date));
+                                    EventInfo eventInfo = EventDataMethods.getEventFromObjID(eventsSeats.getString("eventObjectId"), GlobalVariables.ALL_EVENTS_DATA);
+                                    Date current_date = new Date();
+                                    Date event_date = eventInfo.getDate();
+                                    eventInfo.setIsFutureEvent(event_date.after(current_date));
 
 
-                                        if (eventsSeats.getSoldTicketsPointer()!=null) {
-                                            ParseObject soldTickets = eventsSeats.getSoldTicketsPointer().fetch();
+                                    if (eventsSeats.getSoldTicketsPointer() != null) {
+                                        ParseObject soldTickets = eventsSeats.getSoldTicketsPointer().fetch();
 
-                                            if (!eventInfo.getPrice().equals("FREE")) { //11.08 - Assaf added to support Free events also
-                                                my_tickets_events_list.add(eventInfo);
-                                                my_tickets_list.add(new EventsSeatsInfo(eventsSeats.getSeatNumber(),
-                                                       // qrCode,
-                                                        eventsSeats.getCreatedAt(),// The time that the Seat Order made
-                                                        eventsSeats.getIntPrice(),
-                                                        eventInfo,
-                                                        soldTickets,imageQRFilePath)); //09.10 QR file path instead of QR
-                                            } else //11.08 - Assaf added to support Free events also
-                                            {
-                                                my_tickets_events_list.add(eventInfo);
-                                                my_tickets_list.add(new EventsSeatsInfo(eventsSeats.getSeatNumber(),
-                                                       // qrCode,
-                                                        eventsSeats.getCreatedAt(), //the time that the Seat Order made
-                                                        eventsSeats.getIntPrice(),
-                                                        eventInfo,
-                                                        soldTickets,imageQRFilePath));//09.10 QR file path instead of QR
-                                            }
+                                        if (!eventInfo.getPrice().equals("FREE")) { //11.08 - Assaf added to support Free events also
+                                            my_tickets_events_list.add(eventInfo);
+                                            my_tickets_list.add(new EventsSeatsInfo(eventsSeats.getSeatNumber(),
+                                                    // qrCode,
+                                                    eventsSeats.getCreatedAt(),// The time that the Seat Order made
+                                                    eventsSeats.getIntPrice(),
+                                                    eventInfo,
+                                                    soldTickets, imageQRFilePath)); //09.10 QR file path instead of QR
+                                        } else //11.08 - Assaf added to support Free events also
+                                        {
+                                            my_tickets_events_list.add(eventInfo);
+                                            my_tickets_list.add(new EventsSeatsInfo(eventsSeats.getSeatNumber(),
+                                                    // qrCode,
+                                                    eventsSeats.getCreatedAt(), //the time that the Seat Order made
+                                                    eventsSeats.getIntPrice(),
+                                                    eventInfo,
+                                                    soldTickets, imageQRFilePath));//09.10 QR file path instead of QR
                                         }
-
-                                    } catch (ParseException exception) {
-                                        exception.printStackTrace();
                                     }
 
-                                    catch (OutOfMemoryError err)
-                                    {
+                                } catch (ParseException exception) {
+                                    exception.printStackTrace();
+                                } catch (OutOfMemoryError err) {
                                     err.printStackTrace();
-                                    }
+                                }
 
                                 listT.setAdapter(_adapter);
                             }
 
                             dialog.dismiss();
                         } else {
+                            dialog.dismiss();
                             noTickets.setText(R.string.no_tickets_to_display);
                             noTickets.setVisibility(View.VISIBLE);
+
                         }
-                      }
-                       else{
+                    } else {
                         e.printStackTrace();
+                        dialog.dismiss();
                     }
-                   }
+                }
             });
 
         } catch (Exception e) {
@@ -179,5 +174,10 @@ public class MyEventsTicketsActivity extends AppCompatActivity {
         }
     }
 
-   }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        this.finish();
+    }
+}
 

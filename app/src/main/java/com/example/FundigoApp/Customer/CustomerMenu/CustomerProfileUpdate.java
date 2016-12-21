@@ -17,9 +17,12 @@ import com.example.FundigoApp.GlobalVariables;
 import com.example.FundigoApp.R;
 import com.example.FundigoApp.StaticMethod.FileAndImageMethods;
 import com.example.FundigoApp.StaticMethod.UserDetailsMethod;
+import com.parse.ParseACL;
+import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
@@ -41,54 +44,94 @@ public class CustomerProfileUpdate extends AppCompatActivity {
         customerName = (EditText) findViewById (R.id.userEdit);
         customerImg = (ImageView) findViewById (R.id.customerImage);
         emailAddressText =  (EditText)findViewById(R.id.emailValue);
-        getCurrentUserProfile ();
+        getCurrentUserProfile();
     }
 
     public void updateProfile(View view) {
         customer = customerName.getText ().toString ();
         emailValue = emailAddressText.getText().toString();
+        boolean emailChanged= false;
         byte[] imageToUpdate;
-        List<ParseObject> list;
+        List<ParseObject> listProfile;
+        List<ParseUser> listUser;
+        ParseACL parseAcl = new ParseACL();
+        parseAcl.setPublicReadAccess(true);
+        parseAcl.setPublicWriteAccess(true);
+
         if ((!customer.equals("")&& !emailValue.equals("")) || IMAGE_SELECTED ) {
             String _userPhoneNumber = GlobalVariables.CUSTOMER_PHONE_NUM;
-            if (!_userPhoneNumber.isEmpty ()) {
-                try {
-                    ParseQuery<ParseObject> query = ParseQuery.getQuery ("Profile");
-                    query.whereEqualTo ("number", _userPhoneNumber);
-                    list = query.find ();
-                    for (ParseObject obj : list) {
-                        obj.put ("name", customer);
-                        obj.put("email",emailValue);
+            try {
+                if (!_userPhoneNumber.isEmpty()) {
+
+                    ParseQuery<ParseObject> queryProfile = ParseQuery.getQuery("Profile");
+                    queryProfile.whereEqualTo("number", _userPhoneNumber); // assaf 20.11 - update profile Table
+                    listProfile = queryProfile.find();
+                    for (ParseObject obj : listProfile) {
+                        obj.setACL(parseAcl);
+                        obj.put("name", customer);
+                        obj.put("email", emailValue);
                         if (IMAGE_SELECTED) {
-                            imageToUpdate = imageUpdate ();
-                            ParseFile picFile = new ParseFile (imageToUpdate);
-                            obj.put ("pic", picFile);
+                            imageToUpdate = imageUpdate();
+                            ParseFile picFile = new ParseFile(imageToUpdate);
+                            obj.put("pic", picFile);
                         }
                         obj.saveInBackground();
-                        finish ();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                catch (OutOfMemoryError ex)
-                {
-                    ex.printStackTrace();
-                }
 
-            } else {
-                Toast.makeText (getApplicationContext (),
-                                       R.string.user_may_not_registered_or_not_exist,
-                                       Toast.LENGTH_SHORT).show ();
+                    ParseQuery<ParseUser> queryUser = ParseUser.getQuery(); // 20.1 - assaf update User table with email only
+                    queryUser.whereEqualTo("username", _userPhoneNumber);
+                    listUser = queryUser.find();
+
+                    for (ParseUser obj1 : listUser) {
+                        ParseUser _user = ParseUser.logIn(_userPhoneNumber, _userPhoneNumber);
+                        String currentEmail = _user.getEmail();
+                        ParseACL parseUserAcl = new ParseACL();
+                        parseUserAcl.setReadAccess(_user, true);
+                        parseUserAcl.setWriteAccess(_user, true);
+                        _user.setACL(parseUserAcl);
+                        if (!currentEmail.equals(emailValue)) {// assaf-  update mail in User table only if email address changed
+                            _user.put("email", emailValue);
+                            _user.saveInBackground();
+                            emailChanged = true;
+                        }
+                        finish();
+                    }
+                }
+                else{
+                    Toast.makeText(getApplicationContext(),
+                            R.string.user_may_not_registered_or_not_exist,
+                            Toast.LENGTH_SHORT).show();
+                }
+                if (!customer.isEmpty())
+                    Toast.makeText(getApplicationContext(),
+                            R.string.user_updated_and_now_it_is,
+                            Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(getApplicationContext(),
+                            R.string.picture_updated,
+                            Toast.LENGTH_SHORT).show();
+                if (emailChanged) {
+                    Toast.makeText(getApplicationContext(),
+                            R.string.email_updated, Toast.LENGTH_LONG).show();
+                }
             }
-            if (!customer.isEmpty ())
-                Toast.makeText (getApplicationContext (),
-                                       R.string.user_updated_and_now_it_is,
-                                       Toast.LENGTH_SHORT).show ();
-            else
-                Toast.makeText (getApplicationContext (),
-                                       R.string.picture_updated,
-                                       Toast.LENGTH_SHORT).show ();
-        } else
+
+            catch(ParseException ex1)
+            {
+                ex1.printStackTrace();
+            }
+
+            catch(Exception e){
+                e.printStackTrace();
+            }
+
+            catch(OutOfMemoryError ex)
+            {
+                ex.printStackTrace();
+            }
+
+        }
+        else
             Toast.makeText (getApplicationContext (),
                                    R.string.nothing_selected_to_update,
                                    Toast.LENGTH_SHORT).show ();

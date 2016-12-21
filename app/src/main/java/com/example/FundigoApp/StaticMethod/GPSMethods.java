@@ -69,13 +69,19 @@ public class GPSMethods {
                                                            0,
                                                            locationListener);
         }
-        if (passive_enabled) {
-            locationManager.requestLocationUpdates (LocationManager.PASSIVE_PROVIDER,
+        if (passive_enabled) {//05.12 assaf added location permission check
+            if (ActivityCompat.checkSelfPermission (context, permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission (context, permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                //do nothing
+            }
+            else
+              locationManager.requestLocationUpdates (LocationManager.PASSIVE_PROVIDER,
                                                            GlobalVariables.GPS_UPDATE_TIME_INTERVAL,
                                                            0,
-                                                           locationListener);
+                                                      locationListener);
         }
     }
+
+
 
     public static boolean isLocationEnabled(Context context) {
         int locationMode = 0;
@@ -158,6 +164,14 @@ public class GPSMethods {
         }
         return -1;
     }
+
+
+
+    //assaf - new method ti check permissios - not in use 05.12
+     /*public static boolean isPermissionGranted(String permission, Context context){
+        int result = ContextCompat.checkSelfPermission(context, permission);
+        return (result == PackageManager.PERMISSION_GRANTED);
+    }*/
 
 
     //Assaf - 30.10 -Not In Use

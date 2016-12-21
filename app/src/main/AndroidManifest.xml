@@ -63,13 +63,14 @@
         <activity android:name=".Tickets.WebBrowserActivity"></activity>
         <activity android:name=".Events.CreateEventActivity"></activity>
         <activity android:name=".Customer.CustomerMenu.SaveCreditCard" />
-        <activity android:name=".Verifications.LoginActivity"></activity>
+        <activity android:name=".Verifications.LoginActivity"
+					android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
         <activity android:name=".Customer.RealTime.RealTimeActivity"></activity>
         <activity android:name=".Customer.CustomerMenu.MenuActivity"></activity>
         <activity android:name=".Verifications.CreateNewProducerActivity"></activity>
         <activity
             android:name=".DeepLinkActivity"
-            android:theme="@android:style/Theme.NoDisplay"></activity>
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
         <activity android:name=".Customer.SavedEvents.SavedEventActivity"></activity>
         <activity android:name=".Customer.CustomerMenu.CustomerTicketsMoreDetailesActivity"></activity>
         <activity android:name=".SearchActivity"></activity>

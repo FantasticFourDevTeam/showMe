@@ -5,9 +5,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/phoneTV"
@@ -124,10 +124,11 @@
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/imageV"
             android:layout_alignTop="@+id/imageV"
-            android:gravity="center"
+            android:gravity="start|fill_horizontal"
             android:text="@string/your_first_use"
             android:textColor="#a3a2a2"
-            android:textSize="19sp"
+            android:textSize="18sp"
+            android:layout_margin="5dp"
             android:visibility="visible"/>
 
         <TextView
@@ -136,7 +137,7 @@
             android:layout_height="40dp"
             android:layout_above="@+id/phoneLinearLayout"
             android:gravity="center"
-            android:text="Email Address"
+            android:text="@string/email_address"
             android:textSize="25sp"
             android:visibility="invisible"
             />
@@ -150,6 +151,5 @@
             android:ems="10"
             android:inputType="textEmailAddress"
             android:visibility="invisible"/>
-
     </RelativeLayout>
 </ScrollView>

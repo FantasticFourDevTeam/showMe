@@ -49,7 +49,7 @@
                 android:layout_gravity="top|right"
                 android:editable="false"
                 android:textColor="@color/White"
-                android:textSize="15dp"
+                android:textSize="15sp"
                 android:visibility="invisible"
                 />
         </LinearLayout>
@@ -195,12 +195,11 @@
         android:layout_width="match_parent"
         android:orientation="vertical"
         android:layout_height="wrap_content"
-         android:layout_weight="1"
-        android:layout_alignParentBottom="true">
+         android:layout_weight="1">
         <include layout="@layout/push_messages_bar"/>
     </LinearLayout>
     </LinearLayout>
-    <Button
+    <!--Button
         android:id="@+id/create_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -208,5 +207,5 @@
         android:layout_centerHorizontal="true"
         android:onClick="createEvent"
         android:text="@string/create_event"
-        android:visibility="invisible"/>
+        android:visibility="invisible"/-->
 </RelativeLayout>

@@ -77,18 +77,21 @@ public class UserDetailsMethod {
             imageFile = (ParseFile) number.getPic ();
             if (imageFile != null) {
                 try {
-                    data = imageFile.getData ();
-                } catch (ParseException e1) {
+                    data = imageFile.getData();
+                    if (data!=null)
+                       customerImage = BitmapFactory.decodeByteArray(data, 0, data.length);
+                }
+                catch (ParseException e1) {
                     e1.printStackTrace ();
                 }
-                customerImage = BitmapFactory.decodeByteArray (data, 0, data.length);
             }
         }
         CustomerDetails customerDetails = new CustomerDetails (faceBookId,
                                                                       customerPicFacebookUrl,
                                                                       null,
                                                                       customerName,emailAddress);
-        customerDetails.setBitmap (customerImage);
+        if (customerImage!=null)
+           customerDetails.setBitmap (customerImage);
         return customerDetails;
     }
 

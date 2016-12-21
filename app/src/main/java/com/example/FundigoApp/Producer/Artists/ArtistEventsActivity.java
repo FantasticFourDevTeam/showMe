@@ -19,11 +19,11 @@ import com.example.FundigoApp.Events.EventInfo;
 import com.example.FundigoApp.Events.EventPageActivity;
 import com.example.FundigoApp.Events.EventsListAdapter;
 import com.example.FundigoApp.GlobalVariables;
+import com.example.FundigoApp.Producer.ProducerSendPuchActivity;
 import com.example.FundigoApp.R;
 import com.example.FundigoApp.StaticMethod.EventDataMethods;
 import com.example.FundigoApp.StaticMethod.FilterMethods;
 import com.example.FundigoApp.StaticMethod.GeneralStaticMethods;
-import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -108,42 +108,73 @@ public class ArtistEventsActivity extends Activity implements AdapterView.OnItem
             case R.id.delete_event:
                 eventObjectId = eventsList.get (pos).getParseObjectId ();
                 DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener () {
-
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
                             case DialogInterface.BUTTON_POSITIVE:
-                                deleteEvent (eventObjectId);
+                                cancelEvent(eventObjectId);
+                                //deleteEvent(eventObjectId); not delete but cancel - assaf 01.12
                                 GlobalVariables.refreshArtistsList = true;
                                 break;
                             case DialogInterface.BUTTON_NEGATIVE:
                                 dialog.dismiss ();
                                 break;
+                            case DialogInterface.BUTTON_NEUTRAL: // open Push notifications to users before event delete
+                                Intent intent = new Intent(ArtistEventsActivity.this, ProducerSendPuchActivity.class);
+                                intent.putExtra("id",eventObjectId);
+                                startActivity(intent);
+                                break;
                         }
                     }
                 };
                 AlertDialog.Builder builder = new AlertDialog.Builder (this);
-                builder.setTitle ("You are going to delete "+ eventsList.get(pos).getName() + " event");
-                builder.setIcon (R.drawable.warning);
-                builder.setMessage ("Are you sure? This event could not be resume after deleting it");
-                builder.setPositiveButton ("Yes", listener);
-                builder.setNegativeButton ("No", listener);
+                builder.setTitle (getString(R.string.going_to_delete)+ eventsList.get(pos).getName());
+                builder.setIcon(R.drawable.warning);
+                builder.setMessage(getString(R.string.are_you_sure));
+                builder.setPositiveButton(getString(R.string.yes), listener);
+                builder.setNegativeButton(getString(R.string.no), listener);
+                builder.setNeutralButton (getString(R.string.send_push), listener);
                 AlertDialog dialog = builder.create ();
                 dialog.show ();
                 return true;
-            case R.id.edit_event:
+            case R.id.edit_event: //01.12 - assaf added a notification to updated the users with changes
                 eventObjectId = eventsList.get (pos).getParseObjectId ();
-                Intent intent = new Intent (this, EditEventActivity.class);
-                intent.putExtra(GlobalVariables.OBJECTID, eventObjectId);
-                startActivity (intent);
+                DialogInterface.OnClickListener listenerEdit = new DialogInterface.OnClickListener () {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case DialogInterface.BUTTON_POSITIVE:
+                                Intent intent = new Intent (ArtistEventsActivity.this, EditEventActivity.class);
+                                intent.putExtra(GlobalVariables.OBJECTID, eventObjectId);
+                                startActivity(intent);
+                                GlobalVariables.refreshArtistsList = true;
+                                break;
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                dialog.dismiss ();
+                                break;
+                            case DialogInterface.BUTTON_NEUTRAL: // open Push notifications to users before event delete
+                                Intent intentPush = new Intent(ArtistEventsActivity.this, ProducerSendPuchActivity.class);
+                                intentPush.putExtra("id",eventObjectId);
+                                startActivity(intentPush);
+                                break;
+                        }
+                    }
+                };
+                AlertDialog.Builder builderEdit = new AlertDialog.Builder (this);
+                builderEdit.setIcon(R.drawable.warning);
+                builderEdit.setMessage(getString(R.string.are_you_sure_edit_event));
+                builderEdit.setPositiveButton(getString(R.string.yes), listenerEdit);
+                builderEdit.setNegativeButton(getString(R.string.no), listenerEdit);
+                builderEdit.setNeutralButton(getString(R.string.send_push), listenerEdit);
+                AlertDialog dialogEdit = builderEdit.create ();
+                dialogEdit.show();
                 return true;
-
             default:
                 return super.onContextItemSelected(item);
         }
     }
 
-    public void deleteEvent(final String objectId) {
+   /* public void deleteEvent(final String objectId) {  //01.12 - Assaf marked this methid for now. no full delete just cancel
         ParseQuery<ParseObject> query = ParseQuery.getQuery ("Event");
         query.whereEqualTo ("objectId", objectId);
         query.orderByDescending ("createdAt");
@@ -215,5 +246,18 @@ public class ArtistEventsActivity extends Activity implements AdapterView.OnItem
             }
         });
         finish ();
+    }*/
+
+    public void cancelEvent(final String objectId) {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery ("Event");
+        query.whereEqualTo("objectId", objectId);
+        try {
+            ParseObject parseObject = query.getFirst();
+            parseObject.put("eventCanceled","yes");
+            parseObject.save ();
+        } catch (ParseException e1) {
+            e1.printStackTrace ();
+        }
+        finish();
     }
 }

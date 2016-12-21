@@ -59,7 +59,7 @@ public class FilterImageAdapter extends BaseAdapter {
         imgView.setImageResource (this.mImages[position]);
         ////////
         if(mFilter!=null) {
-               if (!GlobalVariables.CURRENT_FILTER_NAME.isEmpty() && this.mFilter[position].equals(GlobalVariables.CURRENT_FILTER_NAME)) {
+            if (!GlobalVariables.CURRENT_FILTER_NAME.isEmpty() && GlobalVariables.CURRENT_FILTER_NAME.contains(this.mFilter[position])) {
                    grid.setBackgroundColor(Color.RED);
                  } else { //05.10 assaf - added to remove duplicate background Red when scroll the Grid
                     grid.setBackgroundColor(Color.WHITE);
