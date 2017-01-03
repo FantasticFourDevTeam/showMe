@@ -42,11 +42,14 @@ public class EventPicturesAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         View grid=null;
         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService (Context.LAYOUT_INFLATER_SERVICE);
-
         try {
             if (convertView == null) {
-                grid = inflater.inflate(R.layout.event_pictures_grid_view_adapter, null);
+                //01.01 - Assaf updated
+                grid = inflater.inflate(R.layout.event_pictures_grid_view_adapter,parent,false);
                 ImageView imgView = (ImageView) grid.findViewById(R.id.grid_producers_images);
+                imgView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                imgView.setPadding(8,8,8,8);
+                //01.01 - until here//
                 if (getCount() != 0 && mImages[0] != "no images" ) {
                     loader.displayImage(this.mImages[position], imgView);
                 }

@@ -102,6 +102,18 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
         getTicketsButton = (Button) findViewById (R.id.button);
 
         intent = getIntent ();
+		try {
+            //01.01 - assaf get the saved  state of All events data when back from Intent
+            if (savedInstanceState != null && GlobalVariables.ALL_EVENTS_DATA.size() == 0) {
+                //Restore value of members from saved state
+
+                ArrayList<EventInfo> TEMP_ALL_EVENTS = (ArrayList<EventInfo>) savedInstanceState.getSerializable("SAVED_EVENTS_LIST");
+                GlobalVariables.ALL_EVENTS_DATA = TEMP_ALL_EVENTS;
+            }
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
         eventInfo = GlobalVariables.ALL_EVENTS_DATA.get
                                                             (intent.getIntExtra ("index", 0));
 
@@ -862,5 +874,16 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
 		}
     }
 	
+   @Override
+    protected void onSaveInstanceState(Bundle outState) {
+    //assaf - 01.01 new Method - save all All_events_data when back from Navigate intent
+        super.onSaveInstanceState(outState);
+        try {
+            outState.putSerializable("SAVED_EVENTS_LIST", new ArrayList<>(GlobalVariables.ALL_EVENTS_DATA));
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+    }
    
 }

@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.FundigoApp.Events.CreateEventActivity;
 import com.example.FundigoApp.GlobalVariables;
 import com.example.FundigoApp.R;
 import com.example.events.ProducerActivity;
@@ -33,6 +34,7 @@ public class LoginActivity extends Activity {
     EditText producer_usernameET;
     boolean emailVerified = false;
     boolean passwordVerified;
+    private Intent typeIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +44,8 @@ public class LoginActivity extends Activity {
        // producer_usernameET = (EditText) findViewById (R.id.username_et);// 27.11 assaf - remove the Login page
        // producer_passwordET = (EditText) findViewById (R.id.password_et);// 27.11 assaf - remove the Login page
        // producer_loginButton = (Button) findViewById (R.id.button_login);// 27.11 assaf - remove the Login page
+
+        typeIntent = getIntent();
         producer_username = GlobalVariables.CUSTOMER_PHONE_NUM;
         producer_password = GlobalVariables.CUSTOMER_PHONE_NUM;
 
@@ -81,6 +85,7 @@ public class LoginActivity extends Activity {
                         }
                         if (exists) {
                             try {
+                                ParseUser.logOut(); //01.01 -Assaf
                                 ParseUser.logIn(producer_username, producer_password);
                               /*  if (!emailVerified) {
                                     Toast.makeText(getApplicationContext(), R.string.verify_email, Toast.LENGTH_LONG).show();
@@ -94,11 +99,11 @@ public class LoginActivity extends Activity {
                                 GlobalVariables.IS_CUSTOMER_GUEST = false;
                                 GlobalVariables.CUSTOMER_PHONE_NUM = null;
                                 GlobalVariables.PRODUCER_PARSE_OBJECT_ID = ParseUser.getCurrentUser().getObjectId();
-                                Intent intent = new Intent(LoginActivity.this, ProducerActivity.class);
-                                intent.putExtra("customerPhone", tempCustomerPhoneNumber);
-                                GlobalVariables.ALL_EVENTS_DATA.clear();
-                                startActivity(intent);
-                                finish();
+
+                                 selectWhatActivityToCreate(tempCustomerPhoneNumber, typeIntent.getStringExtra("type")); // 01.01 - assaf - control the intnet after Login
+                                //or create or open prodcuer page
+
+
                             } catch (Exception e1) {
                                 e1.printStackTrace();
                                 //Toast.makeText(getApplicationContext(), R.string.wrong_password_try_again, Toast.LENGTH_SHORT).show();
@@ -117,6 +122,29 @@ public class LoginActivity extends Activity {
         {
             ex.printStackTrace();
         }
+    }
+
+
+
+    private void selectWhatActivityToCreate(String tempCustomerPhoneNumber , String type){
+    //01.01 assaf - New Method for control the intent after Login or create event or open producer page
+
+        if (type.equals("login")) {
+
+              Intent prodIntent = new Intent(LoginActivity.this, ProducerActivity.class);
+              prodIntent.putExtra("customerPhone", tempCustomerPhoneNumber);
+              GlobalVariables.ALL_EVENTS_DATA.clear();
+              startActivity(prodIntent);
+              finish();
+          }
+          else if (type.equals("create"))
+            {
+              Intent createIntent = new Intent(LoginActivity.this, CreateEventActivity.class);
+              createIntent.putExtra("producerID" , GlobalVariables.PRODUCER_PARSE_OBJECT_ID);
+              GlobalVariables.ALL_EVENTS_DATA.clear();
+              startActivity(createIntent);
+              finish();
+            }
     }
 
 

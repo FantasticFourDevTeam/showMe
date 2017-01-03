@@ -160,6 +160,12 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
         sp.edit().putInt(GlobalVariables.GREEN, -1).apply();
         sp.edit().putInt(GlobalVariables.ORANGE,-1).apply();
         componentInit();
+		
+		if (savedInstanceState != null) {
+            // Restore value of members from saved state
+            GlobalVariables.PRODUCER_PARSE_OBJECT_ID = savedInstanceState.getString("SAVED_PRODUCER_ID");
+        }
+		
     }
 
     @Override
@@ -1366,6 +1372,12 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
         return toSaveEvent;
       }
 
+	  @Override
+    protected void onSaveInstanceState(Bundle outState) {
+    //Assaf - 01.01 - New Method save producerId when back from pictures intent
+        super.onSaveInstanceState(outState);
+        outState.putString("SAVED_PRODUCER_ID", GlobalVariables.PRODUCER_PARSE_OBJECT_ID);
+    }
  }
 
 

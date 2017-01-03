@@ -23,13 +23,22 @@ public class ProducerMainActivity extends android.support.v4.app.Fragment implem
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         View rootView = inflater.inflate (R.layout.activity_main_producer, container, false);
         artistListView = (ListView) rootView.findViewById (R.id.artist_list_view);
         artistAdapter = new ArtistAdapter (getActivity ().getApplicationContext (), GlobalVariables.artist_list);
-        artistListView.setAdapter (artistAdapter);
+        artistListView.setAdapter(artistAdapter);
         artistListView.setSelector(new ColorDrawable(Color.TRANSPARENT));
+
+        /// Assaf 01.01 - in case that Event created and back to Menu . need to start Producer page with false
+        if (GlobalVariables.refreshArtistsList)
+            GlobalVariables.refreshArtistsList = false;
+        /// 01.01 until here
+
          Intent intent = new Intent (this.getActivity (), EventPageActivity.class);
          EventDataMethods.downloadEventsData(this, GlobalVariables.PRODUCER_PARSE_OBJECT_ID, this.getContext(), intent);
+
+
 
          artistListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,

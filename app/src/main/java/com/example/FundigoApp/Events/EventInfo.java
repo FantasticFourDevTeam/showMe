@@ -4,10 +4,11 @@ import android.graphics.Bitmap;
 
 import com.example.FundigoApp.Tickets.EventsSeats;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-public class EventInfo {
+public class EventInfo implements Serializable { //01.01 assaf added implements Serializable
 
     Bitmap imageId;
     Date date;

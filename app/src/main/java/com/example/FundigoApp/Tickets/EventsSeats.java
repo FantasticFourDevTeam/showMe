@@ -4,10 +4,11 @@ import com.parse.ParseClassName;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @ParseClassName("EventsSeats")
-public class EventsSeats extends ParseObject {
+public class EventsSeats extends ParseObject implements Serializable { //01.01 assaf added implements Serializable
     public int getPrice() {
         return getInt ("price");
     }

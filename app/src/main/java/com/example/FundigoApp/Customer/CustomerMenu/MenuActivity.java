@@ -18,7 +18,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.FundigoApp.Customer.CustomerDetails;
-import com.example.FundigoApp.Events.CreateEventActivity;
 import com.example.FundigoApp.Events.EventPageActivity;
 import com.example.FundigoApp.GlobalVariables;
 import com.example.FundigoApp.R;
@@ -129,14 +128,17 @@ public class MenuActivity extends AppCompatActivity implements EventDataMethods.
                         intent = new Intent(MenuActivity.this, SmsSignUpActivity.class);
                         startActivity(intent);
                         break;
+                    //////01.01 - assaf - case R.string.producer_login fixed
                     case R.string.producer_login:
-                        if (GlobalVariables.IS_CUSTOMER_REGISTERED_USER != false && GlobalVariables.CUSTOMER_PHONE_NUM != null) {
+                        if (GlobalVariables.IS_CUSTOMER_REGISTERED_USER && GlobalVariables.CUSTOMER_PHONE_NUM != null) {
                             intent = new Intent(MenuActivity.this, LoginActivity.class);
+                             intent.putExtra("type","login");
                             startActivity(intent);
                         } else {
                             Toast.makeText(context, getString(R.string.please_register), Toast.LENGTH_SHORT).show();
                         }
                         break;
+
                   /*  case R.string.save_credit_card:
                         intent = new Intent(MenuActivity.this, SaveCreditCard.class);
                         startActivity(intent);
@@ -146,19 +148,19 @@ public class MenuActivity extends AppCompatActivity implements EventDataMethods.
                         deleteCreditCard();
                         break; */
 
-                    case R.string.create_event: //29.11 - assaf add option of create event from Menu.
-                        if (GlobalVariables.IS_CUSTOMER_REGISTERED_USER != false && GlobalVariables.CUSTOMER_PHONE_NUM != null) {
+                    //////01.01 - assaf - case R.string.create_event
+                    case R.string.create_event:
+                        if (GlobalVariables.IS_CUSTOMER_REGISTERED_USER  && GlobalVariables.CUSTOMER_PHONE_NUM != null) {
                             //if (GeneralStaticMethods.EmailAddressVerified(GlobalVariables.CUSTOMER_PHONE_NUM)) {  //for registered user that approved his mail
-                            intent = new Intent(MenuActivity.this, CreateEventActivity.class);
+                            intent = new Intent(MenuActivity.this, LoginActivity.class);
+                            intent.putExtra("type","create");
                             startActivity(intent);
-                            //   }
-                            // else
-                            //  Toast.makeText(getApplicationContext(),R.string.verify_email,Toast.LENGTH_LONG).show();
-                        } else {
+                          } else {
                             Toast.makeText(context, getString(R.string.please_register), Toast.LENGTH_SHORT).show();
                         }
-
                         break;
+
+                    ///////////////////////
                     case R.string.updateProfile:
                         try {
                             Intent I = new Intent(MenuActivity.this, CustomerProfileUpdate.class);
@@ -171,8 +173,6 @@ public class MenuActivity extends AppCompatActivity implements EventDataMethods.
                         intent = new Intent(MenuActivity.this, MyEventsTicketsActivity.class);
                         startActivity(intent);
                         break;
-
-
                 }
             }
         });
@@ -186,7 +186,7 @@ public class MenuActivity extends AppCompatActivity implements EventDataMethods.
 
         // in case that return back from Prodcuer area then need to check if customer registered or not
         GlobalVariables.CUSTOMER_PHONE_NUM = FileAndImageMethods.getCustomerPhoneNumFromFile(this);
-        //assaf 28.11 - upload all events data again inin case that revert back from Producer , upload all events again
+        //assaf 28.11 - upload all events data again in case that revert back from Producer , upload all events again
         if (GlobalVariables.ALL_EVENTS_DATA.size() == 0) {
             Intent intent = new Intent(this, EventPageActivity.class);
             EventDataMethods.downloadEventsData(this, null, this.context, intent);
