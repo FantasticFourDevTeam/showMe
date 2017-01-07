@@ -5,6 +5,8 @@ import com.parse.ParseFile;
 import com.parse.ParseObject;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @ParseClassName("Event")
 public class Event extends ParseObject {
@@ -26,7 +28,7 @@ public class Event extends ParseObject {
     }
 
     public int getNumOfTickets() {
-        return getInt ("NumOfTickets");
+        return getInt("NumOfTickets");
     }
 
     public void setNumOfTickets(int numOfTickets) {
@@ -34,7 +36,7 @@ public class Event extends ParseObject {
     }
 
     public int getAttending_count() {
-        return getInt ("attending_count");
+        return getInt("attending_count");
     }
 
     public void setAttending_count(int  attending_count) {
@@ -50,7 +52,7 @@ public class Event extends ParseObject {
     }
 
     public String getPrice() {
-        return getString ("Price");
+        return getString("Price");
     }
 
     public void setPrice(String price) {
@@ -58,7 +60,7 @@ public class Event extends ParseObject {
     }
 
     public double getX() {
-        return getDouble ("X");
+        return getDouble("X");
     }
 
     public double getY() {
@@ -74,7 +76,7 @@ public class Event extends ParseObject {
     }
 
     public String getTags() {
-        return getString ("tags");
+        return getString("tags");
     }
 
     public void setTags(String tags) {
@@ -106,7 +108,7 @@ public class Event extends ParseObject {
     }
 
     public Date getRealDate() {
-        return getDate ("realDate");
+        return getDate("realDate");
     }
 
     public void setRealDate(Date date) {
@@ -122,7 +124,7 @@ public class Event extends ParseObject {
     }
 
     public String getEventToiletService() {
-        return getString ("eventToiletService");
+        return getString("eventToiletService");
     }
 
     public void setEventToiletService(String eventToiletService) {
@@ -180,7 +182,7 @@ public class Event extends ParseObject {
     }
 
     public boolean getIsStadium() { //link saved in Parse for link to Even FB page
-        return getBoolean ("isStadium");
+        return getBoolean("isStadium");
     }
 
     public ParseFile getPic() {
@@ -210,5 +212,35 @@ public class Event extends ParseObject {
     public void setAccessToken(String accessToken){put("accessToken",accessToken);}
 
     public String getAccessToken(){return getString("accessToken");}
+
+    public Map<String, String> getAddressPerLanguage(){ //28.10 assaf - get address per Lanugauge
+        try {
+
+            return getMap("addressInLanguage");
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+    public Map<String, String> getCityPerLanguage(){ //28.10 assaf - get city names in otyher lAnguage
+        try {
+
+            return getMap("cityInLanguage");
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+    public void setAddressPerLanguage(HashMap address){ //28.10 assaf
+        put ("addressInLanguage",address);
+    }
+
+    public void setCityPerLanguage(HashMap city){ //28.10 assaf
+        put ("cityInLanguage",city);
+    }
 
 }

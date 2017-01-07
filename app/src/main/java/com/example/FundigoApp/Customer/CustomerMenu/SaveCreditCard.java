@@ -14,9 +14,9 @@ import com.example.FundigoApp.R;
 import com.parse.ParseException;
 import com.stripe.android.Stripe;
 import com.stripe.android.TokenCallback;
+import com.stripe.android.exception.StripeException;
 import com.stripe.android.model.Card;
 import com.stripe.android.model.Token;
-import com.stripe.exception.StripeException;
 
 public class SaveCreditCard extends AppCompatActivity implements View.OnClickListener {
 

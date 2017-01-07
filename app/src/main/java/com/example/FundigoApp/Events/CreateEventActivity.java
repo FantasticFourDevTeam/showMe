@@ -145,7 +145,7 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
     int IMAGE_MAX_SIZE = 650;
     private static Bitmap image;
     private Boolean toSaveEvent = false; // 17.11 assaf - check if vdlaidation pass before save event to Parse
-
+	boolean SHARE; //benjamin - check if event create for share to person contact/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
