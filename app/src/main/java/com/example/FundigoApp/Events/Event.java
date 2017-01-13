@@ -205,9 +205,9 @@ public class Event extends ParseObject {
 
     public void setEventFromFacebook(boolean eventFromFacebook){put("eventFromFacebook",eventFromFacebook);}
 
-    public boolean getCancelEvent(){return getBoolean("canceled");}
+    public boolean getCancelEvent(){return getBoolean("eventCanceled");}
 
-    public void setCancelEventFromFacebook(boolean canceled){put("canceled",canceled);}
+    public void setCancelEventFromFacebook(boolean canceled){put("eventCanceled",canceled);}
 
     public void setAccessToken(String accessToken){put("accessToken",accessToken);}
 

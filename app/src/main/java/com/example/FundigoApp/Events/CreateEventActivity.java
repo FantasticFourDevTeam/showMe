@@ -57,6 +57,12 @@ import java.util.HashMap;
 import java.util.List;
 
 import fr.ganfra.materialspinner.MaterialSpinner;
+import io.branch.indexing.BranchUniversalObject;
+import io.branch.referral.Branch;
+import io.branch.referral.BranchError;
+import io.branch.referral.SharingHelper;
+import io.branch.referral.util.LinkProperties;
+import io.branch.referral.util.ShareSheetStyle;
 
 public class CreateEventActivity extends Activity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, AdapterView.OnItemSelectedListener {
 
@@ -425,6 +431,68 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
         SHARE = true;
         saveEvent();
     }
+    public void shareDeepLink(String name,String picUrl,String parseObjectId)
+    {
+
+        final BranchUniversalObject branchUniversalObject = new BranchUniversalObject ()
+                .setCanonicalIdentifier ("item/1234")
+                .setTitle(name + " is amazing event, one of your friends shared it through WhoGO App")
+                .setContentDescription(this.getString(R.string.my_content_description))
+                .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
+                .setContentImageUrl(picUrl)
+                .addContentMetadata("objectId", parseObjectId);
+
+        final io.branch.referral.util.LinkProperties linkProperties = new LinkProperties()
+                .setChannel("My Application")
+                .setFeature("sharing");
+
+
+
+        ShareSheetStyle shareSheetStyle = new ShareSheetStyle (CreateEventActivity.this, "", name + " is amazing event join it by using WhoGO App")
+                .setCopyUrlStyle(getResources().getDrawable(android.R.drawable.ic_menu_send), "Copy Link", "Copied to clipboard")
+                .addPreferredSharingOption(SharingHelper.SHARE_WITH.FACEBOOK)
+                .addPreferredSharingOption(SharingHelper.SHARE_WITH.TWITTER)
+                .addPreferredSharingOption(SharingHelper.SHARE_WITH.WHATS_APP)
+                .addPreferredSharingOption(SharingHelper.SHARE_WITH.MESSAGE);
+
+        branchUniversalObject.showShareSheet(this,
+                linkProperties,
+                shareSheetStyle,
+                new Branch.BranchLinkShareListener() {
+                    @Override
+                    public void onShareLinkDialogLaunched() {
+                        Log.e("ShareLinkDialogLaunched","sss");
+                    }
+
+                    @Override
+                    public void onShareLinkDialogDismissed() {
+                        Log.e("LinkDialogDismissed","sss");
+                    }
+
+
+                    @Override
+                    public void onLinkShareResponse(String sharedLink, String sharedChannel, BranchError error) {
+                        Log.e("LinkShareResponse",sharedLink);
+                    }
+
+                    @Override
+                    public void onChannelSelected(String channelName) {
+                        Log.e("onChannelSelected",channelName);
+                    }
+                });
+
+
+        branchUniversalObject.generateShortUrl(getApplicationContext(), linkProperties, new Branch.BranchLinkCreateListener() {
+            @Override
+            public void onLinkCreate(String url, BranchError error) {
+                if (error == null) {
+                    // Toast.makeText(getApplicationContext(), url, Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), error.getMessage() + "", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
 
     public void saveEvent() {
         final Event event = new Event();
@@ -538,7 +606,7 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
             byte[] image = stream.toByteArray();
-            ParseFile file = new ParseFile("picturePath", image);
+            final ParseFile file = new ParseFile("picturePath", image);
             try {
                 file.saveInBackground();
             } catch (Exception e) {

@@ -41,7 +41,7 @@ public class EventInfo implements Serializable { //01.01 assaf added implements 
     List<EventsSeats> eventsSeatsList;
     String picUrl;
     Date createdAt;
-
+    boolean isCanceled;
     public EventInfo(String picUrl,
                      Date date,
                      String dateAsString,
@@ -67,7 +67,7 @@ public class EventInfo implements Serializable { //01.01 assaf added implements 
                      int numOfTickets,
                      String parseObjectId,
                      String fbUrl,
-                     boolean isStadium,Date createdAt) {
+                     boolean isStadium,boolean isCanceled,Date createdAt) {
         this.picUrl = picUrl;
         this.date = date;
         this.dateAsString = dateAsString;
@@ -94,6 +94,7 @@ public class EventInfo implements Serializable { //01.01 assaf added implements 
         this.fbUrl = fbUrl;
         this.isStadium = isStadium;
         this.subFilterName = subFilterName;
+        this.isCanceled = isCanceled;
         this.createdAt = createdAt;
     }
 
@@ -322,5 +323,6 @@ public class EventInfo implements Serializable { //01.01 assaf added implements 
     public void setPicUrl(String picUrl) {
         this.picUrl = picUrl;
     }
-
+    public boolean getIsCanceled(){return isCanceled;}
+    public void setIsCanceled(boolean cancel){ this.isCanceled = cancel;}
 }
