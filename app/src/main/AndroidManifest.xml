@@ -54,6 +54,9 @@
         <activity android:name=".Customer.Social.DetailedNotificationActivity" />
         <activity android:name=".Customer.Social.MyNotificationsActivity" />
         <activity android:name=".Producer.ProducerSendPuchActivity" />
+		<activity android:name=".Events.EventPicturesGridView"
+                  android:theme="@style/AppTheme"
+            />
         <activity android:name=".Customer.Social.CustomerMessageConversationsListActivity" />
         <activity android:name=".Customer.Social.MipoActivity"></activity>
         <activity android:name=".Producer.Artists.QR_producer"></activity>
