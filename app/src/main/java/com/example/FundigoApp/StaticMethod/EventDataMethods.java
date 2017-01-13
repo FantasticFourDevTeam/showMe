@@ -120,7 +120,7 @@ public class EventDataMethods {
                         event.getNumOfTickets(),
                         event.getObjectId(),
                         event.getFbUrl(),
-                        event.getIsStadium(), event.getCreatedAt()//16.10 assaf added get created at
+                        event.getIsStadium(),event.getCancelEvent(), event.getCreatedAt()//16.10 assaf added get created at
                 ));
             }
             GeneralStaticMethods.updateSavedEvents(tempEventsList, context);
