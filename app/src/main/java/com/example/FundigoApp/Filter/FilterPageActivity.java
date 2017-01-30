@@ -138,15 +138,15 @@ public class FilterPageActivity extends AppCompatActivity implements AdapterView
         other =getApplicationContext ().getString (R.string.other);
 
         //24.09 - to support filter in Hebrew and keep last filter selcted by user
-        num = new String[]{"Sports", // for filter puprposev. it is include whogo filters and also FB filters
-                                  "Tourism",
-                                  "Party",
-                                  "Business",
-                                  "Comedy",
-                                  "Workshop",
-                                  "Kids",
-                                  "LifeStyle",
-                                  "Music","ART_EVENT","BOOK_EVENT","MOVIE_EVENT","FUNDRAISER","VOLUNTEERING","FAMILY_EVENT","FESTIVAL_EVENT",
+        num = new String[]{"SPORTS_EVENT", // for filter puprposev. it is include whogo filters and also FB filters
+                                  "TOURISM_EVENT",
+                                  "PARTY_EVENT",
+                                  "BUSINESS_EVENT",
+                                  "COMEDY_EVENT",
+                                  "WORKSHOP_EVENT",
+                                  "KIDS_EVENT",
+                                  "LIFESTYLE_EVENT",
+                                  "MUSIC_EVENT","ART_EVENT","BOOK_EVENT","MOVIE_EVENT","FUNDRAISER","VOLUNTEERING","FAMILY_EVENT","FESTIVAL_EVENT",
                                   "NEIGHBORHOOD","RELIGIOUS_EVENT","SHOPPING","NIGHTLIFE","THEATER_EVENT","DINING_EVENT","FOOD_TASTING","FITNESS",
                                   "DANCE_EVENT","CONFERENCE_EVENT","MEETUP","CLASS_EVENT","LECTURE","OTHER"};
 

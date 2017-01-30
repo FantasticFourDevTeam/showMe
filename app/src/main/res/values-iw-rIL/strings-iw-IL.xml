@@ -203,7 +203,7 @@
     <string name="gust_entered">אורח רשום:</string>
     <string name="qr_scanner">סורק QR</string>
     <string name="push">התראות:</string>
-    v
+    <string name="event_cancelation">אירוע בוטל</string>
     <string name="edit_event">ערוך אירוע</string>
     <string name="food_drink_convention">#אוכל #שתייה #שיחות</string>
     <string name="fundigo">מיקום נוכחי</string>
@@ -281,7 +281,7 @@
     <string name="canceled_logging_facebook">בוטלה הרשמה דרך פייסבוק</string>
     <string name="error_logging_facebook">שגיאה בהתחברות לפייסבוק</string>
     <string name="hey_come_to_see_events_near_you">בוא לראות אירועים לידך</string>
-    <string name="loged_out_of_facebook">התנתק מפייסבוק</string>
+    <string name="loged_out_of_facebook">התנתקת מפייסבוק</string>
     <string name="km_away">ק\"מ</string>
     <string name="you_unsaved_this_event">אירוע אינו שמור</string>
     <string name="you_saved_this_event">אירוע שמור</string>
@@ -430,7 +430,7 @@
 <string name="please_register">הכניסה לאיזור זה דורש רישום או הזדהות</string>
 <string name="email_address_missing">כתובת מייל חסרה</string>
 <string name="user_name_missing">שם משתמש חסר</string>
-<string name="user_exist">כתובת במייל שההזנת נמצאת בשימוש על ידי משתמש אחר, בצע רישום מחדש</string>
+<string name="user_exist">כתובת המייל בשימוש על ידי משתמש אחר או שהכתובת לא תקינה, בצע רישום מחדש</string>
 <string name="error">נמצאה תקלה, פעולה לא הושלמה נסה שוב</string>
 <string name="verification_failed">תהליך האימות נכשל נסה שוב בעוד מספר דקות</string>
 <string name="are_you_sure">אתה בטוח שברצונך לבטל את האירוע? לא ניתן לשחזר אירוע שבוטל. שלח הודעת עידכון למשתתפי האירוע לפני פעולת ביטול</string>
@@ -455,5 +455,8 @@
 <string name="upload_pictures">העלה תמונות</string>
 <string name="view_pictures">צפה בתמונות</string>
 <string name="max_images">מספר התמונות המקסימלי הוא:</string>
+<string name="navigate_to">נווט ליעד</string>
+<string name="log_out_from_App">התנתק</string>
+<string name="logged_out_from_App">התנתקת בהצלחה</string>
 
 </resources>

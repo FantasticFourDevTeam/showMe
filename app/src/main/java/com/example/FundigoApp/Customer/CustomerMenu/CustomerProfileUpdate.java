@@ -8,6 +8,7 @@ import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -17,6 +18,8 @@ import com.example.FundigoApp.GlobalVariables;
 import com.example.FundigoApp.R;
 import com.example.FundigoApp.StaticMethod.FileAndImageMethods;
 import com.example.FundigoApp.StaticMethod.UserDetailsMethod;
+import com.facebook.AccessToken;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -36,6 +39,10 @@ public class CustomerProfileUpdate extends AppCompatActivity {
     boolean IMAGE_SELECTED = false;
     ProgressDialog dialog;
     private static Bitmap imageToUpdate;
+    AccessToken accessToken;
+    ImageLoader loader;
+    Button submitButton;
+    Button uploadPictureButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +51,9 @@ public class CustomerProfileUpdate extends AppCompatActivity {
         customerName = (EditText) findViewById (R.id.userEdit);
         customerImg = (ImageView) findViewById (R.id.customerImage);
         emailAddressText =  (EditText)findViewById(R.id.emailValue);
-        getCurrentUserProfile();
+        loader = FileAndImageMethods.getImageLoader(this);
+        submitButton = (Button)findViewById(R.id.submit);
+        uploadPictureButton = (Button)findViewById(R.id.imgUpload);
     }
 
     public void updateProfile(View view) {
@@ -205,13 +214,36 @@ public class CustomerProfileUpdate extends AppCompatActivity {
                 customerName.setSelection(customerName.getText().length());
             }
             Bitmap userImage = customerDetails.getBitmap();
-            if (userImage != null && !IMAGE_SELECTED) {
-                customerImg.setImageBitmap(userImage);
-                customerImg.setVisibility(View.VISIBLE);
+            String facebookUserImage = customerDetails.getPicUrl();
+
+            if (accessToken!=null)
+            {
+                if (facebookUserImage != "" && facebookUserImage!=null)
+                {
+                    loader.displayImage(facebookUserImage, customerImg);
+                }
+                else {
+                    customerImg.setImageResource(R.drawable.avatar);
+                }
+
+                //In case of Facebook - all fields are readonly
+                submitButton.setVisibility(View.GONE);//
+                uploadPictureButton.setVisibility(View.GONE);
+                customerName.setEnabled(false);
+                emailAddressText.setEnabled(false);
+            }
+            else if (userImage != null && !IMAGE_SELECTED)
+            {
+                    customerImg.setImageBitmap(userImage);
+                    customerImg.setVisibility(View.VISIBLE);
+
+            }
+            else if (userImage==null && !IMAGE_SELECTED){
+                customerImg.setImageResource(R.drawable.avatar);
             }
 
             if (customerDetails.getEmail() != null) {
-                emailAddressText.setText(emailAddress.toString());
+                emailAddressText.setText(emailAddress);
             }
         }
         catch (Exception e)
@@ -224,5 +256,14 @@ public class CustomerProfileUpdate extends AppCompatActivity {
         }
 
         dialog.dismiss();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        accessToken = AccessToken.getCurrentAccessToken();
+        getCurrentUserProfile();
+
     }
 }

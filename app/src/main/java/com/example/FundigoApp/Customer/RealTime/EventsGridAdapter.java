@@ -79,7 +79,12 @@ public class EventsGridAdapter extends BaseAdapter {
         eventGridHolder.date.setText (event.getDateAsString ());
         eventGridHolder.name.setText (event.getName ());
         eventGridHolder.tags.setText (event.getTags ());
-        eventGridHolder.price.setText (EventDataMethods.getDisplayedEventPrice (event.getPrice ()));
+
+        if (EventDataMethods.getDisplayedEventPrice (event.getPrice ()).equals("FREE")) {
+            eventGridHolder.price.setText(R.string.free);
+        }else {
+            eventGridHolder.price.setText(EventDataMethods.getDisplayedEventPrice(event.getPrice()));
+        }
         eventGridHolder.place.setText (event.getDist () + " " + context.getResources ().getString (R.string.km_away));
         checkIfChangeColorToSaveButtton (event, eventGridHolder.saveEvent);
         eventGridHolder.saveEvent.setOnClickListener (new View.OnClickListener () {

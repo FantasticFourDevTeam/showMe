@@ -41,10 +41,10 @@ public class EventsListAdapter extends BaseAdapter {
         this.eventList = eventList;
         this.isSavedActivity = isSavedActivity;
         loader = FileAndImageMethods.getImageLoader (c);
-
         Calendar calendar = Calendar.getInstance();
         currentDate = calendar.getTime();
     }
+
 
     @Override
     public int getCount() {
@@ -65,7 +65,6 @@ public class EventsListAdapter extends BaseAdapter {
     public View getView(final int i, View view, ViewGroup viewGroup) {
         View row = view;
         final EventListHolder eventListHolder;
-
         if (row == null) {
             LayoutInflater inflator = (LayoutInflater) context.getSystemService (Context.LAYOUT_INFLATER_SERVICE);
             row = inflator.inflate (R.layout.list_view, viewGroup, false);
@@ -74,6 +73,7 @@ public class EventsListAdapter extends BaseAdapter {
         } else {
             eventListHolder = (EventListHolder) row.getTag ();
         }
+
         final EventInfo event = eventList.get(i);
 
         index = i;
@@ -96,11 +96,21 @@ public class EventsListAdapter extends BaseAdapter {
             eventListHolder.expiredTag.setText(R.string.event_expiration);
             eventListHolder.expiredTag.setVisibility(View.VISIBLE);
         }
-        else{
+        else {
             eventListHolder.expiredTag.setVisibility(View.GONE);
         }
 
-        checkIfChangeColorToSaveButtton (event, eventListHolder.saveEvent);
+       if (event.getIsCanceled()) { //15.01 - assaf: set a mark for if event canceled
+           eventListHolder.canceledTag.setText(R.string.event_cancelation);
+           eventListHolder.canceledTag.setVisibility(View.VISIBLE);
+           eventListHolder.expiredTag.setVisibility(View.GONE);
+        }
+        else
+        {
+            eventListHolder.canceledTag.setVisibility(View.GONE);
+        }
+
+        checkIfChangeColorToSaveButtton(event, eventListHolder.saveEvent);
         eventListHolder.saveEvent.setOnClickListener (new View.OnClickListener () {
             @Override
             public void onClick(View v) {

@@ -124,37 +124,36 @@
     />
 
     <string-array name="filters">
-        <item>Sports</item>
-        <item>Tourism</item>
-        <item>Party</item>
-        <item>Business</item>
-        <item>Comedy</item>
-        <item>Workshop</item>
-        <item>Kids</item>
-        <item>LifeStyle</item>
-        <item>Music</item>
-        <item>ART</item>
-        <item>BOOK</item>
-        <item>MOVIE</item>
+        <item>SPORTS_EVENT</item>
+        <item>TOURISM_EVENT</item>
+        <item>PARTY_EVENT</item>
+        <item>BUSINESS_EVENT</item>
+        <item>COMEDY_EVENT</item>
+        <item>WORKSHOP_EVENT</item>
+        <item>KIDS_EVENT</item>
+        <item>LIFESTYLE_EVENT</item>
+        <item>MUSIC_EVENT</item>
+        <item>ART_EVENT</item>
+        <item>BOOK_EVENT</item>
+        <item>MOVIE_EVENT</item>
         <item>FUNDRAISER</item>
         <item>VOLUNTEERING</item>
-        <item>FAMILY</item>
-        <item>FESTIVAL</item>
+        <item>FAMILY_EVENT</item>
+        <item>FESTIVAL_EVENT</item>
         <item>NEIGHBORHOOD</item>
-        <item>RELIGIOUS</item>
+        <item>RELIGIOUS_EVENT</item>
         <item>SHOPPING</item>
         <item>NIGHTLIFE</item>
-        <item>THEATER</item>
-        <item>DINING</item>
-        <item>FOOD</item>
+        <item>THEATER_EVENT</item>
+        <item>DINING_EVENT</item>
+        <item>FOOD_TASTING</item>
         <item>FITNESS</item>
-        <item>DANCE</item>
-        <item>CONFERENCE</item>
+        <item>DANCE_EVENT</item>
+        <item>CONFERENCE_EVENT</item>
         <item>MEETUP</item>
-        <item>CLASS</item>
+        <item>CLASS_EVENT</item>
         <item>LECTURE</item>
         <item>OTHER</item>
-
     </string-array>
 
     <string-array name="sportFiltersAllLanguages">
@@ -426,6 +425,8 @@
     <string name="hey_come_to_see_events_near_you">Hey Come To See Events Near You </string>
     <string name="loged_out_of_facebook">Logged out from facebook</string>
     <string name="log_out_from_facebook">Logout from facebook</string>
+    <string name="log_out_from_App">Logout</string>
+    <string name="logged_out_from_App">Logged out successfully</string>
     <string name="km_away">km away</string>
     <string name="you_unsaved_this_event">You canceled event saving</string>
     <string name="you_saved_this_event">You saved this event</string>
@@ -565,6 +566,7 @@
     <string name="please_enter_valid_address">Please enter valid address and fill event Place</string>
     <string name="event_image_upload">Event Image Upload</string>
     <string name="event_expiration">Event Expired</string>
+    <string name="event_cancelation">Event Canceled</string>
     <string name="title_activity_landing_page">LandingPage</string>
     <string name="fromDate">From</string>
     <string name="toDate">To</string>
@@ -581,7 +583,7 @@
     <string name="num_events">Number of Events:</string>
     <string name="please_register">To use this option you need to pass registration first</string>
     <string name="email_address">Email address</string>
-    <string name="user_exist">Same email address already in use, please register again</string>
+    <string name="user_exist">Same email address already in use or Email format is wrong, please register again</string>
     <string name="error">Error was found please try again later</string>
     <string name="verification_failed">Verification was failed please try again later</string>
     <string name="are_you_sure">Are you sure? This event could not be resume after cancellation.Send a message update to Event participants before cancel the Event</string>
@@ -602,4 +604,5 @@
     <string name="upload_pictures">Upload Pictures </string>
     <string name="view_pictures">View Pictures</string>
     <string name="max_images">Max number of pictures allowed is: </string>
+    <string name="navigate_to">Navigate To</string>
 </resources>

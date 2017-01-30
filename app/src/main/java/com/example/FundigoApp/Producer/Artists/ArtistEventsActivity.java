@@ -253,7 +253,7 @@ public class ArtistEventsActivity extends Activity implements AdapterView.OnItem
         query.whereEqualTo("objectId", objectId);
         try {
             ParseObject parseObject = query.getFirst();
-            parseObject.put("eventCanceled","yes");
+            parseObject.put("eventCanceled",true);
             parseObject.save ();
         } catch (ParseException e1) {
             e1.printStackTrace ();

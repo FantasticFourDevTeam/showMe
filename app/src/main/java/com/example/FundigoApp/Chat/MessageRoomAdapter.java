@@ -69,17 +69,43 @@ public class MessageRoomAdapter extends BaseAdapter {
             holder = (MessageRoomItemHolder) row.getTag ();
         }
         MessageRoomBean message_bean = listOfConversations.get (i);
+
+      /*  final AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        String facebookUserImage = customerDetails.getPicUrl();
+        String userImage = customerDetails.getCustomerImage();
+
+        if (accessToken!=null)
+        {
+            if (facebookUserImage != "" && facebookUserImage!=null)
+            {
+                Picasso.with(this).load (facebookUserImage).into(profileImage);
+            }
+            else {
+                profileImage.setImageResource(R.drawable.avatar);
+            }
+        }
+        else if (userImage != null) {
+            loader.displayImage(userImage, profileImage);
+        }
+        else {
+            profileImage.setImageResource(R.drawable.avatar);
+        }*/
+
         if (isCustomer) {
             loader.displayImage (listOfEventsImage.get (i), holder.customerOrEventImage);
-        } else if (message_bean.getCustomerImageFacebookUrl () != null &&
-                           !message_bean.getCustomerImageFacebookUrl ().isEmpty ()) {
-            Picasso.with (context).load (message_bean.getCustomerImageFacebookUrl ()).into (holder.customerOrEventImage);
-        } else if (message_bean.getCustomerImage () != null) {
+        }
+        else if (message_bean.getCustomerImage () != null) {
             loader.displayImage (message_bean.getCustomerImage (), holder.customerOrEventImage);
         }
-        else if (message_bean.getCustomerImage ()== null) {
-            loader.displayImage ("", holder.customerOrEventImage);
+        else if (message_bean.getCustomerImageFacebookUrl () != null &&
+                           !message_bean.getCustomerImageFacebookUrl ().isEmpty ()) {
+            Picasso.with (context).load (message_bean.getCustomerImageFacebookUrl ()).into(holder.customerOrEventImage);
         }
+        else if (message_bean.getCustomerImage ()== null) {
+            holder.customerOrEventImage.setImageResource(R.drawable.avatar);
+        }
+
+
 
         holder.messageBody.setText (message_bean.getLastMessage());
        // customerDetails = UserDetailsMethod.getUserDetailsFromParseInMainThread(message_bean.getCustomer_id ());

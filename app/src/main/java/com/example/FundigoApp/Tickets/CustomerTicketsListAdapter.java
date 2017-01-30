@@ -58,8 +58,12 @@ public class CustomerTicketsListAdapter extends ArrayAdapter<EventsSeatsInfo> {
                 } else {
                     ticketNameBody.setText (eventsSeatsInfo.getTicketName ());
                 }
-                if(!eventsSeatsInfo.getEventInfo ().isFutureEvent ()){
+                if(!eventsSeatsInfo.getEventInfo ().isFutureEvent () && !eventsSeatsInfo.getEventInfo().getIsCanceled()){
+                    eventEndedButton.setVisibility(View.VISIBLE);
+                }
+                else if(eventsSeatsInfo.getEventInfo().getIsCanceled()){
                     eventEndedButton.setVisibility (View.VISIBLE);
+                    eventEndedButton.setText(R.string.event_cancelation);
                 }
             }
         } catch (Exception e) {

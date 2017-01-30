@@ -24,6 +24,8 @@ public class GlobalVariables {
     public static final String FB_PIC_URL = "fb_pic_url";
     public static final String FB_NAME = "fb_name";
     public static final String FB_ID = "fb_id";
+    public static final String FB_EMAIL= "fb_email";
+
     public static final String No_Artist_Events = "No Artist";
     public static final int REQUEST_CODE_MY_PICK = 1;
     public static final int SELECT_PICTURE = 1;

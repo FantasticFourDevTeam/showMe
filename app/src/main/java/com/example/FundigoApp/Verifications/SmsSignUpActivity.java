@@ -32,6 +32,11 @@ import com.example.FundigoApp.GlobalVariables;
 import com.example.FundigoApp.R;
 import com.example.FundigoApp.StaticMethod.FileAndImageMethods;
 import com.example.FundigoApp.StaticMethod.UserDetailsMethod;
+import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
+import com.facebook.login.LoginManager;
 import com.parse.FindCallback;
 import com.parse.ParseACL;
 import com.parse.ParseException;
@@ -76,7 +81,7 @@ public class SmsSignUpActivity extends AppCompatActivity {
     TextView expTV;
     static private TextView emailAddressTitle;
     static private EditText emailAddress;
-    private String emailAddressValue;
+    private String emailAddressValue="";
     boolean image_selected = false;
     Profile previousDataFound = null;
     private Locale locale = null;
@@ -86,6 +91,14 @@ public class SmsSignUpActivity extends AppCompatActivity {
     private Profile profileParseObject;
     ProgressDialog smsDialog;
     String currentEmailAddress = "";
+    private String facebookEmail="";
+    private String facebookName="";
+    private String facebookPicUrl="";
+    private SharedPreferences sp;
+    private String facebookID;
+    private static Button signUpButton;
+    final AccessToken accessToken = AccessToken.getCurrentAccessToken();// cancel Login to Facebook if the same email address already used
+
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void forceRTLIfSupported() {
@@ -113,7 +126,7 @@ public class SmsSignUpActivity extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<String> (this,
                                                                         android.R.layout.simple_spinner_item,
                                                                         array_spinner);
-        s.setAdapter (adapter);
+        s.setAdapter(adapter);
 
         usernameTV = (TextView) findViewById (R.id.usernameTV);
         usernameTE = (EditText) findViewById (R.id.usernameTE);
@@ -122,6 +135,20 @@ public class SmsSignUpActivity extends AppCompatActivity {
         phoneET = (EditText) findViewById (R.id.phoneET);
         phoneTV = (TextView) findViewById (R.id.phoneTV);
         customerImageView = (ImageView) findViewById (R.id.imageV);
+        signUpButton = (Button) findViewById(R.id.signUpButton);
+
+        sp = PreferenceManager.getDefaultSharedPreferences(SmsSignUpActivity.this);
+        facebookEmail = sp.getString(GlobalVariables.FB_EMAIL, "");
+        facebookName = sp.getString(GlobalVariables.FB_NAME,"");
+        facebookPicUrl = sp.getString(GlobalVariables.FB_PIC_URL,"");
+        facebookID = sp.getString(GlobalVariables.FB_ID, "");
+
+        signUpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Signup();
+            }
+        });
 
         phoneET.setOnEditorActionListener (new TextView.OnEditorActionListener () {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -130,9 +157,7 @@ public class SmsSignUpActivity extends AppCompatActivity {
                 (actionId == EditorInfo.IME_ACTION_DONE)) {
                  area = s.getSelectedItem().toString();
                  phone_number_to_verify = getNumber(phoneET.getText().toString(), area);
-                 getUserPreviousDetails(area + phoneET.getText().toString());
                  if (!phoneET.getText().toString().equals("") && phoneET.getText() != null) {
-                   username = usernameTE.getText().toString();
                    smsDialog = new ProgressDialog(SmsSignUpActivity.this);
                    smsDialog.setTitle(getString(R.string.verification));
                    smsDialog.show();
@@ -154,8 +179,16 @@ public class SmsSignUpActivity extends AppCompatActivity {
                     if (!username.equals("") && username!=null) {
                         usernameTE.setVisibility(View.INVISIBLE);
                         usernameTV.setVisibility(View.INVISIBLE);
-                        emailAddressTitle.setVisibility(View.VISIBLE);
-                        emailAddress.setVisibility(View.VISIBLE);
+
+                        if (facebookEmail==null || facebookEmail.isEmpty()) { // Show Email only if User name is Ok and if Email not set as partt of regitrtaion by Facenbook
+                            emailAddressTitle.setVisibility(View.VISIBLE);
+                            emailAddress.setVisibility(View.VISIBLE);
+                        }
+                        else{
+                            emailAddressValue = facebookEmail;
+                            emailAddress.setText(emailAddressValue);
+                            ToSign("userName");
+                        }
                     }
                     else
                     {
@@ -174,12 +207,19 @@ public class SmsSignUpActivity extends AppCompatActivity {
                     if (!emailAddressValue.equals("") && emailAddress!=null) {
                         emailAddressTitle.setVisibility(View.INVISIBLE);
                         emailAddress.setVisibility(View.INVISIBLE);
-                        customerImageView = (ImageView) findViewById(R.id.imageV);
-                        customerImageView.setVisibility(View.VISIBLE);
-                        upload_button = (Button) findViewById(R.id.upload_button);
-                        upload_button.setVisibility(View.VISIBLE);
-                        signup = (Button) findViewById(R.id.button2);
-                        signup.setVisibility(View.VISIBLE);
+
+                        if (facebookPicUrl == null || facebookPicUrl.isEmpty()) { // Only in case that no Picture from Facebook
+                            customerImageView = (ImageView) findViewById(R.id.imageV);
+                            customerImageView.setVisibility(View.VISIBLE);
+                            upload_button = (Button) findViewById(R.id.upload_button);
+                            upload_button.setVisibility(View.VISIBLE);
+                            signup = (Button) findViewById(R.id.signUpButton);
+                            signup.setVisibility(View.VISIBLE);
+                        }
+                        else {
+                            ToSign("emailAddress");
+                        }
+
                         //optionalTV = (TextView) findViewById(R.id.optionalTV);
                         //optionalTV.setVisibility(View.VISIBLE);
                     }
@@ -191,22 +231,22 @@ public class SmsSignUpActivity extends AppCompatActivity {
         });
     }
 
-    public void Signup(View view) {
+    public void Signup() {
 
         Boolean setUserDone = false;
-        if (previousDataFound != null) {
+        if (previousDataFound != null) { // exist User detailes
             profileParseObject = previousDataFound;
             GlobalVariables.CUSTOMER_PHONE_NUM = previousDataFound.getNumber ();
             ParseUser.logOut ();
             try { // 29.11 - assaf updated to support both new and existing users
                 //save the user in User Table as well
-                ParseUser _user = ParseUser.logIn (GlobalVariables.CUSTOMER_PHONE_NUM, GlobalVariables.CUSTOMER_PHONE_NUM);
-                String currentEmail = _user.getEmail();
+                ParseUser _user = ParseUser.logIn(GlobalVariables.CUSTOMER_PHONE_NUM, GlobalVariables.CUSTOMER_PHONE_NUM);
+                currentEmailAddress = _user.getEmail();
                 ParseACL parseUserAcl = new ParseACL();
                 parseUserAcl.setPublicReadAccess(true);
                 parseUserAcl.setWriteAccess(_user, true);
                 _user.setACL(parseUserAcl);
-                if (!currentEmail.equals(emailAddress.getText().toString())) {// assaf-  update mail in User table only if email address changed
+                if (!currentEmailAddress.equals(emailAddress.getText().toString())) {// assaf-  update mail in User table only if email address changed
                     _user.put("email", emailAddress.getText().toString());
                     _user.save();
                 }
@@ -229,7 +269,7 @@ public class SmsSignUpActivity extends AppCompatActivity {
                     ParsePush.subscribeInBackground ("a" + GlobalVariables.userChanels.get (i));
                 }
             }
-        } else {
+        } else { // new user
             profileParseObject = new Profile ();
             ParseUser user = new ParseUser ();
             user.setUsername (area + phoneET.getText ().toString ());
@@ -245,6 +285,9 @@ public class SmsSignUpActivity extends AppCompatActivity {
            } catch (ParseException e) {
                 e.printStackTrace ();
                 Toast.makeText(getApplicationContext(),getString(R.string.user_exist),Toast.LENGTH_LONG).show();
+                   if (accessToken!=null) {
+                       cancelFacebookLogin();// In case that Login with facebook has a conflict, then closing the connection
+                   }
             }
         }
 
@@ -295,14 +338,12 @@ public class SmsSignUpActivity extends AppCompatActivity {
                 profileParseObject.put("pic", file);
             }
             profileParseObject.setNumber(area + phoneET.getText().toString());
-            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(SmsSignUpActivity.this);
-            String fbId = sp.getString(GlobalVariables.FB_ID, null);
-            if (fbId != null) {
-                profileParseObject.setFbId(fbId);
+
+            if (!facebookID.isEmpty()) {
+                profileParseObject.setFbId(facebookID);
             }
-            String fbUrl = sp.getString(GlobalVariables.FB_PIC_URL, null);
-            if (fbUrl != null) {
-                profileParseObject.setFbUrl(fbUrl);
+            if (!facebookPicUrl.isEmpty()) {
+                profileParseObject.setFbUrl(facebookPicUrl);
             }
             if (GlobalVariables.MY_LOCATION != null) {
                 ParseGeoPoint parseGeoPoint = new ParseGeoPoint(GlobalVariables.MY_LOCATION.getLatitude(),
@@ -316,10 +357,12 @@ public class SmsSignUpActivity extends AppCompatActivity {
             try {
                 profileParseObject.saveInBackground();
 
-                if (!emailAddress.getText().toString().equals(currentEmailAddress))
-                   Toast.makeText(getApplicationContext(), R.string.account_created_successfully_verification_mail, Toast.LENGTH_LONG).show();
-                else
-                   Toast.makeText(getApplicationContext(), R.string.successfully_signed_up, Toast.LENGTH_SHORT).show();
+             if (!emailAddress.getText().toString().equals(currentEmailAddress)) {
+                 Toast.makeText(getApplicationContext(), R.string.account_created_successfully_verification_mail, Toast.LENGTH_LONG).show();
+             }
+              else {
+                 Toast.makeText(getApplicationContext(), R.string.successfully_signed_up, Toast.LENGTH_SHORT).show();
+             }
 
                 saveToFile(area + phoneET.getText().toString());
                 GlobalVariables.CUSTOMER_PHONE_NUM = area + phoneET.getText().toString();
@@ -328,6 +371,7 @@ public class SmsSignUpActivity extends AppCompatActivity {
                 finish();
             } catch (Exception e) {
                 Toast.makeText(getApplicationContext(), getString(R.string.error), Toast.LENGTH_SHORT).show();
+                finish();
                 e.printStackTrace();
             }
         }
@@ -383,7 +427,7 @@ public class SmsSignUpActivity extends AppCompatActivity {
         String phoneNumberInE164 = PhoneNumberUtils.formatNumberToE164(phone_number, defaultRegion);
         Verification verification = SinchVerification.createSmsVerification(config, phoneNumberInE164, listener);
         verification.initiate();
-        //onVer(); //  //just for test, DON"T Expose THIS METHOD
+        onVer(); //  //just for test, DON"T Expose THIS METHOD
     }
 
     class MyVerificationListener implements VerificationListener {
@@ -439,18 +483,25 @@ public class SmsSignUpActivity extends AppCompatActivity {
             Toast.makeText(SmsSignUpActivity.this,getString(R.string.verification_failed),Toast.LENGTH_LONG).show();
         }
     }
-   /* public void onVer () //just for test, DON"T Expose THIS METHOD
+    public void onVer () //just for test, DON"T Expose THIS METHOD - > OnVerify method need td be fix once the SMS will start back to work (24.01)
     {
-        // Verification successful
+        // Verification successful - assaf 23.01
         smsDialog.dismiss();
-        usernameTV.setVisibility (View.VISIBLE);
-        usernameTE.setVisibility (View.VISIBLE);
-        phoneET.setVisibility (View.INVISIBLE);
-        phoneTV.setVisibility (View.INVISIBLE);
-        expTV = (TextView) findViewById (R.id.explanationTV);
-        expTV.setVisibility (View.INVISIBLE);
-        s.setVisibility (View.INVISIBLE);
-    } */
+        if (facebookName == null || facebookName.isEmpty()) {// if registartrion was done not through Facebook Regitsration flow
+            usernameTV.setVisibility(View.VISIBLE);
+            usernameTE.setVisibility(View.VISIBLE);
+            phoneET.setVisibility (View.INVISIBLE);
+            phoneTV.setVisibility (View.INVISIBLE);
+            expTV = (TextView) findViewById (R.id.explanationTV);
+            expTV.setVisibility (View.INVISIBLE);
+            s.setVisibility (View.INVISIBLE);
+            getUserPreviousDetails(area + phoneET.getText().toString()); // verify if User detailes already exist
+        }
+        else
+        {
+            getUserPreviousDetails(area + phoneET.getText().toString()); // verify if User detailes already exist
+        }
+    }
 
     void saveToFile(String phone_number) {
         phone_number = phone_number + " isFundigo";
@@ -469,29 +520,30 @@ public class SmsSignUpActivity extends AppCompatActivity {
     private void getUserPreviousDetails(String user_number) {
         ParseQuery<Profile> query = ParseQuery.getQuery ("Profile");
         query.whereEqualTo ("number", user_number);
-        query.findInBackground (new FindCallback<Profile> () {
+        query.findInBackground(new FindCallback<Profile>() {
             public void done(List<Profile> numbers, ParseException e) {
                 if (e == null) {
-                    if (numbers.size () > 0) {
-                        previousDataFound = numbers.get (0);
-                        CustomerDetails customerDetails = UserDetailsMethod.getUserDetailsWithBitmap (numbers);
-                        if (usernameTE.getText ().toString ().isEmpty ()) {
-                            usernameTE.setText (customerDetails.getCustomerName () + "");
-                            usernameTE.setSelection (usernameTE.getText ().length ());
+                    if (numbers.size() > 0) {
+                        previousDataFound = numbers.get(0);
+                        CustomerDetails customerDetails = UserDetailsMethod.getUserDetailsWithBitmap(numbers);
+                        if (usernameTE.getText().toString().isEmpty()) {
+                            usernameTE.setText(customerDetails.getCustomerName() + "");
+                            usernameTE.setSelection(usernameTE.getText().length());
                         }
                         if (!image_selected) {
-                            Bitmap customerImage = customerDetails.getBitmap ();
+                            Bitmap customerImage = customerDetails.getBitmap();
                             if (customerImage != null) {
-                                customerImageView.setImageBitmap (customerImage);
+                                customerImageView.setImageBitmap(customerImage);
                                 image_was_before = true;
                             }
                         }
-                        if(customerDetails.getEmail() != null) {
+                        if (customerDetails.getEmail() != null) {
                             emailAddress.setText(customerDetails.getEmail().toString());
                         }
                     }
+                    ToSign("phoneNumber"); // In case of Facebook login Sign is immediatly
                 } else {
-                    e.printStackTrace ();
+                    e.printStackTrace();
                 }
             }
         });
@@ -500,11 +552,71 @@ public class SmsSignUpActivity extends AppCompatActivity {
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged (newConfig);
+        super.onConfigurationChanged(newConfig);
         if (locale != null) {
             newConfig.locale = locale;
             Locale.setDefault (locale);
             getBaseContext ().getResources ().updateConfiguration (newConfig, getBaseContext ().getResources ().getDisplayMetrics ());
         }
     }
-}
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        if (accessToken!=null) {
+            cancelFacebookLogin();
+        }
+           // Get the Facebook Object and disconnect from Facebook in case the Access token was created.
+    }
+
+    private void ToSign(String parameter)
+    {
+        switch (parameter) {
+            case "phoneNumber":
+                if (!facebookName.isEmpty() && !facebookEmail.isEmpty()) {
+
+                    username = facebookName;
+                    emailAddressValue = facebookEmail;
+                    Signup();
+                }
+                break;
+
+            case "userName":
+                  if (!facebookEmail.isEmpty()){
+                      emailAddressValue = facebookEmail;
+                      Signup();
+                  }
+
+                break;
+
+            case "emailAddrees":
+                if (!facebookPicUrl.isEmpty())
+                    Signup();
+                break;
+         }
+    }
+
+
+      private void cancelFacebookLogin()
+      {
+          new GraphRequest(AccessToken.getCurrentAccessToken(), "/me/permissions/", null, HttpMethod.DELETE, new GraphRequest.Callback () {
+              @Override
+              public void onCompleted(GraphResponse graphResponse) {
+                  LoginManager.getInstance().logOut();
+                  Toast.makeText(getApplicationContext(), R.string.loged_out_of_facebook, Toast.LENGTH_SHORT).show();
+                 // 24.01- assaf: remove Facebook items from Shard prefrencess
+                  sp.edit().putString(GlobalVariables.FB_PIC_URL, "").commit();
+                  sp.edit().putString(GlobalVariables.FB_NAME, "").commit();
+                  sp.edit().putString(GlobalVariables.FB_EMAIL, "").commit();
+                  sp.edit().putString(GlobalVariables.FB_ID, "").commit();
+                  finish();
+              }
+
+
+          }).executeAsync();
+
+      }
+
+         ///CLEAN SP
+    }

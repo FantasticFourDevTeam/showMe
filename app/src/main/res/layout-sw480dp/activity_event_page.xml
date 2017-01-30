@@ -28,6 +28,7 @@
             android:layout_centerHorizontal="true"
             android:text="WED, MAR 23, 12:00 PM"
             android:textAlignment="center"
+            android:layout_marginTop="5dp"
             android:textColor="#000000"
             android:textSize="15sp"/>
 
@@ -72,13 +73,13 @@
             <TextView
                 android:id="@+id/eventPage_name"
                 android:layout_width="0dip"
-                android:layout_height="fill_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="6"
                 android:gravity="fill_vertical|center_horizontal"
-                android:text="The Best Show in Israel"
+                android:text="The Best Show in Israel fsfdsffdsfdsfdsfds"
                 android:textColor="#000000"
-                android:textSize="20sp"
+                android:textSize="16sp"
                 android:textStyle="bold"/>
 
             <ImageView
@@ -156,7 +157,7 @@
             android:id="@+id/scrollView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/linearLayout"
+            android:layout_above="@+id/findLocation"
             android:layout_below="@+id/eventPage_location"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="5dp"
@@ -178,6 +179,8 @@
                 android:text="ALUMINIUM CHINA is Asia‘s top trading, sourcing, networking and branding platform for the complete aluminum industry chain, bringing together leading industry figures, cutting edge technologies and advanced applications. Annually held in Shanghai, the eventParse engages the global Aluminium community with new customized matchmaking programs linking application buyers with emerging and established demands and buyers of equipment and accessories with leading suppliers."
                 android:textColor="#5e5e5e"
                 android:textIsSelectable="false"
+                android:linksClickable="true"
+                android:autoLink="web"
                 android:textSize="20sp"/>
         </ScrollView>
         <Button
@@ -210,7 +213,7 @@
             android:layout_width="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:text="Navigate To"
+            android:text="@string/navigate_to"
             android:id="@+id/findLocation"
             android:layout_above="@+id/linearLayout"
             android:background="#3293CD"
@@ -219,7 +222,6 @@
             android:textSize="15sp"
             android:visibility="visible"
             android:layout_height="wrap_content" />
-
     </RelativeLayout>
 
 </LinearLayout>

@@ -131,30 +131,34 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
         {
 			if(eventInfo.getIsCanceled())
             {
-                getTicketsButton.setText("Event Canceled");
+                getTicketsButton.setText(R.string.event_cancelation);
                 getTicketsButton.setClickable(false);
             }
-            else if(eventInfo.getNumOfTickets()==0)// in case by mistake someone filled 0 mainly in case of Free events
+            else if(eventInfo.getNumOfTickets()==0&& !eventInfo.getIsCanceled())// in case by mistake someone filled 0 mainly in case of Free events
             {
                 getTicketsButton.setText(getString(R.string.no_tickets));
                 getTicketsButton.setClickable(false);
             }
-            else if (eventInfo.getPrice().equals("FREE") && eventInfo.getNumOfTickets() > 0 && eventInfo.isFutureEvent()) { //29.09 - assaf to suport free events
+            else if (eventInfo.getPrice().equals("FREE") && eventInfo.getNumOfTickets() > 0 && eventInfo.isFutureEvent()&& !eventInfo.getIsCanceled()) { //29.09 - assaf to suport free events
                 //getTicketsButton.setText("Free Event");
                  getTicketsButton.setText(getString(R.string.register)); //09.08 - Assaf changed for the option to register also fr Free events
                 getTicketsButton.setClickable(true);
                 checkIfTicketsLeft();
                 //getTicketsButton.setClickable (false);
-            } else if (eventInfo.getPrice().equals("FREE") && eventInfo.getNumOfTickets() < 0 && eventInfo.isFutureEvent()) {
+            } else if (eventInfo.getPrice().equals("FREE") && eventInfo.getNumOfTickets() < 0 && eventInfo.isFutureEvent()&& !eventInfo.getIsCanceled() || (eventInfo.getIsFacebookEvent() && eventInfo.isFutureEvent()&& !eventInfo.getIsCanceled())) {
                 //getTicketsButton.setText("Free Event");
                 getTicketsButton.setText(getString(R.string.schedule)); //29.09 - Assaf changed for the option to register also fr Free events
                 getTicketsButton.setClickable(true);
-            } else if (!GlobalVariables.IS_PRODUCER && !eventInfo.isFutureEvent()) {
+            } else if (!GlobalVariables.IS_PRODUCER && !eventInfo.isFutureEvent()&& !eventInfo.getIsCanceled()) {
                 getTicketsButton.setText(getString(R.string.event_expiration));
                 getTicketsButton.setClickable(false);
+            }
+              else if (!GlobalVariables.IS_PRODUCER && eventInfo.getIsCanceled()) {//15.01 support block ticketing when event canceled
+                    getTicketsButton.setText(getString(R.string.event_cancelation));
+                    getTicketsButton.setClickable(false);
             } else {
-                if (eventInfo.isFutureEvent()&& !(eventInfo.getPrice().equals("FREE") && eventInfo.getNumOfTickets() < 0)) {
-                    //29.09 -assaf - check if tickets left excpet case that Free event and no limited place
+                if (eventInfo.isFutureEvent()&& !eventInfo.getPrice().equals("FREE") && !eventInfo.getIsFacebookEvent()&& !(eventInfo.getNumOfTickets() < 0)&& !eventInfo.getIsCanceled()) {
+                    //29.09 -assaf - check if tickets left excpet case that Free event and no limited place and not Facebook event
                     checkIfTicketsLeft();
                 }
             }
@@ -275,7 +279,7 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
                     intentSeat.putExtra ("eventObjectId", eventInfo.getParseObjectId ());
                     startActivity (intentSeat);
                 } else {
-                    if (!eventInfo.getPrice().equals("FREE")) { //Save a Seat and buy ticket is only for events that not free
+                    if (!eventInfo.getPrice().equals("FREE") && !eventInfo.getIsFacebookEvent()) { //Save a Seat and buy ticket is only for events that not free and not facebook event
                         Handler handler = new Handler();
                         handler.postDelayed(new Runnable() {
                             @Override

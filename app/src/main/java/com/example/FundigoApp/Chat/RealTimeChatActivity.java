@@ -50,17 +50,17 @@ public class RealTimeChatActivity extends AppCompatActivity {//implements Adapte
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate (savedInstanceState);
-        setContentView (R.layout.activity_real_time_cahts);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_real_time_cahts);
         eventImage = (ImageView) findViewById (R.id.profileImage_rt_chat);
         eventName = (Button) findViewById (R.id.ProfileName_rt_chat);
         buttonSend = (Button) findViewById (R.id.btSend_rt_Chat);
-        loader = FileAndImageMethods.getImageLoader (this);
-        intent = getIntent ();
-        eventObjectId = intent.getStringExtra ("eventObjectId");
-        eventInfo = EventDataMethods.getEventFromObjID (eventObjectId, GlobalVariables.ALL_EVENTS_DATA);
+        loader = FileAndImageMethods.getImageLoader(this);
+        intent = getIntent();
+        eventObjectId = intent.getStringExtra("eventObjectId");
+        eventInfo = EventDataMethods.getEventFromObjID(eventObjectId, GlobalVariables.ALL_EVENTS_DATA);
         loader.displayImage (eventInfo.getPicUrl (), eventImage);
-        eventName.setText (eventInfo.getName () + "(" + getResources ().getString (R.string.real_time_chat) + ")");
+         eventName.setText (eventInfo.getName () + "(" + getResources ().getString (R.string.real_time_chat) + ")");
         if (GlobalVariables.IS_CUSTOMER_REGISTERED_USER) {
             current_user_id = GlobalVariables.CUSTOMER_PHONE_NUM;
         } else if (GlobalVariables.IS_PRODUCER) {
@@ -88,28 +88,26 @@ public class RealTimeChatActivity extends AppCompatActivity {//implements Adapte
 
                 if (!body.isEmpty()) {
                     SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(RealTimeChatActivity.this);
-                    String name = sp.getString(GlobalVariables.FB_NAME, null); //FB nAMe
-                    String pic_url = sp.getString(GlobalVariables.FB_PIC_URL, null);
-                    String fb_id = sp.getString(GlobalVariables.FB_ID, null);
+
                     MsgRealTime message = new MsgRealTime();
                     message.setUserId(current_user_id);
                     CustomerDetails customerDetails = UserDetailsMethod.getUserDetailsFromParseInMainThread(current_user_id);
                     String userName = customerDetails.getCustomerName();//Local profile User name
+                    //String pic_url = sp.getString(GlobalVariables.FB_PIC_URL, null);
+                  //  String fb_id = sp.getString(GlobalVariables.FB_ID, null);
                     if (GlobalVariables.IS_PRODUCER) {
                         message.setIsProducer(true);
                         message.setSenderName("Producer #");
                     } else if (GlobalVariables.IS_CUSTOMER_REGISTERED_USER) {
                         message.setIsProducer(false);
-                        if (name != null) {
-                            message.setSenderName(name);
-                        if (pic_url != null) {
-                                message.setPicUrl(pic_url);
-                            }
-                        if (fb_id != null) {
-                                message.setFbId(fb_id);
-                            }
-                        }
-                        else if (userName!=null){
+                        //if (pic_url != null) {
+                           //     message.setPicUrl(pic_url);
+                          //  }
+                    //    if (fb_id != null) {
+                            //    message.setFbId(fb_id);
+                         //   }
+
+                        if (userName!=null){
                             message.setSenderName(userName);
                         }
                     }
@@ -304,4 +302,5 @@ public class RealTimeChatActivity extends AppCompatActivity {//implements Adapte
                 e.printStackTrace();
             }
     }
+
 }

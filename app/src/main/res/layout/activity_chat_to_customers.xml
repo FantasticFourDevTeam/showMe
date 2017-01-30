@@ -42,10 +42,10 @@
             android:layout_height="55dip"
             android:layout_weight="40"
             android:background="#3293CD"
-            android:text="@string/fb"
+            android:text=""
             android:textColor="#ffffff"
             android:textSize="15sp"
-            android:onClick="oOpenFacebookIntent"/>
+            />
 
     </LinearLayout>
 

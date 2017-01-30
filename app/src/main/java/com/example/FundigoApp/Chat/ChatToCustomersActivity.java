@@ -5,18 +5,20 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.FundigoApp.MyServices;
 import com.example.FundigoApp.Customer.CustomerDetails;
 import com.example.FundigoApp.Events.EventInfo;
 import com.example.FundigoApp.GlobalVariables;
+import com.example.FundigoApp.MyServices;
 import com.example.FundigoApp.R;
 import com.example.FundigoApp.StaticMethod.FileAndImageMethods;
 import com.example.FundigoApp.StaticMethod.UserDetailsMethod;
@@ -113,38 +115,45 @@ public class ChatToCustomersActivity extends Activity implements Comparator<Stri
 
     private void updateUserDetailsFromParse(String recieverPhone) {
         CustomerDetails customerDetails = UserDetailsMethod.getUserDetailsFromParseInMainThread(recieverPhone);
-        if (customerDetails.getFaceBookId () == null || customerDetails.getFaceBookId ().isEmpty ()) {
+
+        /* if (customerDetails.getFaceBookId () == null || customerDetails.getFaceBookId ().isEmpty ()) {
             profileFaceBook.setText ("");
             profileFaceBook.setClickable (false);
         } else {
             faceBookId = customerDetails.getFaceBookId ();
+        }*/
+
+        if (customerDetails.getCustomerImage () != null) {
+            loader.displayImage(customerDetails.getCustomerImage(), profileImage);
         }
-        if (customerDetails.getPicUrl () != null && !customerDetails.getPicUrl ().isEmpty ()) {
-            Picasso.with(this).load (customerDetails.getPicUrl ()).into (profileImage);
-        } else if (customerDetails.getCustomerImage () != null) {
-            loader.displayImage (customerDetails.getCustomerImage (), profileImage);
+       else if (customerDetails.getPicUrl () != null && !customerDetails.getPicUrl ().isEmpty ()) {
+            Picasso.with(this).load (customerDetails.getPicUrl ()).into(profileImage);
+          }
+        else {
+            profileImage.setImageResource(R.drawable.avatar);
         }
-        if (customerDetails.getCustomerImage () == null &&
+
+      /*  if (customerDetails.getCustomerImage () == null &&
                 customerDetails.getPicUrl () == null &&
                 customerDetails.getFaceBookId () == null) {
             profileFaceBook.setText ("");
             profileFaceBook.setClickable (false);
-        }
+        }*/
     }
 
-//    private void setEventInfo(String picUrl) {
-//        profileFaceBook.setVisibility(View.GONE);
-//            float hight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 55, getResources().getDisplayMetrics());
-//            LinearLayout.LayoutParams params =
-//                    new LinearLayout.LayoutParams(
-//                            0,
-//                            Math.round(hight));
-//            params.weight = 90.0f;
-//        profileImage.setLayoutParams(params);
-//        if (picUrl!=null && picUrl!="") {
-//            loader.displayImage(picUrl, profileImage);
-//        }
-//    }
+    private void setEventInfo(String picUrl) {
+        profileFaceBook.setVisibility(View.GONE);
+            float hight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 55, getResources().getDisplayMetrics());
+            LinearLayout.LayoutParams params =
+                    new LinearLayout.LayoutParams(
+                            0,
+                            Math.round(hight));
+            params.weight = 90.0f;
+        profileImage.setLayoutParams(params);
+        if (picUrl!=null && picUrl!="") {
+            loader.displayImage(picUrl, profileImage);
+        }
+    }
 
     private Runnable runnable = new Runnable () {
         @Override

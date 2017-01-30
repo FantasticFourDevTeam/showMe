@@ -3,6 +3,7 @@ package com.example.FundigoApp.StaticMethod;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.example.FundigoApp.Events.Event;
 import com.example.FundigoApp.Events.EventInfo;
@@ -74,17 +75,27 @@ public class EventDataMethods {
                 Event event = eventParse.get(i);
                 //27.10 assaf - support non english Date and Address
                 if (IsNotEnglish) {
-                    address = event.getAddressPerLanguage().get("iw");//assaf - get the address in hebrew
+
+                    Log.e("Address hebrew","value" + event.getAddressPerLanguage().get("iw"));
+                    if (event.getAddressPerLanguage()!=null && !event.getAddressPerLanguage().get("iw").equals("")) {
+                        address = event.getAddressPerLanguage().get("iw");//assaf - get the address in hebrew
+                    }
+                    else {
+                        address = event.getAddress();
+                    }
                     if (address =="" || address == null) {
                         address = event.getAddress();
                     }
-                    city = event.getCityPerLanguage().get("iw");//assaf - 28.10 save city name per Lanagauge as an object in Parse
-
-                    if (city =="" || city == null)
+                    if (event.getCityPerLanguage()!=null && !event.getCityPerLanguage().get("iw").equals("")) {
+                        city = event.getCityPerLanguage().get("iw");//assaf - 28.10 save city name per Lanagauge as an object in Parse
+                    }
+                    else{
+                        city = event.getCity();
+                    }
+                    if (city=="" || city == null)
                     {
                      city = event.getCity();
                     }
-
                     date = GeneralStaticMethods.getDateToStringConversion(event.getRealDate());
                 } else {
                     address = event.getAddress();
@@ -120,7 +131,7 @@ public class EventDataMethods {
                         event.getNumOfTickets(),
                         event.getObjectId(),
                         event.getFbUrl(),
-                        event.getIsStadium(),event.getCancelEvent(), event.getCreatedAt()//16.10 assaf added get created at
+                        event.getIsStadium(),event.getCancelEvent(), event.getCreatedAt(),event.getEventFromFacebook()//16.10 assaf added get created at
                 ));
             }
             GeneralStaticMethods.updateSavedEvents(tempEventsList, context);
@@ -148,6 +159,22 @@ public class EventDataMethods {
             e.printStackTrace();
         }
     }
+
+
+    public static void RemoveExpiredAndCanceledEvents(List<EventInfo> eventList) // 22.01 assaf - for remove expired and cancled events form list
+    {
+        Calendar calendar = Calendar.getInstance();
+        Date currentDate = calendar.getTime();
+        List <EventInfo> tempEventInfoList = new ArrayList<>();
+        for (EventInfo eventInfo:eventList) {
+            if (!eventInfo.getIsCanceled()&& !eventInfo.getDate().before(currentDate))
+                tempEventInfoList.add(eventInfo);
+        }
+
+        eventList.clear();
+        eventList.addAll(tempEventInfoList);
+    }
+
 
     ///////Assaf:15/10 fetch from Parse only evnets that not expired
   /*  public static void downloadEventsDataWithoutExpiredEvents(final GetEventsDataCallback ic,
@@ -396,7 +423,6 @@ public class EventDataMethods {
         String number = "";
         String valid_address = "";
         String addressArray = "";
-
 
         languageCode = "iw"; // 28.10 assaf cuurenly support Hebrew only
         langauage = "&language=" + languageCode;

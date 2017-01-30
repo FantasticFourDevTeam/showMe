@@ -99,23 +99,29 @@ public class ChatActivity extends Activity {
 
     private void updateUserDetailsFromParse() {
         CustomerDetails customerDetails = UserDetailsMethod.getUserDetailsFromParseInMainThread (customerPhone);
-        if (customerDetails.getFaceBookId () == null || customerDetails.getFaceBookId ().isEmpty ()) {
-            profileFaceBook.setText ("");
-            profileFaceBook.setClickable (false);
-        } else {
-            faceBookId = customerDetails.getFaceBookId ();
+    //    if (customerDetails.getFaceBookId () == null || customerDetails.getFaceBookId ().isEmpty ()) {
+          //  profileFaceBook.setText ("");
+          //  profileFaceBook.setClickable (false);
+       // } //else {
+          //  faceBookId = customerDetails.getFaceBookId ();
+       // }
+
+        if (customerDetails.getCustomerImage () != null) {
+            loader.displayImage(customerDetails.getCustomerImage(), profileImage);
         }
-        if (customerDetails.getPicUrl () != null && !customerDetails.getPicUrl ().isEmpty ()) {
-            Picasso.with (this).load (customerDetails.getPicUrl ()).into (profileImage);
-        } else if (customerDetails.getCustomerImage () != null) {
-            loader.displayImage (customerDetails.getCustomerImage (), profileImage);
+        else if (customerDetails.getPicUrl () != null && !customerDetails.getPicUrl ().isEmpty ()) {
+            Picasso.with(this).load (customerDetails.getPicUrl ()).into(profileImage);
         }
-        if (customerDetails.getCustomerImage () == null &&
-                    customerDetails.getPicUrl () == null &&
-                    customerDetails.getFaceBookId () == null) {
-            profileFaceBook.setText ("");
-            profileFaceBook.setClickable (false);
+        else {
+            profileImage.setImageResource(R.drawable.avatar);
         }
+
+       // if (customerDetails.getCustomerImage () == null &&
+         //           customerDetails.getPicUrl () == null &&
+          //          customerDetails.getFaceBookId () == null) {
+            //profileFaceBook.setText ("");
+           // profileFaceBook.setClickable (false);
+       // }
     }
 
     private void setEventInfo(String picUrl) {

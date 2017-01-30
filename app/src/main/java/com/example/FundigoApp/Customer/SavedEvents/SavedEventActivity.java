@@ -84,12 +84,12 @@ public class SavedEventActivity extends AppCompatActivity implements View.OnClic
 
         eventsListAdapter = new EventsListAdapter (this, filteredSavedEventsList, true);
         realTimeTab.setOnClickListener (this);
-        eventTab.setOnClickListener (this);
-        savedEvent.setOnClickListener (this);
+        eventTab.setOnClickListener(this);
+        savedEvent.setOnClickListener(this);
 
-        list_view.setAdapter (eventsListAdapter);
-        list_view.setSelector (new ColorDrawable (Color.TRANSPARENT));
-        list_view.setOnItemClickListener (this);
+        list_view.setAdapter(eventsListAdapter);
+        list_view.setSelector(new ColorDrawable(Color.TRANSPARENT));
+        list_view.setOnItemClickListener(this);
 
         if (GlobalVariables.ALL_EVENTS_DATA.size () == 0) {
             Intent intent = new Intent (this, EventPageActivity.class);
@@ -100,8 +100,12 @@ public class SavedEventActivity extends AppCompatActivity implements View.OnClic
             if (GlobalVariables.MY_LOCATION == null) {
                 GPSMethods.updateDeviceLocationGPS (this.context, this);
             }
+
+            EventDataMethods.RemoveExpiredAndCanceledEvents(filteredSavedEventsList);//22.01 - Assaf remove cnacled or expired events form the List of events
+            eventsListAdapter.notifyDataSetChanged();
         }
         GlobalVariables.SAVED_ACTIVITY_RUNNING = true;
+
     }
 
     @Override
@@ -166,6 +170,8 @@ public class SavedEventActivity extends AppCompatActivity implements View.OnClic
                 eventsListAdapter.notifyDataSetChanged ();
             }
         }
+        EventDataMethods.RemoveExpiredAndCanceledEvents(filteredSavedEventsList);//22.01 - Assaf remove cnacled or expired events form the List of events
+        eventsListAdapter.notifyDataSetChanged();
 
     }
 
@@ -231,6 +237,9 @@ public class SavedEventActivity extends AppCompatActivity implements View.OnClic
                 currentCityButton.setText(GlobalVariables.namesCity[GlobalVariables.indexCityChosen]);
             }
         }
+
+        EventDataMethods.RemoveExpiredAndCanceledEvents(filteredSavedEventsList);//22.01 - Assaf remove cnacled or expired events form the List of events
+        eventsListAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -240,6 +249,8 @@ public class SavedEventActivity extends AppCompatActivity implements View.OnClic
         if (GlobalVariables.MY_LOCATION == null) {
             GPSMethods.updateDeviceLocationGPS (this.getApplicationContext (), this);
         }
+        EventDataMethods.RemoveExpiredAndCanceledEvents(filteredSavedEventsList);//22.01 - Assaf remove cnacled or expired events form the List of events
+        eventsListAdapter.notifyDataSetChanged();
     }
 
     public void getSavedEventsFromJavaList() {
@@ -333,8 +344,10 @@ public class SavedEventActivity extends AppCompatActivity implements View.OnClic
                                                                                 GlobalVariables.CURRENT_DATE_FILTER,
                                                                                 GlobalVariables.CURRENT_PRICE_FILTER,
                                                                                 GlobalVariables.ALL_EVENTS_DATA);
-                        filteredSavedEventsList.clear ();
-                        filteredSavedEventsList.addAll (getSavedEventsFromList (tempEventsListFiltered));
+                        filteredSavedEventsList.clear();
+                        filteredSavedEventsList.addAll(getSavedEventsFromList(tempEventsListFiltered));
+
+                        EventDataMethods.RemoveExpiredAndCanceledEvents(filteredSavedEventsList);//22.01 - Assaf remove cnacled or expired events form the List of events
                         eventsListAdapter.notifyDataSetChanged ();
                         GlobalVariables.USER_CHOSEN_CITY_MANUALLY = true;
                         return true;

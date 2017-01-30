@@ -62,6 +62,7 @@ import com.parse.ParseQuery;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -100,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     int unreadMessageAndPushNumber;
     ArrayList<String> _mainFilterForFilter = new ArrayList<>();//assaf - 02.12 assaf
     Boolean IsLocationSavedInParse = false;
-    Boolean  swipeDetected = false;// detect if swipe to left on Event
+    Boolean swipeDetected = false;// detect if swipe to left on Event
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -204,7 +205,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         list_view.setAdapter(eventsListAdapter);
         list_view.setSelector(new ColorDrawable(Color.TRANSPARENT));
         list_view.setOnItemClickListener(this);
-      //  list_view.setOnTouchListener(OnTouchListener); // 16.12 - assaf to swipe list item to thr left
+        //  list_view.setOnTouchListener(OnTouchListener); // 16.12 - assaf to swipe list item to thr left
 
 
         if (GlobalVariables.ALL_EVENTS_DATA.size() == 0) {
@@ -214,7 +215,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             inflateCityMenu();
             filtered_events_data.clear();
             filtered_events_data.addAll(GlobalVariables.ALL_EVENTS_DATA);
-
             eventsListAdapter.notifyDataSetChanged();
             FilterMethods.filterListsAndUpdateListAdapter(filtered_events_data,
                     eventsListAdapter,
@@ -223,7 +223,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             if (GlobalVariables.MY_LOCATION == null) {
                 GPSMethods.updateDeviceLocationGPS(this.context, this);
             }
+            EventDataMethods.RemoveExpiredAndCanceledEvents(filtered_events_data);//assaf - to remove expired and canceled events form list
+            eventsListAdapter.notifyDataSetChanged();
         }
+
+
         pushViewText = (TextView) findViewById(R.id.pushView);// push notifications bar in the bottom of the page
         //dialog for Register to application - appears when it is a guest only
 
@@ -273,6 +277,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public void eventDataCallback() {
         filtered_events_data.clear();
         filtered_events_data.addAll(GlobalVariables.ALL_EVENTS_DATA);
+
         eventsListAdapter.notifyDataSetChanged();
         inflateCityMenu();//assaf added to call this message here and not from OnCreate
         FilterMethods.filterListsAndUpdateListAdapter(filtered_events_data,
@@ -282,6 +287,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         if (GlobalVariables.MY_LOCATION == null) {
             GPSMethods.updateDeviceLocationGPS(this.context, this);
         }
+        EventDataMethods.RemoveExpiredAndCanceledEvents(filtered_events_data);//22.01 - Assaf remove cnacled or expired events form the List of events
+        eventsListAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -384,6 +391,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 currentCityButton.setText(GlobalVariables.namesCity[GlobalVariables.indexCityChosen]);
             }
         }
+
+        EventDataMethods.RemoveExpiredAndCanceledEvents(filtered_events_data);//22.01 - Assaf remove cnacled or expired events form the List of events
+        eventsListAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -459,6 +469,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 // display the filter line
                 PushDisplay display = new PushDisplay(); // Assaf :execute the the push notifications display in the Textview
                 display.execute();
+                EventDataMethods.RemoveExpiredAndCanceledEvents(filtered_events_data);//22.01 - Assaf remove cnacled or expired events form the List of events
+                eventsListAdapter.notifyDataSetChanged();
 
             }
         } catch (Exception ex) {
@@ -500,6 +512,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                         filtered_events_data.addAll(tempEventsList);
                         eventsListAdapter.notifyDataSetChanged();
                         GlobalVariables.USER_CHOSEN_CITY_MANUALLY = true;
+
+                        EventDataMethods.RemoveExpiredAndCanceledEvents(filtered_events_data);//22.01 - Assaf remove cnacled or expired events form the List of events
+                        eventsListAdapter.notifyDataSetChanged();
+
                         return true;
                     }
                 });
@@ -606,18 +622,18 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     public void onItemClick(AdapterView<?> av, View view, int i, long l) { //Assaf 16.12 - changed ot support onClick and OnItemTouch
-     //   if (swipeDetected) { // swipe event to left and open customer chats  messages page directly
-     //       Intent MessageIntent = new Intent (MainActivity.this, CustomerMessageConversationsListActivity.class);
-     //       startActivity (MessageIntent);
+        //   if (swipeDetected) { // swipe event to left and open customer chats  messages page directly
+        //       Intent MessageIntent = new Intent (MainActivity.this, CustomerMessageConversationsListActivity.class);
+        //       startActivity (MessageIntent);
 
-       //     }
-      //  else {
-            Bundle b = new Bundle();
-            Intent intent = new Intent(this, EventPageActivity.class);
-            EventDataMethods.onEventItemClick(i, filtered_events_data, intent);
-            intent.putExtras(b);
-            startActivity(intent);
-      //  }
+        //     }
+        //  else {
+        Bundle b = new Bundle();
+        Intent intent = new Intent(this, EventPageActivity.class);
+        EventDataMethods.onEventItemClick(i, filtered_events_data, intent);
+        intent.putExtras(b);
+        startActivity(intent);
+        //  }
     }
 
     @Override
@@ -739,7 +755,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     ex.printStackTrace();
                 }
             }
-            //    _sharedPref.edit().clear().commit(); //// 24.-9 Assaf: this is destroy the filter banner selected by a user. was marked so filter will be save
+              cleanDeviceCacheOnDestroy(); //28.01 - clean device background
+
             System.runFinalization();
 
             int currentApiVersion = android.os.Build.VERSION.SDK_INT;
@@ -807,14 +824,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         return new mainHandler(this);
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();  // Always call the superclass method first
-        if (display != null) {
-            //   display.cancel (true);
-        }
-
-    }
+//    @Override
+//    public void onPause() {
+//        super.onPause();  // Always call the superclass method first
+//        if (display != null) {
+//            //   display.cancel (true);
+//        }
+//
+//    }
 
     /**
      * customerLogin() method from LoginActivity for guest and registered users
@@ -988,5 +1005,52 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
 
     }; */
+
+    private void cleanDeviceCacheOnDestroy() { //Delete App cache directoy and send the sub directory to deleteDir - 28.01 - assaf
+
+        // Add file with content
+        try {
+          List <File> cacheType = new ArrayList<>();
+          cacheType.add(context.getCacheDir());
+          cacheType.add(context.getExternalCacheDir());
+
+           for(File cache :cacheType) {
+               if (cache != null && cache.exists()) {
+                   String[] children = cache.list();
+                   for (String filePath : children) {
+                       if (!filePath.equals("lib")) {
+                           deleteDir(new File(cache, filePath));
+                           Log.i("TAG", "**************** File ..." + filePath + " DELETED *******************");
+                       }
+                   }
+               }
+           }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean deleteDir(File dir) { // delete the files in the cache directory
+
+        try {
+            if (dir != null && dir.isDirectory()) {
+                String[] children = dir.list();
+                for (int i = 0; i < children.length; i++) {
+                    boolean success = deleteDir(new File(dir, children[i]));
+                    if (!success) {
+                        return false;
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return dir.delete();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
 }
 

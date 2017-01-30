@@ -78,12 +78,11 @@
             />
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/signUpButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignTop="@+id/upload_button"
             android:layout_marginTop="38dp"
-            android:onClick="Signup"
             android:text="@string/signup"
             android:visibility="invisible"/>
 

@@ -119,6 +119,8 @@ public class RealTimeActivity extends AppCompatActivity implements View.OnClickL
                                                              events_sorted_by_dist_data);
             events_data_filtered.clear();
             events_data_filtered.addAll(tempFilteredList);
+            EventDataMethods.RemoveExpiredAndCanceledEvents(events_data_filtered);
+            eventsGridAdapter.notifyDataSetChanged(); // 22.01 - support remove canceled and expired events form list
             eventsGridAdapter.notifyDataSetChanged();
         }
 
@@ -142,6 +144,9 @@ public class RealTimeActivity extends AppCompatActivity implements View.OnClickL
         } else {
             GPSMethods.updateDeviceLocationGPS(this.getApplicationContext(), this);
         }
+
+        EventDataMethods.RemoveExpiredAndCanceledEvents(events_data_filtered);
+        eventsGridAdapter.notifyDataSetChanged(); // 22.01 - support remove canceled and expired events form list
     }
 
     public List<EventInfo> getSortedListByDist() {
@@ -233,9 +238,10 @@ public class RealTimeActivity extends AppCompatActivity implements View.OnClickL
                                                          events_sorted_by_dist_data);
         events_data_filtered.clear();
         events_data_filtered.addAll(tempFilteredList);
-        eventsGridAdapter.notifyDataSetChanged();
        // if (GlobalVariables.MY_LOCATION != null && GPSMethods.isLocationEnabled (this))
         displayFilterBanner (); // to display filter selected by user
+        EventDataMethods.RemoveExpiredAndCanceledEvents(events_data_filtered);
+        eventsGridAdapter.notifyDataSetChanged(); // 22.01 - support remove canceled and expired events form list
     }
 
     @Override

@@ -2,7 +2,10 @@ package com.example.FundigoApp.Customer.CustomerMenu;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,6 +42,7 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class MenuActivity extends AppCompatActivity implements EventDataMethods.GetEventsDataCallback {
@@ -50,6 +54,7 @@ public class MenuActivity extends AppCompatActivity implements EventDataMethods.
     String currentUserName;
     String phoneNum;
     String userImage;
+    String facebookUserImage;
     TableLayout tableLayout; //table to prsent profile
     ImageView drawView; // profile picture
     TextView facebookUserNameView;
@@ -64,7 +69,7 @@ public class MenuActivity extends AppCompatActivity implements EventDataMethods.
      */
     Button producerPage_button;
     ImageLoader loader;
-
+    SharedPreferences sharedPreferences;
     CustomerDetails customerDetails;
     ArrayList<ImageAdapter.MenuItem> items;
     TextView textViewHader;
@@ -74,6 +79,7 @@ public class MenuActivity extends AppCompatActivity implements EventDataMethods.
     ArrayList<Integer> image = new ArrayList<>();
     ArrayList<Integer> titel = new ArrayList<>();
     ImageAdapter gridAdapter = null;
+
     public static Integer[] mThumbIds = {
             R.drawable.square_facebook,
             R.drawable.user_signup,
@@ -104,11 +110,7 @@ public class MenuActivity extends AppCompatActivity implements EventDataMethods.
         userNameTv = (TextView) findViewById(R.id.user_name_tv);
         user_imageView = (ImageView) findViewById(R.id.user_imageView);
         loader = FileAndImageMethods.getImageLoader(this);
-        final AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        if (accessToken != null) // change default button text to Logout also in case of Guest
-        {
-            mTitels[0] = R.string.log_out_from_facebook;
-        }
+
 
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
@@ -119,10 +121,8 @@ public class MenuActivity extends AppCompatActivity implements EventDataMethods.
                         intent = new Intent(MenuActivity.this, ActivityFacebook.class);
                         startActivityForResult(intent, 1);
                         break;
-                    case R.string.log_out_from_facebook:
-                        // intent = new Intent(MenuActivity.this, ActivityFacebook.class);
-                        // startActivity(intent);
-                        logOutFacebook();
+                    case R.string.log_out_from_App:
+                          ApplicationLogOut();
                         break;
                     case R.string.sms_verification:
                         intent = new Intent(MenuActivity.this, SmsSignUpActivity.class);
@@ -184,6 +184,13 @@ public class MenuActivity extends AppCompatActivity implements EventDataMethods.
         image.clear();
         titel.clear();
 
+        final AccessToken accessToken = AccessToken.getCurrentAccessToken();
+
+        if (accessToken != null) // change default button text to Logout also in case of Guest , and hide the create user button
+        {
+            mTitels[0] = R.string.log_out_from_App;
+        }
+
         // in case that return back from Prodcuer area then need to check if customer registered or not
         GlobalVariables.CUSTOMER_PHONE_NUM = FileAndImageMethods.getCustomerPhoneNumFromFile(this);
         //assaf 28.11 - upload all events data again in case that revert back from Producer , upload all events again
@@ -212,26 +219,40 @@ public class MenuActivity extends AppCompatActivity implements EventDataMethods.
             userNameTv.setText(customerDetails.getCustomerName());
             currentUserName = customerDetails.getCustomerName();
             userImage = customerDetails.getCustomerImage();
+            facebookUserImage = customerDetails.getPicUrl();
 
-
-            if (userImage != null) {
+            if (accessToken!=null)
+            {
+              if (facebookUserImage != "" && facebookUserImage!=null)
+              {
+                  loader.displayImage(facebookUserImage, user_imageView);
+              }
+              else {
+                  user_imageView.setImageResource(R.drawable.avatar);
+              }
+            }
+            else if (userImage != null) {
                 loader.displayImage(userImage, user_imageView);
-            } else {
+            }
+            else {
                 user_imageView.setImageResource(R.drawable.avatar);
             }
 
-            final AccessToken accessToken = AccessToken.getCurrentAccessToken();
+           // final AccessToken accessToken = AccessToken.getCurrentAccessToken();
             for (int i = 0; i < mThumbIds.length; i++) {
                 if (!mTitels[i].equals(R.string.sms_verification)) {
                     if (accessToken == null) {
+                        if (i==0)
+                           mTitels[0] = R.string.log_out_from_App; // Add logout button
                         image.add(mThumbIds[i]);
                         titel.add(mTitels[i]);
                     } else {
+                        if (i == 0)
+                            mTitels[0] = R.string.log_out_from_App;
                         image.add(mThumbIds[i]);
                         titel.add(mTitels[i]);
-                        if (i == 0)
-                            mTitels[0] = R.string.log_out_from_facebook;
                     }
+
                 }
             }
 
@@ -265,13 +286,14 @@ public class MenuActivity extends AppCompatActivity implements EventDataMethods.
                     }
                 }
             });
-
         } else {
-            //textViewHader.setText("Your Social Life App");
             userNameTv.setText(R.string.guest);
             user_imageView.setImageResource(R.drawable.avatar);
             for (int i = 0; i < mThumbIds.length; i++) {
                 if (!mTitels[i].equals(R.string.updateProfile) && !mTitels[i].equals(R.string.save_credit_card) && !mTitels[i].equals(R.string.tickets)) {
+                    if (i==0) {
+                        mTitels[0] = R.string.title_activity_facebook_login;
+                      }
                     image.add(mThumbIds[i]);
                     titel.add(mTitels[i]);
                 }
@@ -284,8 +306,6 @@ public class MenuActivity extends AppCompatActivity implements EventDataMethods.
      {
        ex.printStackTrace();
      }
-    //for debug
-        Log.i("prodMenuMainCreate", "ID" + GlobalVariables.PRODUCER_PARSE_OBJECT_ID);
 
     }
 
@@ -374,7 +394,6 @@ public class MenuActivity extends AppCompatActivity implements EventDataMethods.
 
         }
 
-
         public class MenuItem {
             String itemTitle;
             Integer itemImage;
@@ -400,14 +419,24 @@ public class MenuActivity extends AppCompatActivity implements EventDataMethods.
             public void onCompleted(GraphResponse graphResponse) {
                 mTitels[0] = R.string.title_activity_facebook_login;  // change butto text to login after Logout was completed
                 LoginManager.getInstance().logOut();
-                Toast.makeText(context, R.string.loged_out_of_facebook, Toast.LENGTH_SHORT).show();
-            }
+                Toast.makeText(context, R.string.logged_out_from_App, Toast.LENGTH_SHORT).show();
+
+                sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MenuActivity.this);
+                // 24.01- assaf: to Edit the Shared P. and delete the facebook values from SP
+                sharedPreferences.edit().putString(GlobalVariables.FB_PIC_URL, "").commit();
+                sharedPreferences.edit().putString(GlobalVariables.FB_NAME, "").commit();
+                sharedPreferences.edit().putString(GlobalVariables.FB_EMAIL, "").commit();
+                sharedPreferences.edit().putString(GlobalVariables.FB_ID, "").commit();
+              }
         }).executeAsync();
+
+        finish();
+
     }
 
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        super.onActivityResult (requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
          if(requestCode==1) {
              if (resultCode == RESULT_OK && data != null) {
                  mTitels[0] = R.string.log_out_from_facebook; //chnage button to logout after Login done
@@ -426,4 +455,34 @@ public class MenuActivity extends AppCompatActivity implements EventDataMethods.
         super.onBackPressed();
         finish();
     }
+
+    private void ApplicationLogOut()
+    {
+        boolean deleted= false;
+        final AccessToken accessToken = AccessToken.getCurrentAccessToken();
+
+        try {
+           File fileSavedWithDetails = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "verify.txt");
+           boolean IsFileExist= fileSavedWithDetails.exists();
+
+            if(IsFileExist){
+               deleted = fileSavedWithDetails.delete();
+            }
+             if (deleted) {
+
+                 if (accessToken!=null){
+                     logOutFacebook();
+                 }
+                 else {
+                     Toast.makeText(context, getString(R.string.logged_out_from_App), Toast.LENGTH_SHORT).show();
+                     finish();
+                 }
+             }
+          }
+         catch (Exception ex)
+         {
+            ex.printStackTrace();
+            Toast.makeText(context,"Logout failed" ,Toast.LENGTH_SHORT).show();
+          }
+      }
    }

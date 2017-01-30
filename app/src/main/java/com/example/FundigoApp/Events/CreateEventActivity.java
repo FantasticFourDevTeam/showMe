@@ -516,10 +516,24 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
             event.setY(lng);
             //===========================Setting tags the right way==============
             StringBuilder stringBuilder = new StringBuilder();
+            //15.01 assaf added to set Tags without "_Event
+            String filterStringToRemove = "_EVENT";
+            String tagToSave;
+            if (filter.contains(filterStringToRemove))
+            {
+              int stringToRemoveIndex = filter.indexOf("_");
+              stringBuilder.append(filter);
+              tagToSave = stringBuilder.substring(0,stringToRemoveIndex);
+              stringBuilder.delete(0,stringBuilder.length()); // clear the SB
+            }
+             else{
+                tagToSave = filter;
+            }
+
             if (et_tags.length() == 0) {
-                event.setTags("#" + filter);
+                event.setTags("#" + tagToSave);
             } else {
-                stringBuilder.append("#" + filter);
+                stringBuilder.append("#" + tagToSave);
                 String str = et_tags.getText().toString();
                 str = str.replaceAll(",", " ");
                 str = str.replaceAll("#", "");
@@ -745,12 +759,12 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage(R.string.are_you_sure_you_want_to_exit)
                     .setCancelable(false)
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             CreateEventActivity.this.finish();
                         }
                     })
-                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    .setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             dialog.cancel();
                         }

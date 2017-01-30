@@ -124,10 +124,11 @@ public class MessagesRoomProducerActivity extends Activity implements AdapterVie
     }
 
     private void updateMessageBeanWithCustomerDetails(MessageRoomBean messageRoomBean, CustomerDetails customerDetails) {
-        if (customerDetails.getPicUrl () != null && !customerDetails.getPicUrl ().isEmpty ()) {
+        if (customerDetails.getCustomerImage () != null) {
+            messageRoomBean.setCustomerImage(customerDetails.getCustomerImage());
+        }
+        else if (customerDetails.getPicUrl () != null && !customerDetails.getPicUrl ().isEmpty ()) {
             messageRoomBean.setCustomerImageFacebookUrl (customerDetails.getPicUrl ());
-        } else if (customerDetails.getCustomerImage () != null) {
-            messageRoomBean.setCustomerImage (customerDetails.getCustomerImage ());
         }
 
         String customerName= customerDetails.getCustomerName();
