@@ -86,11 +86,16 @@ public class ActivityFacebook extends AppCompatActivity {
     String fbEmail = "";
     String fbID = "";
 
+    String cameToThisActivityFrom = null;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_facebook);
         context = this;
+        cameToThisActivityFrom = getIntent().getExtras().getString("cameFrom");
+        Log.e("ActivityFaceBook",cameToThisActivityFrom);
         //  facebook_login_button = (LoginButton) findViewById (R.id.login_button11);
         //   facebook_logout_button = (LoginButton) findViewById (R.id.logout_button11);
         //  facebookUserNameView = (TextView) findViewById (R.id.profileUserName);
@@ -281,7 +286,10 @@ public class ActivityFacebook extends AppCompatActivity {
         String place = "";
         String city = "";
         String address = "";
+
         try {
+            if(cameToThisActivityFrom == null)parseObject.setProducerId(object.getString("id"));
+            else parseObject.setProducerId(GlobalVariables.PRODUCER_PARSE_OBJECT_ID);
             if (object.has("name")) {
                 parseObject.setName(object.getString("name"));
                 Log.e("NameofEvent", object.getString("name"));
@@ -439,8 +447,6 @@ public class ActivityFacebook extends AppCompatActivity {
             return changeBitmapToByteAndSaveInParseFIle(i,facebookImage.getPath());
         } catch (MalformedURLException e) {
             e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
         return null;
     }
@@ -449,7 +455,7 @@ public class ActivityFacebook extends AppCompatActivity {
      * benjamin
      * The function change bitmap to byteArray
      *
-     * @param String picture
+     * @param filePath is a picture
      * @return ParseFile
      */
     private ParseFile changeBitmapToByteAndSaveInParseFIle(int i,String filePath) {
@@ -466,8 +472,8 @@ public class ActivityFacebook extends AppCompatActivity {
         //Bitmap resizedBitMap = scaleBitmap(bitmap, 650, 650); ///assaf added
 
         //
-        Bitmap unscaledBitmap = ScalingUtilities.decodeFile(filePath,50, 50 ,ScalingUtilities.ScalingLogic.FIT);
-        Bitmap resizedBitMap = ScalingUtilities.createScaledBitmap(unscaledBitmap, 100, 100,ScalingUtilities.ScalingLogic.FIT);
+        Bitmap unscaledBitmap = com.example.events.ScalingUtilities.decodeFile(filePath,50, 50 , com.example.events.ScalingUtilities.ScalingLogic.FIT);
+        Bitmap resizedBitMap = com.example.events.ScalingUtilities.createScaledBitmap(unscaledBitmap, 100, 100, com.example.events.ScalingUtilities.ScalingLogic.FIT);
 
         resizedBitMap.compress(Bitmap.CompressFormat.PNG, 100, stream);
 

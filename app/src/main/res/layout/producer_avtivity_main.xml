@@ -29,16 +29,6 @@
         android:layout_below="@id/tab_layout"
         android:background="#ffffff" />
 
-    <ImageButton
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:id="@+id/imageButton"
-        android:layout_alignParentTop="true"
-        android:layout_margin="5dp"
-        android:layout_toEndOf="@+id/toolbar"
-        android:layout_toRightOf="@+id/toolbar"
-        android:onClick="createEvent"
-        android:background="@android:drawable/ic_input_add" />
     <ImageView
         android:layout_width="30dp"
         android:layout_height="30dp"
@@ -48,4 +38,24 @@
         android:layout_toEndOf="@+id/imageButton"
         android:layout_toRightOf="@+id/imageButton"
         />
+
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:id="@+id/facebookLoginFromProducer"
+        android:src="@drawable/square_facebook"
+        android:onClick="facebookLoginFromProducer"
+        android:layout_alignTop="@+id/_qr_scan_producer"
+        android:layout_toRightOf="@+id/_qr_scan_producer"
+        android:layout_toEndOf="@+id/_qr_scan_producer" />
+
+    <ImageButton
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:id="@+id/imageButton"
+        android:onClick="createEvent"
+        android:background="@android:drawable/ic_input_add"
+        android:layout_alignTop="@+id/_qr_scan_producer"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 </RelativeLayout>

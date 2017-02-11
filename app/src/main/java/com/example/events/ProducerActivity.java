@@ -17,6 +17,7 @@ import com.example.FundigoApp.GlobalVariables;
 import com.example.FundigoApp.Producer.Artists.QR_producer;
 import com.example.FundigoApp.Producer.TabPagerAdapter;
 import com.example.FundigoApp.R;
+import com.facebook.FacebookActivity;
 
 import java.util.Locale;
 
@@ -123,5 +124,11 @@ private static ImageView qr_scan_icon;
         alert.show();
     }
 
-
+    public void facebookLoginFromProducer(View v)
+    {
+        Log.e("facebookLoginFromProduc","i am one step before go  to facebook");
+        Intent faceBookLogin = new Intent(this, ActivityFacebook.class);
+        faceBookLogin.putExtra("cameFrom","producer");
+        startActivity(faceBookLogin);
+    }
 }

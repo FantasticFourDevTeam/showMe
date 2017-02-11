@@ -37,14 +37,17 @@ public class Fundigo extends Application {
         Branch.getAutoInstance (this);
         ACRA.init (this);
         Parse.enableLocalDatastore (this);
-        Parse.initialize (this);
+        Parse.initialize (new Parse.Configuration.Builder(this).applicationId("gmmXjFV5aZf4BlIepRBfFRxj6PhdCmwX3F4KC84I").clientKey("xQR9WWoE7igtemCeiP9FJEW0BPrGJMdpjxwUF28m").server("https://parseapi.back4app.com/").build());
+        //ParseUser.enableRevocableSessionInBackground(); // If you're using Legacy Sessions
+        ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+        installation.put("GCMSenderId", "866517165799");
+        installation.saveInBackground();
         try
         {
             ParseInstallation.getCurrentInstallation ().save ();
         }
         catch (ParseException e)
         {
-            Log.e("message fro exceptoin",e.getMessage());
             e.printStackTrace ();
         }
         ParseInstallation.getCurrentInstallation ().getObjectId ();

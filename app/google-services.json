@@ -1,0 +1,73 @@
+{
+  "project_info": {
+    "project_number": "866517165799",
+    "firebase_url": "https://akimboserverbiniamin.firebaseio.com",
+    "project_id": "akimboserverbiniamin",
+    "storage_bucket": "akimboserverbiniamin.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:866517165799:android:3db1d27177218525",
+        "android_client_info": {
+          "package_name": "com.example.events"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "866517165799-k834a17dej9hdcd6gmlevc8rl1sqr46d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDAEt9vU2jS14nxycj9la8hlnuDeXdZu2I"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:866517165799:android:bd4238baf3deeca1",
+        "android_client_info": {
+          "package_name": "com.example.events"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "866517165799-k834a17dej9hdcd6gmlevc8rl1sqr46d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDAEt9vU2jS14nxycj9la8hlnuDeXdZu2I"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
