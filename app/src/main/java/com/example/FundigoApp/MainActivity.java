@@ -251,6 +251,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     } else if (v.getId() == fBut.getId()) {
                         dialog.dismiss();//26.09 assaf fixed t close when login to FB
                         Intent intent = new Intent(MainActivity.this, ActivityFacebook.class);
+                        intent.putExtra("cameFrom","mainMenu");
                         startActivity(intent);
 
                     } else if (v.getId() == createBut.getId()) {

@@ -119,6 +119,7 @@ public class MenuActivity extends AppCompatActivity implements EventDataMethods.
                 switch ((int) id) {
                     case R.string.title_activity_facebook_login:
                         intent = new Intent(MenuActivity.this, ActivityFacebook.class);
+                        intent.putExtra("cameFrom","userMenu");
                         startActivityForResult(intent, 1);
                         break;
                     case R.string.log_out_from_App:
