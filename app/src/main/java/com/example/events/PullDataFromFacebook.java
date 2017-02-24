@@ -1,46 +1,27 @@
 package com.example.events;
 
-import android.app.Activity;
+
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.FundigoApp.Customer.CustomerDetails;
-import com.example.FundigoApp.Customer.Social.Profile;
+import android.preference.PreferenceManager;
+import android.util.Log;
+
 import com.example.FundigoApp.Events.Event;
 import com.example.FundigoApp.GlobalVariables;
-import com.example.FundigoApp.R;
 import com.example.FundigoApp.StaticMethod.EventDataMethods;
-import com.example.FundigoApp.StaticMethod.UserDetailsMethod;
-import com.example.FundigoApp.Verifications.SmsSignUpActivity;
 import com.facebook.AccessToken;
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
-import com.facebook.login.LoginManager;
-import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
-import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParsePush;
 import com.parse.ParseQuery;
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -57,126 +38,36 @@ import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Pattern;
 
+/**
+ * Created by benjamin on 2/14/2017.
+ */
 
-
-public class ActivityFacebook extends AppCompatActivity {
-
-    LoginButton facebook_login_button;
-    CallbackManager callbackManager;
-    LoginButton facebook_logout_button;
-    TextView facebookUserNameView;
-    ImageView profileFacebookPictureView;
-    static Context context;
+public class PullDataFromFacebook
+{
     List<String> id = new ArrayList<>();
+    String cameToThisActivityFrom;
+    File tempFacebookImageFile;
+    Context context;
     HashMap<String, String> addressPerLanguage = new HashMap<>();
     HashMap<String, String> cityPerLanguage = new HashMap<>();
-    File tempFacebookImageFile;
-
-    SharedPreferences sp;
     String fbName = "";
     String fbPicUrl = "";
     String fbEmail = "";
     String fbID = "";
-    String cameToThisActivityFrom = null;//benjamin add for check from where this activity call. from producer or customerMenu or mainMenu.
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_facebook);
-        context = this;
-        cameToThisActivityFrom = getIntent().getExtras().getString("cameFrom");
-        Log.e("ActivityFaceBook",cameToThisActivityFrom);
-        //  facebook_login_button = (LoginButton) findViewById (R.id.login_button11);
-        //   facebook_logout_button = (LoginButton) findViewById (R.id.logout_button11);
-        //  facebookUserNameView = (TextView) findViewById (R.id.profileUserName);
-        //  profileFacebookPictureView = (ImageView) findViewById (R.id.faebook_profile);
-
-        final AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        if (accessToken != null) {
-//            facebook_login_button.setVisibility (View.GONE);
-//            profileFacebookPictureView.setVisibility (View.VISIBLE);
-//            facebookUserNameView.setVisibility (View.VISIBLE);
-//            facebook_logout_button.setVisibility (View.VISIBLE);
-             sp = PreferenceManager.getDefaultSharedPreferences(ActivityFacebook.this);
-             fbName = sp.getString(GlobalVariables.FB_NAME, "");
-             fbPicUrl = sp.getString(GlobalVariables.FB_PIC_URL, "");
-             fbEmail = sp.getString(GlobalVariables.FB_EMAIL, "");
-             fbID = sp.getString(GlobalVariables.FB_ID, "");
-//          Picasso.with (context).load (pic_url).into (profileFacebookPictureView);
-//          facebookUserNameView.setText (name);
-        } else {
-//            facebook_login_button.setVisibility (View.VISIBLE);
-//            facebook_logout_button.setVisibility (View.GONE);
-//            profileFacebookPictureView.setVisibility (View.GONE);
-//            facebookUserNameView.setVisibility (View.GONE);
-        }
-
-        callbackManager = CallbackManager.Factory.create();
-
-        LoginManager.getInstance().
-                logInWithReadPermissions
-                        (ActivityFacebook.this,
-                                Arrays.asList
-                                        ("public_profile",
-                                                "user_friends",
-                                                "email", "user_events"));
-        ///    }
-        //    });
-        // Callback registration
-        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(final LoginResult loginResult) {
-                if (accessToken!=null) {
-                    accessToken.setCurrentAccessToken(loginResult.getAccessToken());
-                }
-                getUserDetailsFromFB();
-                Intent databack = new Intent();
-                databack.putExtra("Login Success", true);
-                setResult(Activity.RESULT_OK, databack); // send data back to Menu as Login is OK
-
-//                facebook_login_button.setVisibility (View.GONE);
-//                facebook_logout_button.setVisibility (View.VISIBLE);
-//                profileFacebookPictureView.setVisibility (View.VISIBLE);
-//                facebookUserNameView.setVisibility (View.VISIBLE);
-            }
-
-            @Override
-            public void onCancel() {
-                Toast.makeText(context, R.string.canceled_logging_facebook, Toast.LENGTH_SHORT).show();
-                finish();
-            }
-
-            @Override
-            public void onError(FacebookException exception) {
-                Toast.makeText(context, R.string.error_logging_facebook, Toast.LENGTH_SHORT).show();
-                Log.e("error_logging_facebook", exception.getMessage());
-                exception.printStackTrace();
-                finish();
-            }
-        });
-
-    }
-    public void getUserDetailsFromFB()
+    public PullDataFromFacebook(String cameToThisActivityFrom,Context context)
     {
-        new PullDataFromFacebook(cameToThisActivityFrom,this).getDataFromFacebook();//14.02.17 benjamin
-        if(!GlobalVariables.IS_CUSTOMER_REGISTERED_USER)PassSMSRegistration(); //23.01 - assaf to pass SMS regitration if not done
+        this.cameToThisActivityFrom = cameToThisActivityFrom;
+        this.context = context;
     }
 
-
-    @Override
-    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        callbackManager.onActivityResult(requestCode, resultCode, data);
-    }
-/*
-    public void getUserDetailsFromFB() {
+    public void getDataFromFacebook()
+    {
         Bundle parameters = new Bundle();
         parameters.putString("fields", "email,name,picture,link,events{id,category,place,picture,name,start_time,ticket_uri,admins,description,interested_count,attending_count}");
         new GraphRequest(
@@ -191,28 +82,7 @@ public class ActivityFacebook extends AppCompatActivity {
                             JSONObject event = response.getJSONObject().getJSONObject("events");//benjamin add
                             JSONArray eventArray = event.getJSONArray("data");//benjamin add
                             new downloadPictureAndSaveDataToParse(eventArray).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);//benjamin add
-                            JSONObject picture = response.getJSONObject().getJSONObject("picture");
-                            JSONObject data = picture.getJSONObject("data");
-                            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
-                            SharedPreferences.Editor editor = sp.edit();
-
-                             if(!response.getJSONObject().toString().isEmpty()&& !response.getJSONObject().equals(null)) //assaf 23.01 to read laso mail adress
-                             {
-                                 //Log.e ("FaceBook" ,"FB user data" +" " + response.getJSONObject().toString() );
-                                 editor.putString(GlobalVariables.FB_EMAIL, response.getJSONObject().getString("email"));
-                                 editor.putString(GlobalVariables.FB_NAME, response.getJSONObject().getString("name"));
-                                 editor.putString(GlobalVariables.FB_PIC_URL, data.getString("url"));
-                                 editor.putString(GlobalVariables.FB_ID, response.getJSONObject().getString("id"));
-                                 editor.apply();
-
-                                 fbName =   sp.getString(GlobalVariables.FB_NAME, "");
-                                 fbPicUrl = sp.getString(GlobalVariables.FB_PIC_URL, "");
-                                 fbEmail = sp.getString(GlobalVariables.FB_EMAIL, "");
-                                 fbID = sp.getString(GlobalVariables.FB_ID, "");
-                                 //Picasso.with (context).load (data.getString ("url")).into (profileFacebookPictureView);
-                                 //facebookUserNameView.setText (response.getJSONObject ().getString ("name"));
-                             }
-                            if(!GlobalVariables.IS_CUSTOMER_REGISTERED_USER)PassSMSRegistration(); //23.01 - assaf to pass SMS regitration if not done
+                            getProfileDetielsFromFaceBook(response);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -221,12 +91,44 @@ public class ActivityFacebook extends AppCompatActivity {
         ).executeAsync();
     }
 
+    /**
+     * The function pull the all profile from json object
+     * @param response is GraphResponse from facebook
+     */
+    private void getProfileDetielsFromFaceBook(GraphResponse response)
+    {
+        try
+        {
+            JSONObject picture = response.getJSONObject().getJSONObject("picture");
+            JSONObject data = picture.getJSONObject("data");
+            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+            SharedPreferences.Editor editor = sp.edit();
+            if(!response.getJSONObject().toString().isEmpty()&& !response.getJSONObject().equals(null)) //assaf 23.01 to read laso mail adress
+            {
+                //Log.e ("FaceBook" ,"FB user data" +" " + response.getJSONObject().toString() );
+                editor.putString(GlobalVariables.FB_EMAIL, response.getJSONObject().getString("email"));
+                editor.putString(GlobalVariables.FB_NAME, response.getJSONObject().getString("name"));
+                editor.putString(GlobalVariables.FB_PIC_URL, data.getString("url"));
+                editor.putString(GlobalVariables.FB_ID, response.getJSONObject().getString("id"));
+                editor.apply();
+
+                fbName = sp.getString(GlobalVariables.FB_NAME, "");
+                fbPicUrl = sp.getString(GlobalVariables.FB_PIC_URL, "");
+                fbEmail = sp.getString(GlobalVariables.FB_EMAIL, "");
+                fbID = sp.getString(GlobalVariables.FB_ID, "");
+            }
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+    }
 
 
-    *//**
+    /**
      * benjamin
      * AsyncTack that responsible to create event from faceBook and download picture
-     *//*
+     */
     private class downloadPictureAndSaveDataToParse extends AsyncTask<Void, Void, Void> {
         JSONArray array;
 
@@ -246,12 +148,12 @@ public class ActivityFacebook extends AppCompatActivity {
         }
     }
 
-    *//**
+    /**
      * benjamin
      * The function create event that pull from faceBook.
      *
      * @param jsonArray json array that contain all user event from facebook
-     *//*
+     */
     private void createEventFromFaceBook(JSONArray jsonArray) {
         for (int i = 0; i < jsonArray.length(); i++) {
             try {
@@ -278,12 +180,12 @@ public class ActivityFacebook extends AppCompatActivity {
         }
     }
 
-    *//**
+    /**
      * The functoin put to event his data
      *
      * @param object      json object ftom facebook
      * @param parseObject Event (ParseObject)
-     *//*
+     */
     private void putDataToEvent(JSONObject object, Event parseObject, int eventNum) {
         String street = "";
         String place = "";
@@ -436,20 +338,32 @@ public class ActivityFacebook extends AppCompatActivity {
     }
 
 
-    *//**
+    /**
+     * The function update event data
+     *
+     * @param object   json object from facebook
+     * @param eventNum number of event
+     * @param event    yhe event that need update in parse
+     */
+    private void updateEventDataFromUserEvent(JSONObject object, int eventNum, Event event) {
+        putDataToEvent(object, event, eventNum);
+    }
+
+
+    /**
      * benjamin
      * The function download picture of facebook Event from string
      *
      * @param str url of picture
      * @return ParseFile
-     *//*
+     */
     private ParseFile downloadImageFromUrl(String str, int i) {
         try {
             URL url = new URL(str);
             File facebookImage = UrlToFile(url);
-           // URLConnection conn = url.openConnection();
+            // URLConnection conn = url.openConnection();
             //Bitmap bitmap = BitmapFactory.decodeStream(conn.getInputStream());
-           // return changeBitmapToByteAndSaveInParseFIle(bitmap, i);
+            // return changeBitmapToByteAndSaveInParseFIle(bitmap, i);
             return changeBitmapToByteAndSaveInParseFIle(i,facebookImage.getPath());
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -457,24 +371,24 @@ public class ActivityFacebook extends AppCompatActivity {
         return null;
     }
 
-    *//**
+    /**
      * benjamin
      * The function change bitmap to byteArray
      *
      * @param filePath is a picture
      * @return ParseFile
-     *//*
+     */
     private ParseFile changeBitmapToByteAndSaveInParseFIle(int i,String filePath) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
         /////asaf///
-      //  Bitmap resized = Bitmap.createScaledBitmap(bitmap, 100, 100, true); ///assaf added
-      //  resized.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-         /////
-       // bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        //  Bitmap resized = Bitmap.createScaledBitmap(bitmap, 100, 100, true); ///assaf added
+        //  resized.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        /////
+        // bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
         ////
 
-      //
+        //
         //Bitmap resizedBitMap = scaleBitmap(bitmap, 650, 650); ///assaf added
 
         //
@@ -488,22 +402,11 @@ public class ActivityFacebook extends AppCompatActivity {
         return file;
     }
 
-    *//**
-     * The function update event data
-     *
-     //* @param object   json object from facebook
-     //* @param eventNum number of event
-     //* @param event    yhe event that need update in parse
-     *//*
-    private void updateEventDataFromUserEvent(JSONObject object, int eventNum, Event event) {
-        putDataToEvent(object, event, eventNum);
-    }
-
     //ASSAF
 
     private File UrlToFile(URL fileUrl) {//Assaf - 20.1 - pull the File from Link an store it on temp File
         URLConnection connection;
-        File FacebookImage = getTempFile(this);
+        File FacebookImage = getTempFile(context);
         try {
             connection = fileUrl.openConnection();
             InputStream inputStream = connection.getInputStream();
@@ -526,6 +429,7 @@ public class ActivityFacebook extends AppCompatActivity {
     }
 
 
+
     private File getTempFile(Context context) { // 20.10 - assaf- Create Tem FILE on OS
         tempFacebookImageFile = null;
         try {
@@ -535,74 +439,6 @@ public class ActivityFacebook extends AppCompatActivity {
             e.printStackTrace();
         }
         return tempFacebookImageFile;
-    }*/
-
-
-//    public static Bitmap scaleBitmap(Bitmap bitmap, int wantedWidth, int wantedHeight) {
-////        Bitmap output = Bitmap.createBitmap(wantedWidth, wantedHeight, Bitmap.Config.ARGB_8888);
-//  //      Canvas canvas = new Canvas(output);
-//        int width = bitmap.getWidth();
-//        int height =bitmap.getHeight();
-//        float scaleWidth = ((float) wantedWidth) / width;
-//        float scaleHeight = ((float) wantedHeight) / height;
-//        Matrix m = new Matrix();
-//       // m.setScale((float) wantedWidth / bitmap.getWidth(), (float) wantedHeight / bitmap.getHeight());
-//        m.postScale(scaleWidth, scaleHeight);
-//       // canvas.drawBitmap(bitmap, m, new Paint());
-//
-//        Bitmap resizedBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, m, true);
-//
-//
-//       return resizedBitmap;
-//
-//        //return output;
-//    }
-
-
-    private void PassSMSRegistration(){
-
-        Intent smsVerificationIntent = new Intent(ActivityFacebook.this, SmsSignUpActivity.class);
-        startActivity(smsVerificationIntent);
-        finish();
     }
 
-//    private void UpdateUserDetailes ()
-//    {
-//
-//        ParseQuery<Profile> query = ParseQuery.getQuery ("Profile");
-//        query.whereEqualTo ("number", user_number);
-//        query.findInBackground (new FindCallback<Profile>() {
-//            public void done(List<Profile> numbers, ParseException e) {
-//                if (e == null) {
-//                    if (numbers.size () > 0) {
-//                        previousDataFound = numbers.get (0);
-//                        CustomerDetails customerDetails = UserDetailsMethod.getUserDetailsWithBitmap(numbers);
-//                        if (usernameTE.getText ().toString ().isEmpty ()) {
-//                            usernameTE.setText (customerDetails.getCustomerName () + "");
-//                            usernameTE.setSelection (usernameTE.getText ().length ());
-//                        }
-//                        if (!image_selected) {
-//                            Bitmap customerImage = customerDetails.getBitmap ();
-//                            if (customerImage != null) {
-//                                customerImageView.setImageBitmap (customerImage);
-//                                image_was_before = true;
-//                            }
-//                        }
-//                        if(customerDetails.getEmail() != null) {
-//                            emailAddress.setText(customerDetails.getEmail().toString());
-//                        }
-//                    }
-//                } else {
-//                    e.printStackTrace ();
-//                }
-//            }
-//        });
-//    }
-//
-//    private void CheckIfUserExist()
-//    {
-//
-//    }
 }
-
-

@@ -4,6 +4,10 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+
+import com.example.events.PullDataFromFacebook;
+import com.facebook.AccessToken;
 
 public class LandingPage extends AppCompatActivity {
 
@@ -14,6 +18,16 @@ public class LandingPage extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_landing_page);
+        final AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        if (accessToken != null)
+        {
+            new PullDataFromFacebook("landingPage",getApplicationContext()).getDataFromFacebook();//benjamin add in 13.2.17  - for update userEvent from facebook
+            Log.e("LandingPage","accessToken!=null");
+        }
+        else
+        {
+            Log.e("LandingPage","accessToken==null");
+        }
     }
 
 
