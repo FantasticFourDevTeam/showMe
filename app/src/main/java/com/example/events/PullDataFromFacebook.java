@@ -69,7 +69,7 @@ public class PullDataFromFacebook
     public void getDataFromFacebook()
     {
         Bundle parameters = new Bundle();
-        parameters.putString("fields", "email,name,picture,link,events{id,category,place,picture,name,start_time,ticket_uri,admins,description,interested_count,attending_count}");
+        parameters.putString("fields", "email,name,picture.type(large),link,events{id,category,place,picture,name,start_time,ticket_uri,admins,description,interested_count,attending_count}");
         new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
                 "/me",
@@ -360,11 +360,11 @@ public class PullDataFromFacebook
     private ParseFile downloadImageFromUrl(String str, int i) {
         try {
             URL url = new URL(str);
-            File facebookImage = UrlToFile(url);
-            // URLConnection conn = url.openConnection();
-            //Bitmap bitmap = BitmapFactory.decodeStream(conn.getInputStream());
-            // return changeBitmapToByteAndSaveInParseFIle(bitmap, i);
-            return changeBitmapToByteAndSaveInParseFIle(i,facebookImage.getPath());
+            //File facebookImage = UrlToFile(url);// 24.02 assaf
+            URLConnection conn = url.openConnection();
+            Bitmap bitmap = BitmapFactory.decodeStream(conn.getInputStream());
+            return changeBitmapToByteAndSaveInParseFIle(bitmap, i);
+            //return changeBitmapToByteAndSaveInParseFIle(i,facebookImage.getPath());// 24.02 assaf
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -401,6 +401,22 @@ public class PullDataFromFacebook
         ParseFile file = new ParseFile("" + ((GlobalVariables.ALL_EVENTS_DATA.size() + 1) + i), image);
         return file;
     }
+	
+	private ParseFile changeBitmapToByteAndSaveInParseFile(Bitmap bitmap,int i) { // 24.02 - new Method Assaf
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+        /////asaf///
+        //  Bitmap resized = Bitmap.createScaledBitmap(bitmap, 600, 600, true); ///assaf added
+        //  resized.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        /////
+         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        ////
+
+        byte[] image = stream.toByteArray();
+        ParseFile file = new ParseFile("" + ((GlobalVariables.ALL_EVENTS_DATA.size() + 1) + i ) + ".JPEG", image);
+        return file;
+    }
+
 
     //ASSAF
 
