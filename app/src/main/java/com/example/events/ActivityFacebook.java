@@ -4,10 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -16,53 +12,22 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.FundigoApp.Customer.CustomerDetails;
-import com.example.FundigoApp.Customer.Social.Profile;
-import com.example.FundigoApp.Events.Event;
 import com.example.FundigoApp.GlobalVariables;
 import com.example.FundigoApp.R;
-import com.example.FundigoApp.StaticMethod.EventDataMethods;
-import com.example.FundigoApp.StaticMethod.UserDetailsMethod;
 import com.example.FundigoApp.Verifications.SmsSignUpActivity;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
-import com.facebook.HttpMethod;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.parse.FindCallback;
-import com.parse.ParseException;
-import com.parse.ParseFile;
-import com.parse.ParseObject;
-import com.parse.ParsePush;
-import com.parse.ParseQuery;
-import com.squareup.picasso.Picasso;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
-import java.util.regex.Pattern;
 
 
 
@@ -78,7 +43,7 @@ public class ActivityFacebook extends AppCompatActivity {
     HashMap<String, String> addressPerLanguage = new HashMap<>();
     HashMap<String, String> cityPerLanguage = new HashMap<>();
     File tempFacebookImageFile;
-
+    static Activity activity;
     SharedPreferences sp;
     String fbName = "";
     String fbPicUrl = "";
@@ -91,6 +56,7 @@ public class ActivityFacebook extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_facebook);
         context = this;
+        activity=this;
         cameToThisActivityFrom = getIntent().getExtras().getString("cameFrom");
         Log.e("ActivityFaceBook",cameToThisActivityFrom);
         //  facebook_login_button = (LoginButton) findViewById (R.id.login_button11);
@@ -166,7 +132,7 @@ public class ActivityFacebook extends AppCompatActivity {
     public void getUserDetailsFromFB()
     {
         new PullDataFromFacebook(cameToThisActivityFrom,this).getDataFromFacebook();//14.02.17 benjamin
-        if(!GlobalVariables.IS_CUSTOMER_REGISTERED_USER)PassSMSRegistration(); //23.01 - assaf to pass SMS regitration if not done
+        //if(!GlobalVariables.IS_CUSTOMER_REGISTERED_USER)PassSMSRegistration(); //23.01 - assaf to pass SMS regitration if not done
     }
 
 
@@ -559,11 +525,12 @@ public class ActivityFacebook extends AppCompatActivity {
 //    }
 
 
-    private void PassSMSRegistration(){
+    public static void PassSMSRegistration(){
 
-        Intent smsVerificationIntent = new Intent(ActivityFacebook.this, SmsSignUpActivity.class);
-        startActivity(smsVerificationIntent);
-        finish();
+        //Intent smsVerificationIntent = new Intent(ActivityFacebook.this, SmsSignUpActivity.class);
+        //startActivity(smsVerificationIntent);
+        context.startActivity(new Intent(context, SmsSignUpActivity.class));
+        activity.finish();
     }
 
 //    private void UpdateUserDetailes ()

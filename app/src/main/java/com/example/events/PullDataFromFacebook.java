@@ -4,9 +4,9 @@ package com.example.events;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
-
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -69,7 +69,7 @@ public class PullDataFromFacebook
     public void getDataFromFacebook()
     {
         Bundle parameters = new Bundle();
-        parameters.putString("fields", "email,name,picture.type(large),link,events{id,category,place,picture,name,start_time,ticket_uri,admins,description,interested_count,attending_count}");
+        parameters.putString("fields", "email,name,picture.type(large),link,events{id,category,place,picture.type(large),name,start_time,ticket_uri,admins,description,interested_count,attending_count}");
         new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
                 "/me",
@@ -82,7 +82,7 @@ public class PullDataFromFacebook
                             JSONObject event = response.getJSONObject().getJSONObject("events");//benjamin add
                             JSONArray eventArray = event.getJSONArray("data");//benjamin add
                             new downloadPictureAndSaveDataToParse(eventArray).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);//benjamin add
-                            getProfileDetielsFromFaceBook(response);
+                            getProfileDetailsFromFaceBook(response);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -95,7 +95,7 @@ public class PullDataFromFacebook
      * The function pull the all profile from json object
      * @param response is GraphResponse from facebook
      */
-    private void getProfileDetielsFromFaceBook(GraphResponse response)
+    private void getProfileDetailsFromFaceBook(GraphResponse response)
     {
         try
         {
@@ -116,6 +116,13 @@ public class PullDataFromFacebook
                 fbPicUrl = sp.getString(GlobalVariables.FB_PIC_URL, "");
                 fbEmail = sp.getString(GlobalVariables.FB_EMAIL, "");
                 fbID = sp.getString(GlobalVariables.FB_ID, "");
+            }
+            if(cameToThisActivityFrom.equals("userMenu")||cameToThisActivityFrom.equals("mainMenu")) // Register by SMS only if facebook registration is from User Menu
+                ActivityFacebook.PassSMSRegistration(); //26.02 - assaf to pass SMS regitration if not registered user
+            else
+            {
+             if (ActivityFacebook.activity!=null)
+                ActivityFacebook.activity.finish();
             }
         }
         catch (JSONException e)
@@ -200,41 +207,75 @@ public class PullDataFromFacebook
                 Log.e("NameofEvent", object.getString("name"));
             }
             if (object.has("place")) {
-
-                street = object.getJSONObject("place").getJSONObject("location").getString("street"); //assaf 16/01
-                place = object.getJSONObject("place").getString("name");
-                city = object.getJSONObject("place").getJSONObject("location").getString("city"); //assaf 16/01
-                address = street + "" + "," + city;//assaf
-
-                Log.e(" + object", object.getJSONObject("place").toString());
-                Log.e("+ street", street);
-                Log.e("+Picture" ,object.getJSONObject("picture").toString());
-                Log.e ("full object" , "object" + object.toString());
-
-                if (object.getJSONObject("place").has("location")) {
-                    parseObject.setY(Double.parseDouble(object.getJSONObject("place").getJSONObject("location").getString("longitude")));
-                    parseObject.setX(Double.parseDouble(object.getJSONObject("place").getJSONObject("location").getString("latitude")));
-                    parseObject.setCity(city);
-                    ///assaf
-                    try {
-                        if (address != "" && address != null) {
-                            addressPerLanguage.clear();
-                            cityPerLanguage.clear();
-                            EventDataMethods.addressNameNonEnglish(address, addressPerLanguage, cityPerLanguage);
-                        }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                    ///assaf
-
-                } else {
-                    parseObject.setCity("general");
+                try {
+                    street = object.getJSONObject("place").getJSONObject("location").getString("street"); //assaf 16/01
                 }
+                catch (Exception ex){
+                    street ="";
+                    ex.printStackTrace();
+                }
+                try {
+                    place = object.getJSONObject("place").getString("name");
+                }
+                catch (Exception ex){
+                    place= "";
+                    ex.printStackTrace();
+                }
+                try
+                {
+                    city = object.getJSONObject("place").getJSONObject("location").getString("city"); //assaf 16/01
+                }
+                catch (Exception ex){
+                    city = "";
+                    ex.printStackTrace();
+                }
+                if(city=="" && street==""){
+                    address="";
+                }
+                else {
+                    address = street + "" + "," + city;//assaf
+                }
+
+                Log.e(" + place", place);
+                Log.e("+ street", street);
+                Log.e("+Picture", object.getJSONObject("picture").toString());
+                Log.e("full object", "object" + object.toString());
+
+                 try {
+                    if (object.getJSONObject("place").has("location")) {
+                        parseObject.setY(Double.parseDouble(object.getJSONObject("place").getJSONObject("location").getString("longitude")));
+                        parseObject.setX(Double.parseDouble(object.getJSONObject("place").getJSONObject("location").getString("latitude")));
+                    }
+                   }
+                  catch (Exception ex){
+                      ex.printStackTrace();
+                  }
+
+                try {
+                    if (address != "" && address != null) {
+                        addressPerLanguage.clear();
+                        cityPerLanguage.clear();
+                        EventDataMethods.addressNameNonEnglish(address, addressPerLanguage, cityPerLanguage);
+                    }
+                    else
+                    {
+                        addressPerLanguage.clear();
+                        cityPerLanguage.clear();
+                        EventDataMethods.addressNameNonEnglish("", addressPerLanguage, cityPerLanguage);
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+                parseObject.setCity(city);
                 parseObject.setAddress(address);
                 parseObject.setPlace(place);
                 parseObject.setCityPerLanguage(cityPerLanguage);
                 parseObject.setAddressPerLanguage(addressPerLanguage);
-            } else parseObject.setPlace(object.getJSONObject("place").getString(" general"));
+            }
+            else {
+                parseObject.setPlace(object.getJSONObject("place").getString("general"));
+            }
             if (object.has("admins")) {
                 parseObject.setArtist(object.getJSONObject("admins").getJSONArray("data").getJSONObject(0).getString("name"));
             }
@@ -277,7 +318,7 @@ public class PullDataFromFacebook
 
             }
             parseObject.setNumOfTickets(-1);
-            parseObject.setEventATMService("no");
+            parseObject.setEventATMService("Unknown");
             parseObject.setEventCapacityService("Unknown");
             parseObject.setEventParkingService("Unknown");
             parseObject.setEventToiletService("1, Handicapped 0");
@@ -306,8 +347,8 @@ public class PullDataFromFacebook
                 //assaf 16.01
                 try {
                     //binyamin
-                    parseObject.setPic(downloadImageFromUrl(object.getJSONObject("picture").getJSONObject("data").getString("url"),eventNum));
-                    tempFacebookImageFile.delete();
+                    parseObject.setPic(downloadImageFromUrl(object.getJSONObject("picture").getJSONObject("data").getString("url"), eventNum));
+                  //  tempFacebookImageFile.delete();
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -357,13 +398,13 @@ public class PullDataFromFacebook
      * @param str url of picture
      * @return ParseFile
      */
-    private ParseFile downloadImageFromUrl(String str, int i) {
+    private ParseFile downloadImageFromUrl(String str, int i) throws IOException {
         try {
             URL url = new URL(str);
             //File facebookImage = UrlToFile(url);// 24.02 assaf
             URLConnection conn = url.openConnection();
             Bitmap bitmap = BitmapFactory.decodeStream(conn.getInputStream());
-            return changeBitmapToByteAndSaveInParseFIle(bitmap, i);
+            return changeBitmapToByteAndSaveInParseFile(bitmap, i);
             //return changeBitmapToByteAndSaveInParseFIle(i,facebookImage.getPath());// 24.02 assaf
         } catch (MalformedURLException e) {
             e.printStackTrace();

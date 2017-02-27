@@ -64,7 +64,7 @@ public class SaveCreditCard extends AppCompatActivity implements View.OnClickLis
             }
             if (flag) {
                 try {
-                    final Stripe stripe = new Stripe ("pk_test_YyMy1mvHItPsHftS4iKcoO3O");
+                    final Stripe stripe = new Stripe (this,"pk_test_YyMy1mvHItPsHftS4iKcoO3O");
                     stripe.createToken (card, new TokenCallback () {
                                 public void onSuccess(Token token) {
                                     token.getCard ().setNumber (noZipForm.getCreditCard ().getCardNumber ());

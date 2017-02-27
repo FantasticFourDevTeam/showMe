@@ -457,7 +457,14 @@ public class EventDataMethods {
                     cityPerLanguage.put (languageCode,"");
                 }
             }
+            else
+            {
+                addressPerLanguage.put(languageCode, "");
+                cityPerLanguage.put(languageCode,"");
+            }
         } catch (Exception e) {
+            addressPerLanguage.put(languageCode, "");
+            cityPerLanguage.put(languageCode,"");
             e.printStackTrace();
         }
     }
