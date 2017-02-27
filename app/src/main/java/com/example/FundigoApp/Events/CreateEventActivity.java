@@ -151,7 +151,9 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
     int IMAGE_MAX_SIZE = 650;
     private static Bitmap image;
     private Boolean toSaveEvent = false; // 17.11 assaf - check if vdlaidation pass before save event to Parse
-	boolean SHARE; //benjamin - check if event create for share to person contact/
+	boolean SHARE = false; //benjamin - check if event create for share to person contact/
+    boolean EXIT = false;
+    private static CheckBox checkBoxForShareWithContacts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,9 +181,9 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
         super.onResume();
         seats = sp.getBoolean(GlobalVariables.SEATS, false);
 		//condition for after share event and save. this condition return to list of producer event
-        if(SHARE)
+        if(EXIT)
         {
-            SHARE = false;
+            btn_next2.setClickable(false);//prevent save again until create page close
             finish();
         }
 
@@ -260,10 +262,7 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
                 Intent intent = new Intent(this, TicketsPriceActivity.class);
                 startActivity(intent);
                 break;
-			case R.id.btn_pickContact:
-                saveAndShare();
-                break;
-        }
+		  }
     }
 
     public boolean validatePrice() {
@@ -426,10 +425,13 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
  //   }
 
  
-    public void saveAndShare()
+    public void saveAndShare(boolean IsChecked)
     {
-        SHARE = true;
-        saveEvent();
+         if (IsChecked)
+            SHARE = true;
+        else
+            SHARE = false;
+
     }
     public void shareDeepLink(String name,String picUrl,String parseObjectId)
     {
@@ -671,6 +673,7 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
                             if(SHARE)
                             {
                                 shareDeepLink(et_name.getText().toString(),file.getUrl(),event.getObjectId());//benjamin add
+                                EXIT = true;
                             }
                             else
                             {
@@ -819,6 +822,8 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
         ll_description = (LinearLayout) findViewById(R.id.ll_description);
         btn_price_details = (Button) findViewById(R.id.btn_price_details);
         btn_price_details.setOnClickListener(this);
+        checkBoxForShareWithContacts = (CheckBox)findViewById(R.id.checkBoxShareContacts);
+        checkBoxForShareWithContacts.setOnCheckedChangeListener(this);
 
 //===============================Filter Spinner stuff==================================
         FILTERS = getResources().getStringArray(R.array.filters);
@@ -911,9 +916,20 @@ public class CreateEventActivity extends Activity implements View.OnClickListene
                     editor.putBoolean(GlobalVariables.SEATS, false);
                     editor.apply();
                 }
-
                 break;
+               case R.id.checkBoxShareContacts:
+                   if (isChecked) {
+                       saveAndShare(true);
+                   }
+                   else
+                   {
+                       saveAndShare(false);
+                   }
+                break;
+
         }
+
+
     }
 
     /**
