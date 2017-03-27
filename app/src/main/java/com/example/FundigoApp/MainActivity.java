@@ -1,46 +1,39 @@
 package com.example.FundigoApp;
 
-
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.FundigoApp.Chat.checkMessageUnreadChats;
-import com.example.FundigoApp.Customer.CustomerMenu.MenuActivity;
 import com.example.FundigoApp.Customer.RealTime.RealTimeActivity;
 import com.example.FundigoApp.Customer.SavedEvents.SavedEventActivity;
 import com.example.FundigoApp.Customer.Social.MyNotificationsActivity;
 import com.example.FundigoApp.Customer.Social.Profile;
-import com.example.FundigoApp.Events.CreateEventActivity;
 import com.example.FundigoApp.Events.EventInfo;
 import com.example.FundigoApp.Events.EventPageActivity;
 import com.example.FundigoApp.Events.EventsListAdapter;
-import com.example.FundigoApp.Filter.FilterPageActivity;
 import com.example.FundigoApp.MyLocation.CityMenu;
 import com.example.FundigoApp.StaticMethod.EventDataMethods;
 import com.example.FundigoApp.StaticMethod.EventDataMethods.GetEventsDataCallback;
@@ -49,24 +42,16 @@ import com.example.FundigoApp.StaticMethod.FilterMethods;
 import com.example.FundigoApp.StaticMethod.GPSMethods;
 import com.example.FundigoApp.StaticMethod.GPSMethods.GpsICallback;
 import com.example.FundigoApp.StaticMethod.GeneralStaticMethods;
-import com.example.FundigoApp.Verifications.SmsSignUpActivity;
-import com.example.events.ActivityFacebook;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
-import com.parse.ParseInstallation;
-import com.parse.ParseObject;
-import com.parse.ParsePush;
 import com.parse.ParseQuery;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -74,10 +59,10 @@ import java.util.Set;
 import io.branch.referral.Branch;
 import io.branch.referral.BranchError;
 
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener,
+public class MainActivity extends Fragment implements AdapterView.OnItemClickListener,
                                                                        View.OnClickListener,
                                                                        GetEventsDataCallback,
-                                                                       GpsICallback {
+                                                                       GpsICallback,CustomerFragmentsMainActivity.ClickCaller {
 
     ListView list_view;
     private static List<EventInfo> filtered_events_data = new ArrayList<EventInfo>();
@@ -90,8 +75,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     Context context;
     private static SharedPreferences _sharedPref;
     private static TextView filterTextView;
-    PushDisplay display;
-    private static Boolean EXIT;// a flag to close main activities that in stack when press back
+    //PushDisplay display; // push messages banner cancedled for now 08.03 - assaf
     private static ImageView qr_scan_icon;
     //public static ProgressDialog dialog;
     //public static int dialogCounter; //for present the progress dialog only once when statiscics page loaded
@@ -102,105 +86,60 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     ArrayList<String> _mainFilterForFilter = new ArrayList<>();//assaf - 02.12 assaf
     Boolean IsLocationSavedInParse = false;
     Boolean swipeDetected = false;// detect if swipe to left on Event
+    private Button mainCityFilterButton;
+
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+        View rootView = inflater.inflate(R.layout.activity_main, container, false);
+        //customerLogin(); //01.03 moved to Main fragment
+        createCustomerMainPage(rootView);
+        return rootView;
+
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        GlobalVariables.CUSTOMER_PHONE_NUM = FileAndImageMethods.getCustomerPhoneNumFromFile(this.getContext());
+    }
+    /* moved ot oncretae view - 01.03 -assaf
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         GlobalVariables.CUSTOMER_PHONE_NUM = FileAndImageMethods.getCustomerPhoneNumFromFile(this);
-        /**
-         * only one if condition, not like before
-         */
-		 /*
-        if (GlobalVariables.IS_PRODUCER) {
-            createProducerMainPage();
-        } else {
-            customerLogin();
-            createCustomerMainPage();
-            EXIT = false;
-        }*/
         customerLogin();
         createCustomerMainPage();
         EXIT = false;
-        startService(new Intent(this, checkMessageUnreadChats.class));
+        startService(new Intent(this, checkMessageUnreadChats.class));  //01.03 assaf - moved to Main faramnt activity
     }
+*/
 
-    /*
-        public void createProducerMainPage() {
-            setContentView(R.layout.producer_avtivity_main);
+    public void createCustomerMainPage(View rootView) {
+        //setContentView(R.layout.activity_main); moved to oncreate
 
-            TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-            if (Locale.getDefault().getDisplayLanguage().equals("עברית")) {
-                tabLayout.addTab(tabLayout.newTab().setText("אמנים"));
-                tabLayout.addTab(tabLayout.newTab().setText("מידע"));
-            } else {
-                tabLayout.addTab(tabLayout.newTab().setText("Artists"));
-                tabLayout.addTab(tabLayout.newTab().setText("State"));
-            }
+        list_view = (ListView) rootView.findViewById(R.id.listView);
+        mainCityFilterButton = (Button)getActivity().findViewById(R.id.main_fragment_main_city_item);// 08.10 added
+     /* event = (Button) rootView.findViewById(R.id.BarEvent_button);
+        savedEvent = (Button) rootView.findViewById(R.id.BarSavedEvent_button);
+        realTime = (Button) rootView.findViewById(R.id.BarRealTime_button);
+        notification = (ImageView) rootView.findViewById(R.id.notification_item);
+        */
+        unreadMessage = (EditText) getActivity().findViewById(R.id.Message_unread);
 
-            tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-            final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-            final TabPagerAdapter adapter = new TabPagerAdapter
-                    (getSupportFragmentManager(), tabLayout.getTabCount());
-            qr_scan_icon = (ImageView) findViewById(R.id.qr_scan_produ);
-            viewPager.setAdapter(adapter);
-            viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+       // notification.setOnClickListener(this);
+        context = this.getContext();
+        //currentCityButton = (Button) rootView.findViewById(R.id.city_item);
+        eventsListAdapter = new EventsListAdapter(this.getContext(), filtered_events_data, false);
+        //realTime.setOnClickListener(this);
+       // event.setOnClickListener(this);
+       // savedEvent.setOnClickListener(this);
+        filterTextView = (TextView) rootView.findViewById(R.id.filterView);
 
-            tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-
-                @Override
-                public void onTabSelected(TabLayout.Tab tab) {
-                    if (tab.getPosition() == 1 && dialogCounter == 0) {
-                        dialog = new ProgressDialog(MainActivity.this);
-                        dialog.setMessage("Loading...");
-                        dialog.show();
-                    }
-                    viewPager.setCurrentItem(tab.getPosition());
-                }
-
-                @Override
-                public void onTabUnselected(TabLayout.Tab tab) {
-                    if (tab.getPosition() == 1) {
-                        dialogCounter++;
-                    }
-                    viewPager.setCurrentItem(tab.getPosition());
-                }
-
-                @Override
-                public void onTabReselected(TabLayout.Tab tab) {
-                }
-            });
-
-            qr_scan_icon.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(getApplicationContext(), QR_producer.class);
-                    startActivity(intent);
-                }
-            });
-        }
-    */
-    public void createCustomerMainPage() {
-        setContentView(R.layout.activity_main);
-
-        list_view = (ListView) findViewById(R.id.listView);
-        event = (Button) findViewById(R.id.BarEvent_button);
-        savedEvent = (Button) findViewById(R.id.BarSavedEvent_button);
-        realTime = (Button) findViewById(R.id.BarRealTime_button);
-        notification = (ImageView) findViewById(R.id.notification_item);
-        unreadMessage = (EditText) findViewById(R.id.Message_unread);
-
-        notification.setOnClickListener(this);
-        context = this;
-
-        currentCityButton = (Button) findViewById(R.id.city_item);
-        eventsListAdapter = new EventsListAdapter(this, filtered_events_data, false);
-        realTime.setOnClickListener(this);
-        event.setOnClickListener(this);
-        savedEvent.setOnClickListener(this);
-        filterTextView = (TextView) findViewById(R.id.filterView);
-
-        search = (ImageView) findViewById(R.id.search);
-        search.setOnClickListener(this);
+        //search = (ImageView) rootView.findViewById(R.id.search);
+        //search.setOnClickListener(this);
 
         list_view.setAdapter(eventsListAdapter);
         list_view.setSelector(new ColorDrawable(Color.TRANSPARENT));
@@ -209,8 +148,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
 
         if (GlobalVariables.ALL_EVENTS_DATA.size() == 0) {
-            Intent intent = new Intent(this, EventPageActivity.class);
-            EventDataMethods.downloadEventsData(this, null, this.context, intent);
+            Intent intent = new Intent(this.getContext(), EventPageActivity.class);
+            EventDataMethods.downloadEventsData(this, null, this.getContext(), intent);
         } else {
             inflateCityMenu();
             filtered_events_data.clear();
@@ -221,19 +160,21 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     GlobalVariables.namesCity,
                     GlobalVariables.indexCityChosen);
             if (GlobalVariables.MY_LOCATION == null) {
-                GPSMethods.updateDeviceLocationGPS(this.context, this);
+                GPSMethods.updateDeviceLocationGPS(this.getContext(), this);
             }
             EventDataMethods.RemoveExpiredAndCanceledEvents(filtered_events_data);//assaf - to remove expired and canceled events form list
             eventsListAdapter.notifyDataSetChanged();
         }
 
+           //canceled for now
+           // pushViewText = (TextView) rootView.findViewById(R.id.pushView);// push notifications bar in the bottom of the page
 
-        pushViewText = (TextView) findViewById(R.id.pushView);// push notifications bar in the bottom of the page
+  // moved to main Fragmnet
         //dialog for Register to application - appears when it is a guest only
-
+/*
         if (GlobalVariables.CUSTOMER_PHONE_NUM == null || GlobalVariables.CUSTOMER_PHONE_NUM.equals("")) {
             //dialog that popup for Guest only for register to Application
-            final Dialog dialog = new Dialog(this);
+            final Dialog dialog = new Dialog(this.getContext());
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setContentView(R.layout.login_dialog);
             dialog.setCancelable(false);
@@ -267,26 +208,29 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
             dialog.show();
         }
+   */
 
+        // moved to main fragmnet
         // dialog that popup if NO gps after 2 minutes that user logged
-        builder = new AlertDialog.Builder(context);
-        gpsMessageHandler = new Handler();
-        gpsMessageHandler.postDelayed(gpsRunnable, 300000);// 26.09 assaf - check each 5 minutes from the moment this page uploaded-- if no GPS location then show a message
+       // builder = new AlertDialog.Builder(context);
+
+        // 01.03 moved to Mian Fragment
+       // gpsMessageHandler = new Handler();
+       // gpsMessageHandler.postDelayed(gpsRunnable, 300000);// 26.09 assaf - check each 5 minutes from the moment this page uploaded-- if no GPS location then show a message
     }
 
     @Override
     public void eventDataCallback() {
         filtered_events_data.clear();
         filtered_events_data.addAll(GlobalVariables.ALL_EVENTS_DATA);
-
         eventsListAdapter.notifyDataSetChanged();
-        inflateCityMenu();//assaf added to call this message here and not from OnCreate
+        inflateCityMenu();
         FilterMethods.filterListsAndUpdateListAdapter(filtered_events_data,
                 eventsListAdapter,
                 GlobalVariables.namesCity,
                 GlobalVariables.indexCityChosen);
         if (GlobalVariables.MY_LOCATION == null) {
-            GPSMethods.updateDeviceLocationGPS(this.context, this);
+            GPSMethods.updateDeviceLocationGPS(this.getContext(), this);
         }
         EventDataMethods.RemoveExpiredAndCanceledEvents(filtered_events_data);//22.01 - Assaf remove cnacled or expired events form the List of events
         eventsListAdapter.notifyDataSetChanged();
@@ -294,11 +238,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     public void gpsCallback() {
+        ArrayList<EventInfo> tempEventsListForCityNameFilter = new ArrayList<>();
+
         if ((GlobalVariables.MY_LOCATION == null || !GPSMethods.isLocationEnabled(context)) && !GlobalVariables.IS_PRODUCER) {
             gpsMessageHandler.postDelayed(gpsRunnable, 5);// check after 5 minutes from the moment GPS updates method  called-- if no GPS location then show a message
         }
-
-
         //Save User location once login done and GPS is open- done only one time
         if (GlobalVariables.MY_LOCATION != null && !IsLocationSavedInParse && GlobalVariables.CUSTOMER_PHONE_NUM != null) {
             ParseQuery<Profile> query = ParseQuery.getQuery("Profile");
@@ -312,7 +256,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                         if (e == null) {
                             for (Profile userProfile : objects) {
                                 ParseGeoPoint parseGeoPoint = new ParseGeoPoint(GlobalVariables.MY_LOCATION.getLatitude(),
-                                        GlobalVariables.MY_LOCATION.getLongitude());
+                                GlobalVariables.MY_LOCATION.getLongitude());
                                 userProfile.setLocation(parseGeoPoint);
                                 try {
                                     userProfile.save();
@@ -331,13 +275,21 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         }
 
-        if (GlobalVariables.CITY_GPS != null && !GlobalVariables.CITY_GPS.isEmpty() && GlobalVariables.MY_LOCATION != null) {
-            GlobalVariables.cityMenuInstance = new CityMenu(GlobalVariables.ALL_EVENTS_DATA, this);
+
+        if (GlobalVariables.CITY_GPS != null && !GlobalVariables.CITY_GPS.isEmpty() && GlobalVariables.MY_LOCATION != null
+                && this.getContext()!=null) {
+
+            tempEventsListForCityNameFilter.clear();
+            tempEventsListForCityNameFilter.addAll(GlobalVariables.ALL_EVENTS_DATA);
+            EventDataMethods.RemoveExpiredAndCanceledEvents(tempEventsListForCityNameFilter);// - Assaf remove canceled or expired events cities form the city menu list
+            //GlobalVariables.cityMenuInstance = new CityMenu(GlobalVariables.ALL_EVENTS_DATA, this.getContext());
+            GlobalVariables.cityMenuInstance = new CityMenu(tempEventsListForCityNameFilter, this.getContext());
             GlobalVariables.namesCity = GlobalVariables.cityMenuInstance.getCityNames();
             inflateCityMenu();
             int indexCityGps = GPSMethods.getCityIndexFromName(GlobalVariables.CITY_GPS);
 
             if (indexCityGps >= 0) {
+
                 // popup.getMenu().getItem(GlobalVariables.indexCityGPS).setTitle(GlobalVariables.namesCity[GlobalVariables.indexCityGPS]);
                 GlobalVariables.indexCityGPS = indexCityGps;
                 popup.getMenu().getItem(GlobalVariables.indexCityGPS).setTitle(GlobalVariables.CITY_GPS + "(GPS)");
@@ -353,7 +305,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     filtered_events_data.clear();
                     filtered_events_data.addAll(tempEventsList);
                     eventsListAdapter.notifyDataSetChanged();
-                    currentCityButton.setText(GlobalVariables.CITY_GPS + "(GPS)");
+                    mainCityFilterButton.setText(GlobalVariables.CITY_GPS + "(GPS)");
                 }
 
             } else { // ASSAF :08/09 to support a case that GPS location updated but not found in the list of Cities
@@ -387,9 +339,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             if (GlobalVariables.CITY_GPS != null &&
                     GlobalVariables.namesCity[GlobalVariables.indexCityChosen].equals(GlobalVariables.CITY_GPS) &&
                     GPSMethods.getCityIndexFromName(GlobalVariables.CITY_GPS) >= 0) {
-                currentCityButton.setText(GlobalVariables.namesCity[GlobalVariables.indexCityChosen] + "(GPS)");
+                mainCityFilterButton.setText(GlobalVariables.namesCity[GlobalVariables.indexCityChosen] + "(GPS)");
             } else {
-                currentCityButton.setText(GlobalVariables.namesCity[GlobalVariables.indexCityChosen]);
+                mainCityFilterButton.setText(GlobalVariables.namesCity[GlobalVariables.indexCityChosen]);
             }
         }
 
@@ -397,12 +349,25 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         eventsListAdapter.notifyDataSetChanged();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
 
-        FilterMethods.setContext(getApplicationContext());//for Intilaize FilterMethods Context to getData static method.
-        unreadMessageAndPushNumber = Integer.parseInt(MyServices.getFromSharedPreferences("push", getApplicationContext()) + MyServices.getFromSharedPreferences("unreadMessageFromCustomer", getApplicationContext()) + MyServices.getFromSharedPreferences("unreadMessageFromProducer", getApplicationContext()));
+    @Override
+    public void GetMenuCityButtonClick(){
+        inflateCityMenu();
+        popup.show();
+    }
+
+
+
+    @Override
+    public void onResume() {
+
+       super.onResume();
+
+        FilterMethods.setContext((getActivity().getApplicationContext()));//for Intilaize FilterMethods Context to getData static method.
+        unreadMessageAndPushNumber = Integer.parseInt(MyServices.getFromSharedPreferences("push", (getActivity().getApplicationContext()))
+                + MyServices.getFromSharedPreferences("unreadMessageFromCustomer", getActivity().getApplicationContext())
+                + MyServices.getFromSharedPreferences("unreadMessageFromProducer", getActivity().getApplicationContext()));
+
         if (unreadMessageAndPushNumber > 0) {
             if (unreadMessage.getVisibility() != View.VISIBLE) {
                 unreadMessage.setVisibility(View.VISIBLE);
@@ -414,12 +379,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         try {
             if (!GlobalVariables.IS_PRODUCER) {
-
-                if (EXIT) // if exit is true then back button pressed and actiivty will be closed
-                {
-                    this.finish();
-                }
-                if (GlobalVariables.USER_CHOSEN_CITY_MANUALLY) {
+               if (GlobalVariables.USER_CHOSEN_CITY_MANUALLY) {
                     ArrayList<EventInfo> tempEventsList =
                             FilterMethods.filterByCityAndFilterName(
                                     GlobalVariables.namesCity[GlobalVariables.indexCityChosen],
@@ -434,9 +394,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     if (GlobalVariables.CITY_GPS != null &&
                             GlobalVariables.namesCity[GlobalVariables.indexCityChosen].equals(GlobalVariables.CITY_GPS) &&
                             GPSMethods.getCityIndexFromName(GlobalVariables.CITY_GPS) >= 0) {
-                        currentCityButton.setText(GlobalVariables.namesCity[GlobalVariables.indexCityChosen] + "(GPS)");
+                        mainCityFilterButton.setText(GlobalVariables.namesCity[GlobalVariables.indexCityChosen] + "(GPS)");
                     } else {
-                        currentCityButton.setText(GlobalVariables.namesCity[GlobalVariables.indexCityChosen]);
+                        mainCityFilterButton.setText(GlobalVariables.namesCity[GlobalVariables.indexCityChosen]);
                     }
                 } else if (GlobalVariables.CITY_GPS != null &&
                         !GlobalVariables.CITY_GPS.isEmpty() &&
@@ -452,7 +412,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     filtered_events_data.clear();
                     filtered_events_data.addAll(tempEventsList);
                     eventsListAdapter.notifyDataSetChanged();
-                    currentCityButton.setText(GlobalVariables.CITY_GPS + "(GPS)");
+                    mainCityFilterButton.setText(GlobalVariables.CITY_GPS + "(GPS)");
                 } else {
                     ArrayList<EventInfo> tempEventsList =
                             FilterMethods.filterByCityAndFilterName(
@@ -467,9 +427,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     eventsListAdapter.notifyDataSetChanged();
                 }
                 displayFilterBannerAndSaveFilter();  // display the filter Banner
-                // display the filter line
-                PushDisplay display = new PushDisplay(); // Assaf :execute the the push notifications display in the Textview
-                display.execute();
+
+                // display the filter line - canceled for now - 08.03
+               // PushDisplay display = new PushDisplay(); // Assaf :execute the the push notifications display in the Textview
+              //  display.execute();
+
                 EventDataMethods.RemoveExpiredAndCanceledEvents(filtered_events_data);//22.01 - Assaf remove cnacled or expired events form the List of events
                 eventsListAdapter.notifyDataSetChanged();
 
@@ -480,14 +442,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     private void inflateCityMenu() {
-        popup = new PopupMenu(MainActivity.this, currentCityButton);//Assaf added
+        popup = new PopupMenu(this.getContext(), mainCityFilterButton);//Assaf added
         popup.getMenuInflater().inflate(R.menu.popup_city, popup.getMenu());//Assaf added
         loadCityNamesToPopUp();
-        currentCityButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+       // mainCityFilterButton.setOnClickListener(new View.OnClickListener() {
+           // @Override
+         //   public void onClick(View v) {
                 //registering popup with OnMenuItemClickListener
-                currentCityButton.setClickable(false);
+             //   mainCityFilterButton.setClickable(false);
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     public boolean onMenuItemClick(MenuItem item) {
 
@@ -497,9 +459,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                         if (GlobalVariables.CITY_GPS != null &&
                                 GlobalVariables.namesCity[GlobalVariables.indexCityChosen].equals(GlobalVariables.CITY_GPS) &&
                                 GPSMethods.getCityIndexFromName(GlobalVariables.CITY_GPS) >= 0) {
-                            currentCityButton.setText(GlobalVariables.namesCity[GlobalVariables.indexCityChosen] + "(GPS)");
+                            mainCityFilterButton.setText(GlobalVariables.namesCity[GlobalVariables.indexCityChosen] + "(GPS)");
                         } else {
-                            currentCityButton.setText(GlobalVariables.namesCity[GlobalVariables.indexCityChosen]);
+                            mainCityFilterButton.setText(GlobalVariables.namesCity[GlobalVariables.indexCityChosen]);
                         }
                         ArrayList<EventInfo> tempEventsList =
                                 FilterMethods.filterByCityAndFilterName(
@@ -516,17 +478,16 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
                         EventDataMethods.RemoveExpiredAndCanceledEvents(filtered_events_data);//22.01 - Assaf remove cnacled or expired events form the List of events
                         eventsListAdapter.notifyDataSetChanged();
-
                         return true;
                     }
                 });
-                popup.show();//showing popup menu
-                currentCityButton.setClickable(true);
+//                popup.show();//showing popup menu
+//                mainCityFilterButton.setClickable(true);
             }
-        });
-    }
+      //  });
+  //  }
 
-    public boolean onPrepareOptionsMenu(Menu menu) {
+    public void onPrepareOptionsMenu(Menu menu) {
         //Hide the Items in Menu XML which are empty since the length of menu is less then Max length dfined.
         //Less relevnat after we changed the menu to dislay all cities
         try {
@@ -543,7 +504,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         } catch (Exception e) {
             Log.e(e.toString(), "On Prepare Method Exception");
         }
-        return true;
+        //return true;
     }
 
 
@@ -576,11 +537,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 GlobalVariables.indexCityChosen = 0;
             }
             if (GlobalVariables.USER_CHOSEN_CITY_MANUALLY) {
-                currentCityButton.setText(popup.getMenu().getItem(GlobalVariables.indexCityChosen).getTitle());
+                mainCityFilterButton.setText(popup.getMenu().getItem(GlobalVariables.indexCityChosen).getTitle());
             } else if (GlobalVariables.CITY_GPS != null && GPSMethods.getCityIndexFromName(GlobalVariables.CITY_GPS) >= 0) {
-                currentCityButton.setText(GlobalVariables.CITY_GPS + "(GPS)");
+                mainCityFilterButton.setText(GlobalVariables.CITY_GPS + "(GPS)");
             } else {
-                currentCityButton.setText(popup.getMenu().getItem(0).getTitle());
+                mainCityFilterButton.setText(popup.getMenu().getItem(0).getTitle());
             }
         } catch (Exception e) {
             throw e;
@@ -597,29 +558,31 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public void onClick(View v) {
         Intent newIntent = null;
         if (v.getId() == savedEvent.getId()) {
-            newIntent = new Intent(this, SavedEventActivity.class);
+            newIntent = new Intent(this.getContext(), SavedEventActivity.class);
             startActivity(newIntent);
         } else if (v.getId() == realTime.getId()) {
-            newIntent = new Intent(this, RealTimeActivity.class);
+            newIntent = new Intent(this.getContext(), RealTimeActivity.class);
             startActivity(newIntent);
         } else if (v.getId() == search.getId()) {
-            newIntent = new Intent(this, SearchActivity.class);
+            newIntent = new Intent(this.getContext(), SearchActivity.class);
             startActivity(newIntent);
         } else if (v.getId() == notification.getId()) {
-            newIntent = new Intent(this, MyNotificationsActivity.class);
+            newIntent = new Intent(this.getContext(), MyNotificationsActivity.class);
             startActivity(newIntent);
         }
     }
 
-    public void openFilterPage(View v) {
-        Intent filterPageIntent = new Intent(this, FilterPageActivity.class);
+    //01.03 - passed to Main Frgamnet
+
+   /* public void openFilterPage(View v) {
+        Intent filterPageIntent = new Intent(this.getContext(), FilterPageActivity.class);
         startActivity(filterPageIntent);
     }
 
     public void openMenuPage(View v) {
-        Intent menuPageIntent = new Intent(this, MenuActivity.class);
+        Intent menuPageIntent = new Intent(this.getContext(), MenuActivity.class);
         startActivity(menuPageIntent);
-    }
+    } */
 
     @Override
     public void onItemClick(AdapterView<?> av, View view, int i, long l) { //Assaf 16.12 - changed ot support onClick and OnItemTouch
@@ -630,7 +593,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         //     }
         //  else {
         Bundle b = new Bundle();
-        Intent intent = new Intent(this, EventPageActivity.class);
+        Intent intent = new Intent(this.getContext(), EventPageActivity.class);
         EventDataMethods.onEventItemClick(i, filtered_events_data, intent);
         intent.putExtras(b);
         startActivity(intent);
@@ -638,22 +601,22 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         GeneralStaticMethods.onActivityResult(requestCode,
                 data,
-                this);
+                this.getActivity());
     }
 
-    public void createEvent(View view) {
+    /*public void createEvent(View view) {
         Intent intent = new Intent(MainActivity.this, CreateEventActivity.class);
         intent.putExtra("create", "true");
         startActivity(intent);
-    }
+    }*/
 
     @Override
     public void onStart() {
         super.onStart();
-        Branch branch = Branch.getInstance(getApplicationContext());
+        Branch branch = Branch.getInstance((getActivity().getApplicationContext()));
         branch.initSession(new Branch.BranchReferralInitListener() {
             @Override
             public void onInitFinished(JSONObject referringParams, BranchError error) {
@@ -675,17 +638,19 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                         e.printStackTrace();
                     }
                 } else
-                    Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText((getActivity().getApplicationContext()), error.getMessage(), Toast.LENGTH_SHORT).show();
             }
-        }, this.getIntent().getData(), this);
+        }, getActivity().getIntent().getData(), getActivity());
     }
 
-    @Override
-    public void onNewIntent(Intent intent) {
-        this.setIntent(intent);
-    }
+//    //@Override
+//    public void onNewIntent(Intent intent) {
+//        getActivity().setIntent(intent);
+//    }
 
-    private class PushDisplay extends AsyncTask<Void, String, String> { // Display Push Events in Text View banner
+    // Asynch for Push messages display at the bottom bunner - canceled for now - Asaf 08.03
+
+  /*  private class PushDisplay extends AsyncTask<Void, String, String> { // Display Push Events in Text View banner
         List<ParseObject> pushObjectsList = new ArrayList<ParseObject>();
 
         @Override
@@ -730,52 +695,54 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        try {
-            super.onDestroy();
-            _sharedPref = getSharedPreferences("filterInfo", MODE_PRIVATE); // 24.09- assaf: to Edit the Shared P. and delete the price and date form filter
-            _sharedPref.edit().putString("date", "").commit();// 24.09- assaf:
-            _sharedPref.edit().putString("price", "").commit();// 24.09- assaf:
-            _sharedPref.edit().putString("dateFrom", "").commit();// 18.10- assaf:
-            _sharedPref.edit().putString("dateTo", "").commit();// 18.10- assaf:
+    */
 
-            //Save Filters Choice in Parse for Future use. if not empty or null
-
-            if (GlobalVariables.CURRENT_FILTER_NAME != null && !GlobalVariables.CURRENT_FILTER_NAME.isEmpty()) {
-                ParseQuery<Profile> query = ParseQuery.getQuery("Profile");
-                query.whereEqualTo("number", GlobalVariables.CUSTOMER_PHONE_NUM);
-                query.setLimit(100000);
-                try {
-                    List<Profile> listNumbers = query.find();
-                    for (Profile userProfile : listNumbers) {
-                        userProfile.put("prefferedTopics", GlobalVariables.CURRENT_FILTER_NAME);
-                        userProfile.save();
-                    }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-              cleanDeviceCacheOnDestroy(); //28.01 - clean device background
-
-            System.runFinalization();
-
-            int currentApiVersion = android.os.Build.VERSION.SDK_INT;
-            if (currentApiVersion >= Build.VERSION_CODES.JELLY_BEAN) { //chekc that API version greater then 15
-                finishAffinity();
-            } else {
-                finish();
-            }
-            System.exit(0);     // for kill  background Threads that operate the Endless loop of present the push messages
-        } catch (Exception ex) {
-            Log.e(ex.getMessage(), "onDestroy exception");
-        }
-    }
+//    @Override - passed to Main fragmnet - 01.03
+//    protected void onDestroy() {
+//        try {
+//            super.onDestroy();
+//            _sharedPref = getSharedPreferences("filterInfo", MODE_PRIVATE); // 24.09- assaf: to Edit the Shared P. and delete the price and date form filter
+//            _sharedPref.edit().putString("date", "").commit();// 24.09- assaf:
+//            _sharedPref.edit().putString("price", "").commit();// 24.09- assaf:
+//            _sharedPref.edit().putString("dateFrom", "").commit();// 18.10- assaf:
+//            _sharedPref.edit().putString("dateTo", "").commit();// 18.10- assaf:
+//
+//            //Save Filters Choice in Parse for Future use. if not empty or null
+//
+//            if (GlobalVariables.CURRENT_FILTER_NAME != null && !GlobalVariables.CURRENT_FILTER_NAME.isEmpty()) {
+//                ParseQuery<Profile> query = ParseQuery.getQuery("Profile");
+//                query.whereEqualTo("number", GlobalVariables.CUSTOMER_PHONE_NUM);
+//                query.setLimit(100000);
+//                try {
+//                    List<Profile> listNumbers = query.find();
+//                    for (Profile userProfile : listNumbers) {
+//                        userProfile.put("prefferedTopics", GlobalVariables.CURRENT_FILTER_NAME);
+//                        userProfile.save();
+//                    }
+//                } catch (Exception ex) {
+//                    ex.printStackTrace();
+//                }
+//            }
+//              cleanDeviceCacheOnDestroy(); //28.01 - clean device background
+//
+//            System.runFinalization();
+//
+//            int currentApiVersion = android.os.Build.VERSION.SDK_INT;
+//            if (currentApiVersion >= Build.VERSION_CODES.JELLY_BEAN) { //chekc that API version greater then 15
+//                finishAffinity();
+//            } else {
+//                finish();
+//            }
+//            System.exit(0);     // for kill  background Threads that operate the Endless loop of present the push messages
+//        } catch (Exception ex) {
+//            Log.e(ex.getMessage(), "onDestroy exception");
+//        }
+//    }
 
     private String[] getData()
     // display the filter info selected by the user. 24-09 - assaf
     {
-        _sharedPref = getSharedPreferences("filterInfo", MODE_PRIVATE);
+        _sharedPref = this.getActivity().getSharedPreferences("filterInfo", Context.MODE_PRIVATE);
         String _date = _sharedPref.getString("date", "");
         String _dateFrom = _sharedPref.getString("dateFrom", ""); //18.10 assaf
         String _dateTo = _sharedPref.getString("dateTo", "");//18.10 - assaf
@@ -795,7 +762,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         return _results;
     }
 
-    private static class mainHandler extends Handler {
+  // push messages filter bottom banner canceled for now - 08.03 - assaf
+   /* private static class mainHandler extends Handler {
         //Using a weak reference means you won't prevent garbage collection
         private final WeakReference<MainActivity> mainWeakReference;
         SavedEventActivity savedEveAct = new SavedEventActivity();
@@ -819,24 +787,18 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         }
 
-    }
+    } */
 
-    public Handler getHandler() {
+ /*   public Handler getHandler() {
         return new mainHandler(this);
-    }
+    } */
 
-//    @Override
-//    public void onPause() {
-//        super.onPause();  // Always call the superclass method first
-//        if (display != null) {
-//            //   display.cancel (true);
-//        }
-//
-//    }
+
 
     /**
      * customerLogin() method from LoginActivity for guest and registered users
      */
+    /* 01.03 - passed to Main fragment
     public void customerLogin() {
 
         if (GlobalVariables.CUSTOMER_PHONE_NUM == null || GlobalVariables.CUSTOMER_PHONE_NUM.equals("")) {
@@ -875,18 +837,19 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         GlobalVariables.PRODUCER_PARSE_OBJECT_ID = null;
         GlobalVariables.ALL_EVENTS_DATA.clear();
 
-    }
+    } */
 
+   /*  01.03 - passed to Main fragment
     @Override
     public void onBackPressed() {//prevent the back Button to the Activities that sent intents to the Main Activity
         //super.onBackPressed();
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.getContext());
         builder.setMessage(R.string.are_you_sure_you_want_to_exit)
                 .setCancelable(false)
                 .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         EXIT = true; //a flag close all activities that opened in the stack
-                        MainActivity.this.finish();
+                        MainActivity.this.getActivity().finish();
                     }
                 })
                 .setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
@@ -898,7 +861,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         alert.show();
     }
 
-
+  */
     private void displayFilterBannerAndSaveFilter() {//24.09 display filter banner and initial Filters from Shared.P.
         try {
             String[] results = getData();
@@ -981,6 +944,24 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     };
 
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) { // refresh the fragment When swipe to it
+        super.setUserVisibleHint(isVisibleToUser);
+
+        if (isVisibleToUser)
+        {
+            if (getView()!=null)
+            {
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                Fragment _fragment = new MainActivity();
+                fragmentTransaction.replace(R.id.mainFragment,_fragment);
+                fragmentTransaction.commit();
+            }
+        }
+    }
+
+    /// Moved ot Main fragment
   /*  View.OnTouchListener OnTouchListener = new View.OnTouchListener() { // 16.12 - assaf - added to support swipe to Left
         @Override
         public boolean onTouch(View v, MotionEvent event) {
@@ -1007,6 +988,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     }; */
 
+
+    /// Moved ot Main fragment
+    /*
     private void cleanDeviceCacheOnDestroy() { //Delete App cache directoy and send the sub directory to deleteDir - 28.01 - assaf
 
         // Add file with content
@@ -1031,6 +1015,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     }
 
+/// Moved ot Main fragment
     private boolean deleteDir(File dir) { // delete the files in the cache directory
 
         try {
@@ -1048,10 +1033,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
         return dir.delete();
     }
+*/
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
 }
 

@@ -139,6 +139,7 @@ public class EventDataMethods {
             GlobalVariables.ALL_EVENTS_DATA.addAll(tempEventsList);
 
             if (!GlobalVariables.IS_PRODUCER) {
+                EventDataMethods.RemoveExpiredAndCanceledEvents(tempEventsList);//Assaf remove cnacled or expired events city location from the List of cities menu
                 GlobalVariables.cityMenuInstance = new CityMenu(tempEventsList, context);
                 GlobalVariables.namesCity = GlobalVariables.cityMenuInstance.getCityNames();
                 if (!GlobalVariables.deepLinkEventObjID.equals("")) {

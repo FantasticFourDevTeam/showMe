@@ -1,26 +1,28 @@
 package com.example.FundigoApp.Customer.RealTime;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.FundigoApp.Customer.CustomerMenu.MenuActivity;
 import com.example.FundigoApp.Customer.SavedEvents.SavedEventActivity;
 import com.example.FundigoApp.Customer.Social.MyNotificationsActivity;
+import com.example.FundigoApp.CustomerFragmentsMainActivity;
 import com.example.FundigoApp.Events.EventInfo;
 import com.example.FundigoApp.Events.EventPageActivity;
-import com.example.FundigoApp.Filter.FilterPageActivity;
 import com.example.FundigoApp.GlobalVariables;
 import com.example.FundigoApp.R;
 import com.example.FundigoApp.SearchActivity;
@@ -39,10 +41,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
-public class RealTimeActivity extends AppCompatActivity implements View.OnClickListener,
+public class RealTimeActivity extends Fragment implements View.OnClickListener,
                                                                            AdapterView.OnItemClickListener,
                                                                            GetEventsDataCallback,
-                                                                           GpsICallback {
+                                                                           GpsICallback,CustomerFragmentsMainActivity.ClickCaller{
 
     private GridView gridView;
     private Button Event, RealTime, SavedEvent;
@@ -54,52 +56,62 @@ public class RealTimeActivity extends AppCompatActivity implements View.OnClickL
     private static TextView pushViewText; //assaf: Text view for present the Push messages
     private static SharedPreferences _sharedPref;
     private static TextView filterTextView;
+    private static Button mainCityFilterButton;
+    private static Button mainFragmentCityFilterButton;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate (savedInstanceState);
-        setContentView (R.layout.activity_real_time);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+        View rootView = inflater.inflate(R.layout.activity_real_time, container, false);
 
-        Event = (Button) findViewById (R.id.BarEvent_button);
-        RealTime = (Button) findViewById (R.id.BarRealTime_button);
-        SavedEvent = (Button) findViewById (R.id.BarSavedEvent_button);
-        turnOnGPS = (TextView) findViewById (R.id.turnOnGps);
-        Event.setOnClickListener (this);
-        SavedEvent.setOnClickListener (this);
-        RealTime.setOnClickListener (this);
-        notification = (ImageView) findViewById (R.id.notification_item);
-        notification.setOnClickListener (this);
-        search = (ImageView) findViewById (R.id.search);
-        search.setOnClickListener (this);
-        pushViewText = (TextView) findViewById (R.id.pushView);
-        filterTextView = (TextView) findViewById (R.id.filterView);
-        RealTime.setTextColor (Color.WHITE);
-        if (GlobalVariables.MY_LOCATION == null || !GPSMethods.isLocationEnabled (this)) {
-            turnOnGps ();
+
+        Log.e("oncreateview" ,"realtimeevents");
+
+        //mainCityFilterButton = CustomerFragmentsMainActivity.GetMainButton();
+        mainFragmentCityFilterButton = (Button)getActivity().findViewById(R.id.main_fragment_main_city_item);// 08.10 added
+        mainCityFilterButton = (Button) getActivity().findViewById(R.id.main_fragment_main_current_location);
+       // Event = (Button) findViewById (R.id.BarEvent_button);
+       // RealTime = (Button) findViewById (R.id.BarRealTime_button);
+       // SavedEvent = (Button) findViewById (R.id.BarSavedEvent_button);
+        turnOnGPS = (TextView) rootView.findViewById (R.id.turnOnGps);
+        //Event.setOnClickListener (this);
+       // SavedEvent.setOnClickListener (this);
+        //RealTime.setOnClickListener (this);
+        //notification = (ImageView) findViewById (R.id.notification_item);
+        //notification.setOnClickListener (this);
+        ///search = (ImageView) findViewById (R.id.search);
+        //search.setOnClickListener (this);
+        //pushViewText = (TextView) rootView.findViewById(R.id.pushView); // cacnedled for now 08.03
+        filterTextView = (TextView) rootView.findViewById(R.id.filterView);
+        //RealTime.setTextColor (Color.WHITE);
+        if (GlobalVariables.MY_LOCATION == null || !GPSMethods.isLocationEnabled (this.getContext())) {
+            turnOnGps();
         }
-
         if (GlobalVariables.ALL_EVENTS_DATA.size () == 0) {
-            Intent intent = new Intent (this, EventPageActivity.class);
-            EventDataMethods.downloadEventsData (this, null, this.getApplicationContext (), intent);
+            Intent intent = new Intent (this.getContext(), EventPageActivity.class);
+            EventDataMethods.downloadEventsData (this, null, this.getContext(), intent);
         } else {
-            if (GlobalVariables.MY_LOCATION != null && GPSMethods.isLocationEnabled (this)) {
+            if (GlobalVariables.MY_LOCATION != null && GPSMethods.isLocationEnabled (this.getContext())) {
                 events_sorted_by_dist_data = getSortedListByDist ();
                 List<EventInfo> tempFilteredList =
                         FilterMethods.filterByFilterName (GlobalVariables.CURRENT_FILTER_NAME,
                                                                  GlobalVariables.CURRENT_SUB_FILTER, GlobalVariables.CURRENT_DATE_FILTER, GlobalVariables.CURRENT_PRICE_FILTER, events_sorted_by_dist_data);
                 events_data_filtered.clear ();
                 events_data_filtered.addAll (tempFilteredList);
-            } else {
-                GPSMethods.updateDeviceLocationGPS(this.getApplicationContext(), this);
-
-            }
+            } //else {
+               // GPSMethods.updateDeviceLocationGPS(this.getContext(), this);
+            //}
         }
-
-        gridView = (GridView) findViewById (R.id.gridview);
-        eventsGridAdapter = new EventsGridAdapter (this, events_data_filtered);
+        if (GlobalVariables.MY_LOCATION == null) {
+            GPSMethods.updateDeviceLocationGPS(this.getContext(), this);
+        }
+        gridView = (GridView) rootView.findViewById(R.id.gridview);
+        eventsGridAdapter = new EventsGridAdapter (this.getContext(), events_data_filtered);
         gridView.setAdapter(eventsGridAdapter);
         gridView.setSelector(new ColorDrawable(Color.TRANSPARENT));
         gridView.setOnItemClickListener(this);
+
+         return rootView;
     }
 
     private void turnOnGps() {
@@ -107,7 +119,13 @@ public class RealTimeActivity extends AppCompatActivity implements View.OnClickL
     }
 
     @Override
+    public void GetMenuCityButtonClick(){
+        //do nothing
+    }
+
+    @Override
     public void gpsCallback() {
+
         if (GlobalVariables.ALL_EVENTS_DATA.size () > 0) {
             events_sorted_by_dist_data.clear();
             events_sorted_by_dist_data = getSortedListByDist ();
@@ -142,7 +160,7 @@ public class RealTimeActivity extends AppCompatActivity implements View.OnClickL
             eventsGridAdapter.notifyDataSetChanged ();
             turnOnGPS.setVisibility (View.GONE);
         } else {
-            GPSMethods.updateDeviceLocationGPS(this.getApplicationContext(), this);
+            GPSMethods.updateDeviceLocationGPS(this.getContext(), this);
         }
 
         EventDataMethods.RemoveExpiredAndCanceledEvents(events_data_filtered);
@@ -178,40 +196,40 @@ public class RealTimeActivity extends AppCompatActivity implements View.OnClickL
         return arr;
     }
 
-    @Override
+   @Override
     public void onClick(View v) {
         int vId = v.getId ();
         Intent newIntent = null;
         if (vId == Event.getId ()) {
-            finish ();
+           getActivity().finish();
         } else if (vId == SavedEvent.getId ()) {
-            newIntent = new Intent (this, SavedEventActivity.class);
-            startActivity (newIntent);
-            finish ();
+            newIntent = new Intent (this.getContext(), SavedEventActivity.class);
+            startActivity(newIntent);
+            getActivity().finish();
         } else if (v.getId () == search.getId ()) {
-            newIntent = new Intent (this, SearchActivity.class);
+            newIntent = new Intent (this.getContext(), SearchActivity.class);
             startActivity (newIntent);
         } else if (v.getId () == notification.getId ()) {
-            newIntent = new Intent (this, MyNotificationsActivity.class);
+            newIntent = new Intent (this.getContext(), MyNotificationsActivity.class);
             startActivity (newIntent);
         }
     }
 
-    public void openFilterPage(View v) {
+   /* public void openFilterPage(View v) {
         Intent filterPageIntent = new Intent (this, FilterPageActivity.class);
         startActivity (filterPageIntent);
-    }
+    }*/
 
     @Override
     public void onItemClick(AdapterView<?> av, View view, int i, long l) {
         Bundle b = new Bundle ();
-        Intent intent = new Intent (this, EventPageActivity.class);
-        EventDataMethods.onEventItemClick (i, events_data_filtered, intent);
-        intent.putExtras (b);
-        startActivity (intent);
+        Intent intent = new Intent (this.getContext(), EventPageActivity.class);
+        EventDataMethods.onEventItemClick(i, events_data_filtered, intent);
+        intent.putExtras(b);
+        startActivity(intent);
     }
 
-    public void openMenuPage(View v) {
+   /* public void openMenuPage(View v) {
         Intent menuPageIntent = new Intent (this, MenuActivity.class);
         startActivity (menuPageIntent);
     }
@@ -224,12 +242,15 @@ public class RealTimeActivity extends AppCompatActivity implements View.OnClickL
     public void openSearch(View v) {
         Intent i = new Intent (this, SearchActivity.class);
         startActivity (i);
-    }
+    }*/
 
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
+
+        Log.e("onresune", "onResumeRealTime");
+
         List<EventInfo> tempFilteredList =
                 FilterMethods.filterByFilterName (GlobalVariables.CURRENT_FILTER_NAME,
                                                          GlobalVariables.CURRENT_SUB_FILTER,
@@ -245,23 +266,23 @@ public class RealTimeActivity extends AppCompatActivity implements View.OnClickL
     }
 
     @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        GeneralStaticMethods.onActivityResult (requestCode,
-                                                      data,
-                                                      this);
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        GeneralStaticMethods.onActivityResult(requestCode,
+                data,
+                this.getActivity());
     }
 
-    public void setTextToView(String str) {
+ /*   public void setTextToView(String str) {
         if (pushViewText.equals (null))
-            pushViewText = (TextView) findViewById (R.id.pushView);
+            pushViewText = (TextView) getView().findViewById(R.id.pushView);
 
-        pushViewText.setText (str);//Assaf added: set Push notification text to the Textview by MainActivity
-    }
+        pushViewText.setText(str);//Assaf added: set Push notification text to the Textview by MainActivity
+    } */
 
     private String[] getData()
     // display the filter info selected by the user.
     {
-        _sharedPref = getSharedPreferences ("filterInfo", MODE_PRIVATE);
+        _sharedPref = this.getActivity().getSharedPreferences ("filterInfo", Context.MODE_PRIVATE);
         String _date = _sharedPref.getString ("date", "");
         String _price = _sharedPref.getString ("price", "");
         String _mainfilter = _sharedPref.getString ("mainFilter", "");
@@ -318,5 +339,21 @@ public class RealTimeActivity extends AppCompatActivity implements View.OnClickL
         } catch (Exception ex) {
             Log.e ("TAG", ex.getMessage ());
         }
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) { // refresh the fragment When swipe to it
+        super.setUserVisibleHint(isVisibleToUser);
+
+        if (isVisibleToUser)
+        {
+            mainFragmentCityFilterButton.setVisibility(View.GONE);
+            mainCityFilterButton.setVisibility(View.VISIBLE);
+            if (getView()!=null) {
+                if (GlobalVariables.MY_LOCATION != null)
+
+                    mainCityFilterButton.setText(getString(R.string.fundigo) + "(GPS)");
+              }
+       }
     }
 }

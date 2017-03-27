@@ -156,48 +156,62 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnCl
     }
 
     private ArrayList<EventInfo> searchInfo(String search) {
-        boolean flag = true;
-        ArrayList<EventInfo> ans = new ArrayList<>();
-        ArrayList<String> checkIfInside = new ArrayList<>();
-        for (int i = 0; i < GlobalVariables.ALL_EVENTS_DATA.size(); i++) {
-            if (!checkIfInside.contains(GlobalVariables.ALL_EVENTS_DATA.get(i).getParseObjectId())) {
-                if (GlobalVariables.ALL_EVENTS_DATA.get(i).getInfo().toLowerCase().contains(search.toLowerCase())) {
-                    ans.add(GlobalVariables.ALL_EVENTS_DATA.get(i)); // search in even description
-                    checkIfInside.add(GlobalVariables.ALL_EVENTS_DATA.get(i).getParseObjectId());
-                    flag = false;
-                }
 
-                if (flag && GlobalVariables.ALL_EVENTS_DATA.get(i).getName().toLowerCase().contains(search.toLowerCase())) {
-                    ans.add(GlobalVariables.ALL_EVENTS_DATA.get(i));
-                    checkIfInside.add(GlobalVariables.ALL_EVENTS_DATA.get(i).getParseObjectId());
-                    flag = false;
-                }
+            boolean flag = true;
+            ArrayList<EventInfo> ans = new ArrayList<>();
+            ArrayList<String> checkIfInside = new ArrayList<>();
+            List<EventInfo> tempEventListForFilterSearchResults = new ArrayList<>();
+            tempEventListForFilterSearchResults.addAll(GlobalVariables.ALL_EVENTS_DATA);
+            EventDataMethods.RemoveExpiredAndCanceledEvents(tempEventListForFilterSearchResults);
+          try {
+            for (int i = 0; i < tempEventListForFilterSearchResults.size(); i++) {
+                if (!checkIfInside.contains(tempEventListForFilterSearchResults.get(i).getParseObjectId())) {
+                    Log.e("search", "eventinfo" + tempEventListForFilterSearchResults.get(i).getInfo().toString());
+                    Log.e("search", "searchtext" + search.toLowerCase().toString());
 
-                if (flag && GlobalVariables.ALL_EVENTS_DATA.get(i).getFilterName().toLowerCase().contains(search.toLowerCase())) {
-                    ans.add(GlobalVariables.ALL_EVENTS_DATA.get(i));
-                    checkIfInside.add(GlobalVariables.ALL_EVENTS_DATA.get(i).getParseObjectId());
-                    flag = false;
-                }
+                    if (tempEventListForFilterSearchResults.get(i).getInfo()!=null) {
+                        if (tempEventListForFilterSearchResults.get(i).getInfo().toLowerCase().contains(search.toLowerCase())) {
+                            ans.add(tempEventListForFilterSearchResults.get(i)); // search in even description
+                            checkIfInside.add(tempEventListForFilterSearchResults.get(i).getParseObjectId());
+                        }
+                        flag = false;
+                    }
 
-                if (flag && GlobalVariables.ALL_EVENTS_DATA.get(i).getTags().toLowerCase().contains(search.toLowerCase())) {
-                    ans.add(GlobalVariables.ALL_EVENTS_DATA.get(i));
-                    checkIfInside.add(GlobalVariables.ALL_EVENTS_DATA.get(i).getParseObjectId());
-                }
+                    if (flag && tempEventListForFilterSearchResults.get(i).getName().toLowerCase().contains(search.toLowerCase())) {
+                        ans.add(tempEventListForFilterSearchResults.get(i));
+                        checkIfInside.add(tempEventListForFilterSearchResults.get(i).getParseObjectId());
+                        flag = false;
+                    }
 
-                //Assaf added - search also in Address
-                if (flag && GlobalVariables.ALL_EVENTS_DATA.get(i).getAddress().toLowerCase().contains(search.toLowerCase())) {
-                    ans.add(GlobalVariables.ALL_EVENTS_DATA.get(i));
-                    checkIfInside.add(GlobalVariables.ALL_EVENTS_DATA.get(i).getParseObjectId());
-                    flag = false;
+                    if (flag && tempEventListForFilterSearchResults.get(i).getFilterName().toLowerCase().contains(search.toLowerCase())) {
+                        ans.add(tempEventListForFilterSearchResults.get(i));
+                        checkIfInside.add(tempEventListForFilterSearchResults.get(i).getParseObjectId());
+                        flag = false;
+                    }
+
+                    if (flag && tempEventListForFilterSearchResults.get(i).getTags().toLowerCase().contains(search.toLowerCase())) {
+                        ans.add(tempEventListForFilterSearchResults.get(i));
+                        checkIfInside.add(tempEventListForFilterSearchResults.get(i).getParseObjectId());
+                        flag = false;
+                    }
+
+                    //Assaf added - search also in Address
+                    if (flag && tempEventListForFilterSearchResults.get(i).getAddress().toLowerCase().contains(search.toLowerCase())) {
+                        ans.add(tempEventListForFilterSearchResults.get(i));
+                        checkIfInside.add(tempEventListForFilterSearchResults.get(i).getParseObjectId());
+                        flag = false;
+                    }
+                    //09.10 . assaf added to search in artist value
+                    if (flag && tempEventListForFilterSearchResults.get(i).getArtist().toLowerCase().contains(search.toLowerCase())) {
+                        ans.add(tempEventListForFilterSearchResults.get(i));
+                        checkIfInside.add(tempEventListForFilterSearchResults.get(i).getParseObjectId());
+                    }
+                    flag = true;
                 }
-                 //09.10 . assaf added to search in artist value
-                if (flag && GlobalVariables.ALL_EVENTS_DATA.get(i).getArtist().toLowerCase().contains(search.toLowerCase())) {
-                    ans.add(GlobalVariables.ALL_EVENTS_DATA.get(i));
-                    checkIfInside.add(GlobalVariables.ALL_EVENTS_DATA.get(i).getParseObjectId());
-                    flag = false;
-                }
-                flag = true;
             }
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
         }
         return ans;
     }

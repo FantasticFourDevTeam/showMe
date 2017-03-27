@@ -68,13 +68,13 @@
         <activity android:name=".Customer.CustomerMenu.SaveCreditCard" />
         <activity android:name=".Verifications.LoginActivity"
 					android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
-        <activity android:name=".Customer.RealTime.RealTimeActivity"></activity>
+        <!--activity android:name=".Customer.RealTime.RealTimeActivity"></activity-->  <!-- changed to fragmnet!-->
         <activity android:name=".Customer.CustomerMenu.MenuActivity"></activity>
         <activity android:name=".Verifications.CreateNewProducerActivity"></activity>
         <activity
             android:name=".DeepLinkActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
-        <activity android:name=".Customer.SavedEvents.SavedEventActivity"></activity>
+        <!--activity android:name=".Customer.SavedEvents.SavedEventActivity"></activity-->  <!-- changed to fragmnet!-->
         <activity android:name=".Customer.CustomerMenu.CustomerTicketsMoreDetailesActivity"></activity>
         <activity android:name=".SearchActivity"></activity>
         <activity android:name=".Tickets.TicketsPriceActivity" />
@@ -92,7 +92,7 @@
         <activity android:name=".Chat.RealTimeChatActivity"></activity>
         <activity android:name="com.example.events.ProducerActivity"></activity>
         <activity android:name="com.example.events.ActivityFacebook"></activity>
-
+        <activity android:name="com.example.FundigoApp.CustomerFragmentsMainActivity"></activity>
         <meta-data
             android:name="com.parse.APPLICATION_ID"
             android:value="gmmXjFV5aZf4BlIepRBfFRxj6PhdCmwX3F4KC84I" />
@@ -178,8 +178,7 @@
             android:value="@integer/google_play_services_version" />
         <meta-data android:name="com.parse.push.gcm_sender_id"
             android:value="id:866517165799" />
-
-        <activity android:name=".MainActivity"></activity>
+        <!--activity android:name=".MainActivity"></activity--> <!-- changed to fragmnet!-->
     </application>
 
 </manifest>

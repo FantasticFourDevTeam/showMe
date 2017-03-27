@@ -134,7 +134,7 @@ public class GPSMethods {
 
         @Override
         public void onProviderDisabled(String provider) {
-            ic.gpsCallback(); // call gps when there is a disconnection
+       //     ic.gpsCallback(); // call gps when there is a disconnection
         }
 
         public String findCurrentCityGPS(Location loc) {

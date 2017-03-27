@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:id="@+id/mainFragment"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+   <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="fill_parent"
                 android:background="#F1F1F1"
-                tools:context="com.example.FundigoApp.MainActivity"
-    >
+                tools:context="com.example.FundigoApp.MainActivity">
 
     <LinearLayout
         android:id="@+id/toolbar_up"
@@ -15,31 +19,30 @@
         android:orientation="horizontal"
         android:weightSum="700.0">
 
-        <ImageView
+        <!--ImageView
             android:id="@+id/settings_item"
             android:layout_width="0dip"
             android:layout_height="fill_parent"
             android:layout_weight="100"
             android:onClick="openMenuPage"
             android:padding="2dp"
-            android:src="@drawable/menu4"/>
+            android:src="@drawable/menu4"/-->
 
         
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="100"
-            android:weightSum="200"
-            >
-            <ImageView
+            android:weightSum="200">
+            <!--ImageView
                 android:id="@+id/notification_item"
                 android:layout_width="20dip"
                 android:layout_height="wrap_content"
                 android:layout_weight="150"
                 android:background="#71B7E6"
                 android:padding="2dp"
-                android:src="@drawable/notification_icon"/>
-            <EditText
+                android:src="@drawable/notification_icon"/-->
+            <!--EditText
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_weight="10"
@@ -51,10 +54,10 @@
                 android:textColor="@color/White"
                 android:textSize="15sp"
                 android:visibility="invisible"
-                />
+                /-->
         </LinearLayout>
 
-        <Button
+        <!--Button
             android:id="@+id/city_item"
             android:layout_width="0dip"
             android:layout_height="match_parent"
@@ -62,9 +65,9 @@
             android:background="#71B7E6"
             android:onClick=""
             android:text="WhoGO"
-            android:textColor="#ffffff"/>
+            android:textColor="#ffffff"/-->
 
-        <ImageView
+        <!--ImageView
             android:id="@+id/search"
             android:layout_width="0dip"
             android:layout_height="match_parent"
@@ -72,9 +75,9 @@
             android:actionViewClass="android.widget.SearchView"
             android:background="#71B7E6"
             android:padding="4dp"
-            android:src="@drawable/search_icon"/>
+            android:src="@drawable/search_icon"/-->
 
-        <ImageView
+        <!--ImageView
             android:id="@+id/Filter"
             android:layout_width="0dip"
             android:layout_height="match_parent"
@@ -82,7 +85,7 @@
             android:background="#71B7E6"
             android:onClick="openFilterPage"
             android:padding="5dp"
-            android:src="@drawable/filer_icon"/>
+            android:src="@drawable/filer_icon"/-->
 
     </LinearLayout>
 
@@ -93,10 +96,9 @@
         android:layout_below="@+id/toolbar_up"
         android:orientation="horizontal"
         android:weightSum="392.0"
-
         >
 
-        <Button
+        <!--Button
             android:id="@+id/BarEvent_button"
             android:layout_width="0dip"
             android:layout_height="55dp"
@@ -106,15 +108,15 @@
             android:text="@string/events"
             android:textColor="#ffffff"
             android:textSize="15sp"
-            />
+            /-->
 
-        <View
+        <!--View
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="#e1e1e1"/>
+            android:background="#e1e1e1"/-->
 
-        <Button
+        <!--Button
             android:id="@+id/BarSavedEvent_button"
             android:layout_width="0dip"
             android:layout_height="55dp"
@@ -124,15 +126,15 @@
             android:text="@string/saved_events"
             android:textColor="#ffffff"
             android:textSize="15sp"
-            />
+            /-->
 
-        <View
+        <!--View
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="#e1e1e1"/>
+            android:background="#e1e1e1"/-->
 
-        <Button
+        <!--Button
             android:id="@+id/BarRealTime_button"
             android:layout_width="0dip"
             android:layout_height="55dp"
@@ -142,20 +144,20 @@
             android:text="@string/real_time"
             android:textColor="#ffffff"
             android:textSize="15sp"
-            />
+            /-->
 
     </LinearLayout>
 
-    <View
+    <!--View
         android:id="@+id/devider11"
         android:layout_width="fill_parent"
         android:layout_height="1dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/toolbar"
-        android:background="#c5c5c5"/>
+        android:background="#c5c5c5"/-->
 
-    <LinearLayout
+    <!--LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/listViewLayout">
@@ -170,7 +172,7 @@
             android:textSize="10sp"
             android:textStyle="bold"
             android:visibility="gone"/>
-    </LinearLayout>
+    </LinearLayout-->
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_below="@+id/devider11"
@@ -194,9 +196,9 @@
      <LinearLayout
         android:layout_width="match_parent"
         android:orientation="vertical"
-        android:layout_height="wrap_content"
-         android:layout_weight="1">
-        <include layout="@layout/push_messages_bar"/>
+        android:layout_height="65dp"
+        android:layout_weight="1">
+        <!--include layout="@layout/push_messages_bar"/-->
     </LinearLayout>
     </LinearLayout>
     <!--Button
@@ -209,3 +211,4 @@
         android:text="@string/create_event"
         android:visibility="invisible"/-->
 </RelativeLayout>
+</FrameLayout>

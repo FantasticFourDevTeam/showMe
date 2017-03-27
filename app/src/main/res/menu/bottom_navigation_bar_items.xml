@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_item1"
+        android:icon="@drawable/filer_icon"
+        android:checkable="true"
+        android:title="My Messages"/>
+    <item
+        android:id="@+id/action_item2"
+        android:icon="@drawable/filer_icon"
+        android:checkable="true"
+        android:title="@string/create_event"/>
+    <item
+        android:id="@+id/action_item3"
+        android:icon="@drawable/filer_icon"
+        android:checkable="true"
+        android:title="My tickets"/>
+</menu>

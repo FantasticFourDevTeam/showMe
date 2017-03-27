@@ -134,34 +134,43 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
                 getTicketsButton.setText(R.string.event_cancelation);
                 getTicketsButton.setClickable(false);
             }
-            else if(eventInfo.getNumOfTickets()==0&& !eventInfo.getIsCanceled())// in case by mistake someone filled 0 mainly in case of Free events
+            else if(eventInfo.getNumOfTickets()==0)// in case by mistake someone filled 0 mainly in case of Free events
             {
                 getTicketsButton.setText(getString(R.string.no_tickets));
                 getTicketsButton.setClickable(false);
             }
-            else if (eventInfo.getPrice().equals("FREE") && eventInfo.getNumOfTickets() > 0 && eventInfo.isFutureEvent()&& !eventInfo.getIsCanceled()) { //29.09 - assaf to suport free events
+            else if (eventInfo.getPrice().equals("FREE") && eventInfo.getNumOfTickets() > 0 && eventInfo.isFutureEvent()) { //29.09 - assaf to suport free events
                 //getTicketsButton.setText("Free Event");
                  getTicketsButton.setText(getString(R.string.register)); //09.08 - Assaf changed for the option to register also fr Free events
                 getTicketsButton.setClickable(true);
                 checkIfTicketsLeft();
                 //getTicketsButton.setClickable (false);
-            } else if (eventInfo.getPrice().equals("FREE") && eventInfo.getNumOfTickets() < 0 && eventInfo.isFutureEvent()&& !eventInfo.getIsCanceled() || (eventInfo.getIsFacebookEvent() && eventInfo.isFutureEvent()&& !eventInfo.getIsCanceled())) {
+            } else if (eventInfo.getPrice().equals("FREE") && eventInfo.getNumOfTickets() < 0 && eventInfo.isFutureEvent() || (eventInfo.getIsFacebookEvent()&& eventInfo.getPrice().equals("1")&&eventInfo.getNumOfTickets()==1&& eventInfo.isFutureEvent()&& !eventInfo.getIsCanceled())) {
                 //getTicketsButton.setText("Free Event");
                 getTicketsButton.setText(getString(R.string.schedule)); //29.09 - Assaf changed for the option to register also fr Free events
                 getTicketsButton.setClickable(true);
-            } else if (!GlobalVariables.IS_PRODUCER && !eventInfo.isFutureEvent()&& !eventInfo.getIsCanceled()) {
+            }
+
+              else if (!GlobalVariables.IS_PRODUCER && !eventInfo.isFutureEvent()) {
                 getTicketsButton.setText(getString(R.string.event_expiration));
                 getTicketsButton.setClickable(false);
             }
               else if (!GlobalVariables.IS_PRODUCER && eventInfo.getIsCanceled()) {//15.01 support block ticketing when event canceled
                     getTicketsButton.setText(getString(R.string.event_cancelation));
                     getTicketsButton.setClickable(false);
-            } else {
-                if (eventInfo.isFutureEvent()&& !eventInfo.getPrice().equals("FREE") && !eventInfo.getIsFacebookEvent()&& !(eventInfo.getNumOfTickets() < 0)&& !eventInfo.getIsCanceled()) {
+
+            } else if (eventInfo.isFutureEvent()&& !eventInfo.getPrice().equals("FREE") && !eventInfo.getIsFacebookEvent()&& !(eventInfo.getNumOfTickets() < 0)) {
                     //29.09 -assaf - check if tickets left excpet case that Free event and no limited place and not Facebook event
                     checkIfTicketsLeft();
                 }
-            }
+
+              // buy tickets for facebook event that tickets and seats updated through edit event option
+              else if ((eventInfo.getIsFacebookEvent()&&!eventInfo.getPrice().equals("1")&&eventInfo.getNumOfTickets()!=1 && eventInfo.getNumOfTickets()>0)&& !eventInfo.getPrice().equals("Free"))  {
+                   if (eventInfo.isFutureEvent()&& !eventInfo.getIsCanceled()) {
+                       getTicketsButton.setText(getString(R.string.get_tickets));
+                       checkIfTicketsLeft();
+                   }
+               }
 
             eventPicsView.setVisibility(View.VISIBLE); // 18.12 - assaf - view pictures uploaded by producer
             eventPicsView.setOnClickListener(this);
@@ -279,7 +288,7 @@ public class EventPageActivity extends Activity implements View.OnClickListener 
                     intentSeat.putExtra ("eventObjectId", eventInfo.getParseObjectId ());
                     startActivity (intentSeat);
                 } else {
-                    if (!eventInfo.getPrice().equals("FREE") && !eventInfo.getIsFacebookEvent()) { //Save a Seat and buy ticket is only for events that not free and not facebook event
+                    if (!eventInfo.getPrice().equals("FREE")&& !eventInfo.getIsFacebookEvent() || (!eventInfo.getPrice().equals("FREE")&&eventInfo.getIsFacebookEvent()&&!eventInfo.getPrice().equals("1")&&eventInfo.getNumOfTickets()!=1)) { //Save a Seat and buy ticket is only for events that not free and for facebook event with seat>1 and price >1
                         Handler handler = new Handler();
                         handler.postDelayed(new Runnable() {
                             @Override

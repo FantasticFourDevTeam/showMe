@@ -13,8 +13,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.FundigoApp.GlobalVariables;
@@ -38,7 +41,7 @@ import java.util.HashMap;
 
 import fr.ganfra.materialspinner.MaterialSpinner;
 
-public class EditEventActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, View.OnClickListener {
+public class EditEventActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, View.OnClickListener,CompoundButton.OnCheckedChangeListener {
     private static final String TAG = "EditEventActivity";
     EditText et_name;
     EditText et_artist;
@@ -83,6 +86,11 @@ public class EditEventActivity extends AppCompatActivity implements AdapterView.
     private static HashMap<String,String> addressPerLanguage = new HashMap<>();
     private static HashMap<String,String> cityPerLanguage = new HashMap<>();
     ImageLoader loader;
+    private static EditText ticketPrice;
+    private static EditText numberOfSeats;
+    private CheckBox checkBoxFreePrice;
+    private Boolean freeEvent = false;
+    private TextView ticketPriceTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,6 +160,11 @@ public class EditEventActivity extends AppCompatActivity implements AdapterView.
         iv_val_add_edit = (ImageView) findViewById (R.id.iv_val_add_edit);
         et_hall_cap_edit = (EditText) findViewById (R.id.et_hall_cap_edit);
         et_parking_edit = (EditText) findViewById (R.id.et_parking_edit);
+        numberOfSeats = (EditText)findViewById(R.id.et_quantity_edit_event);
+        ticketPrice = (EditText) findViewById(R.id.et_price_edit_event);
+        checkBoxFreePrice = (CheckBox) findViewById(R.id.checkBoxFree_edit_event);
+        ticketPriceTitle = (TextView)findViewById(R.id.tv_price_edit_event);
+        checkBoxFreePrice.setOnCheckedChangeListener(this);
 // ===============================ATM Spinner  stuff==================================
         ATMS = getResources ().getStringArray (R.array.atms);
         ArrayAdapter<String> atmSpinnerAdapter = new ArrayAdapter<> (this, android.R.layout.simple_spinner_item, ATMS);
@@ -186,7 +199,7 @@ public class EditEventActivity extends AppCompatActivity implements AdapterView.
         String cap = event.getEventCapacityService ();
 
         try {
-            if (cap != null && !cap.isEmpty()) {
+            if (cap != null && !cap.isEmpty()&&!cap.equals("Unknown")) {
                 String[] a = cap.split("\\s+");
                 for (int i = 0; i < a.length; i++) {
                     a[i] = a[i].replaceAll(",", "");
@@ -195,8 +208,12 @@ public class EditEventActivity extends AppCompatActivity implements AdapterView.
 
                 et_hall_cap_edit.setText(a[2]);
             }
+            else {
+                et_hall_cap_edit.setText("Unknown");
+            }
+
             String park = event.getEventParkingService();
-            if (park != null && !park.isEmpty()) {
+            if (park != null && !park.isEmpty()&&!park.equals("Unknown")) {
                 String[] b = park.split("\\s+");
                 for (int i = 0; i < b.length; i++) {
                     b[i] = b[i].replaceAll(",", "");
@@ -204,8 +221,11 @@ public class EditEventActivity extends AppCompatActivity implements AdapterView.
                 }
                 et_parking_edit.setText(b[2]);
             }
+            else {
+                et_parking_edit.setText("Unknown");
+            }
             String toilet = event.getEventToiletService();
-            if (toilet != null && !toilet.isEmpty()) {
+            if (toilet != null && !toilet.isEmpty()&& !toilet.equals("Unknown")) {
                 String[] c = toilet.split("\\s+");
                 for (int i = 0; i < c.length; i++) {
                     c[i] = c[i].replaceAll(",", "");
@@ -220,19 +240,21 @@ public class EditEventActivity extends AppCompatActivity implements AdapterView.
                 } else {
                     toiletSpinner.setSelection(Integer.parseInt(c[0]) + 1);
                 }
-                if (c[c.length-1].equals("")) { //14.08 - updated - Assaf
+                if (c[c.length - 1].equals("")) { //14.08 - updated - Assaf
 
-                } else if (c[c.length-1].equals("None")) {
+                } else if (c[c.length - 1].equals("None")) {
                     handicapToiletSpinner.setSelection(1);
-                } else if (c[c.length-1].equals("Unknown")) { // ADDED
+                } else if (c[c.length - 1].equals("Unknown")) { // ADDED
                     handicapToiletSpinner.setSelection(12);
-                }
-                 else if (c[c.length-1].equals("Handicapped"))
-                {
+                } else if (c[c.length - 1].equals("Handicapped")) {
 
                 } else {
-                    handicapToiletSpinner.setSelection(Integer.parseInt(c[c.length-1]) + 1);
+                    handicapToiletSpinner.setSelection(Integer.parseInt(c[c.length - 1]) + 1);
                 }
+            }
+            else {
+                toiletSpinner.setSelection(12);
+                handicapToiletSpinner.setSelection(12);
             }
             String atm = event.getEventATMService();
             if (atm != null && !atm.isEmpty()) {
@@ -249,6 +271,25 @@ public class EditEventActivity extends AppCompatActivity implements AdapterView.
             et_tags_edit.setText(event.getTags());
             lat = event.getX();
             lng = event.getY();
+
+            if (event.getPrice().equals("FREE")){
+                freeEvent =  true;
+                checkBoxFreePrice.setChecked(true);
+                ticketPrice.setVisibility(View.GONE);
+                ticketPriceTitle.setVisibility(View.GONE);
+              }
+            else {
+                ticketPrice.setText(event.getPrice());
+            }
+            if (event.getNumOfTickets()==-1) // no tickets or seats limit
+            {
+                numberOfSeats.setHint("No Seats Limit");
+            }
+            else{
+                numberOfSeats.setText(String.valueOf(event.getNumOfTickets()));
+            }
+
+            setFieldsToReadOnlyIfFacebookEvent();
         }
         catch (Exception e)
         {
@@ -371,10 +412,12 @@ public class EditEventActivity extends AppCompatActivity implements AdapterView.
                 break;
             case R.id.btn_save_edit_event:
                 if (event.getAddress ().equals (et_address.getText ().toString ()) || address_ok) {
-                    saveTheEvent ();
-                    GlobalVariables.refreshArtistsList = true;
+                    if (CollectPriceAndNumberOfTickets()) {
+                        saveTheEvent();
+                        GlobalVariables.refreshArtistsList = true;
+                    }
                 } else {
-                    Toast.makeText (EditEventActivity.this, "Please validate address", Toast.LENGTH_SHORT).show ();
+                    Toast.makeText (EditEventActivity.this, "Please validate address", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.btn_change_pic:
@@ -458,6 +501,7 @@ public class EditEventActivity extends AppCompatActivity implements AdapterView.
                     event.put("ImageFile", file);
                 }
 
+                //CollectPriceAndNumberOfTickets();
 
                 event.saveInBackground(new SaveCallback() {
                     @Override
@@ -491,6 +535,72 @@ public class EditEventActivity extends AppCompatActivity implements AdapterView.
             Toast.makeText(EditEventActivity.this,"Event Address is empty",Toast.LENGTH_SHORT).show();
         }
     }
+
+
+    private boolean CollectPriceAndNumberOfTickets()
+    {
+     String ticketPriceValue =  ticketPrice.getText().toString();
+     String numOfTicketsValue = numberOfSeats.getText().toString();
+
+     if (!freeEvent) {
+
+         if (numOfTicketsValue.isEmpty() || ticketPriceValue.isEmpty()){
+             Toast.makeText(EditEventActivity.this, "missing tickets or price", Toast.LENGTH_SHORT).show();
+             return false;
+         }
+
+         else if (numOfTicketsValue == null || ticketPriceValue== null || Integer.parseInt(ticketPriceValue) <= 0) {
+             Toast.makeText(EditEventActivity.this, "missing or wrong number of tickets or price", Toast.LENGTH_SHORT).show();
+             return false;
+         } else {
+             event.setPrice(ticketPriceValue);
+             event.setNumOfTickets(Integer.parseInt(numOfTicketsValue));
+             return true;
+         }
+     }
+
+      else if (freeEvent){
+         event.setPrice("FREE");
+         if (numOfTicketsValue.isEmpty() || numOfTicketsValue==null){
+             event.setNumOfTickets(-1);
+         }
+         else if (Integer.parseInt(numOfTicketsValue) <=0)
+         {
+             Toast.makeText(EditEventActivity.this, "number of tickets is invalid", Toast.LENGTH_SHORT).show();
+             return false;
+         }
+         else {
+             event.setNumOfTickets(Integer.parseInt(numOfTicketsValue));
+         }
+       }
+        return true;
+    }
+
+    /**
+     * FREE CHECKBOX LISTENER:
+     *
+     * @param buttonView
+     * @param isChecked
+     */
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        switch (buttonView.getId()) {
+            case R.id.checkBoxFree_edit_event:
+                if (isChecked) {
+                    freeEvent = true;
+                    ticketPrice.setVisibility(View.GONE);
+                    ticketPriceTitle.setVisibility(View.GONE);
+                    numberOfSeats.setHint(getString(R.string.limited_free_seats)); //29.09 assaf added
+                } else {
+                    freeEvent = false;
+                    ticketPrice.setVisibility(View.VISIBLE);
+                    ticketPriceTitle.setVisibility(View.VISIBLE);
+                    numberOfSeats.setHint(""); //29.09 assaf added
+                }
+                break;
+           }
+        }
+
 
     class ValidateAddress extends AsyncTask<String, Void, String> {
 
@@ -580,6 +690,19 @@ public class EditEventActivity extends AppCompatActivity implements AdapterView.
                     Toast.makeText (EditEventActivity.this, R.string.problem_is  + result.getStatus (), Toast.LENGTH_SHORT).show ();
                 }
             }
+        }
+    }
+
+    private void setFieldsToReadOnlyIfFacebookEvent(){
+
+        if (event.getEventFromFacebook()){
+
+            et_name.setEnabled(false);
+            et_address.setEnabled(false);
+            et_description.setEnabled(false);
+            et_place.setEnabled(false);
+            btn_chng_pic.setVisibility(View.GONE);
+            btn_val_add.setVisibility(View.GONE);
         }
     }
 }

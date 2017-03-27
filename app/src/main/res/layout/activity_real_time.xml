@@ -1,28 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/realtimeFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-    <LinearLayout
+    <!--LinearLayout
         android:id="@+id/toolbar_up"
         android:layout_width="fill_parent"
         android:layout_height="35dp"
         android:orientation="horizontal"
         android:weightSum="700.0"
+        android:gravity="center"
         android:background="#71B7E6"
+        -->
 
-        >
-
-        <ImageView
+        <!--ImageView
             android:id="@+id/settings_item"
             android:layout_height="fill_parent"
             android:layout_width="0dip"
             android:layout_weight="100"
             android:src="@drawable/menu4"
             android:padding="2dp"
-            android:onClick="openMenuPage"/>
+            android:onClick="openMenuPage"/-->
 
-        <ImageView
+        <!--ImageView
             android:id="@+id/notification_item"
             android:layout_height="match_parent"
             android:layout_width="0dip"
@@ -30,20 +34,21 @@
             android:src="@drawable/notification_icon"
             android:background="#71B7E6"
             android:onClick="openNotificationPage"
-            android:padding="2dp"/>
+            android:padding="2dp"/-->
 
-        <Button
+        <!--Button
             android:id="@+id/city_item"
             android:layout_height="match_parent"
             android:layout_width="0dip"
             android:layout_weight="300"
+            android:layout_gravity="center"
             android:text="@string/fundigo"
             android:background="#71B7E6"
             android:textColor="#ffffff"
             android:textSize="14sp"
-            android:textStyle="normal"/>
+            android:textStyle="normal"/-->
 
-        <ImageView
+        <!--ImageView
             android:layout_width="0dip"
             android:layout_height="match_parent"
             android:layout_weight="100"
@@ -52,9 +57,9 @@
             android:src="@drawable/search_icon"
             android:background="#71B7E6"
             android:onClick="openSearch"
-            android:padding="4dp"/>
+            android:padding="4dp"/-->
 
-        <ImageView
+        <!--ImageView
             android:id="@+id/Filter"
             android:layout_height="match_parent"
             android:layout_width="0dip"
@@ -62,9 +67,9 @@
             android:src="@drawable/filer_icon"
             android:onClick="openFilterPage"
             android:background="#71B7E6"
-            android:padding="5dp"/>
+            android:padding="5dp"/-->
 
-    </LinearLayout>
+    <!--/LinearLayout-->
 
     <LinearLayout
         android:id="@+id/toolbar"
@@ -76,7 +81,7 @@
 
         >
 
-        <Button
+        <!--Button
             android:id="@+id/BarEvent_button"
             android:layout_width="0dip"
             android:layout_height="55dip"
@@ -122,7 +127,7 @@
             android:text="@string/real_time"
             android:textColor="#ffffff"
             android:textSize="15sp"
-            />
+            /-->
 
     </LinearLayout>
 
@@ -138,13 +143,13 @@
         android:textStyle="bold"
         android:visibility="gone"/>
 
-    <View
+    <!--View
         android:id="@+id/devider11"
         android:layout_width="fill_parent"
         android:layout_height="1dp"
         android:background="#c5c5c5"
         android:layout_below="@+id/toolbar"
-        />
+        /-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_above="@+id/gridviewlayout"
@@ -182,8 +187,9 @@
         android:layout_width="match_parent"
         android:layout_weight="1"
         android:layout_alignParentBottom="true"
-        android:layout_height="wrap_content">
-        <include layout="@layout/push_messages_bar"/>
+        android:layout_height="65dp">
+        <!--include layout="@layout/push_messages_bar"/-->
     </LinearLayout>
     </LinearLayout>
 </RelativeLayout>
+</FrameLayout>

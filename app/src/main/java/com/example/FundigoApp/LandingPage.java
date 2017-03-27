@@ -48,7 +48,7 @@ public class LandingPage extends AppCompatActivity {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            Intent intent = new android.content.Intent(LandingPage.this, MainActivity.class);
+            Intent intent = new android.content.Intent(LandingPage.this, CustomerFragmentsMainActivity.class);
             startActivity(intent);
             return "success";
         }

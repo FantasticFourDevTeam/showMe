@@ -53,6 +53,19 @@ public class WebBrowserActivity extends AppCompatActivity {
         GeneralStaticMethods.url(orderId, GlobalVariables.CUSTOMER_PHONE_NUM, "", "", "");
         if(eventNumOfTickets!=-1) {
             Toast.makeText(this, "You are successfully registered to the Event", Toast.LENGTH_SHORT).show();
+			// benjamin add 4.3.17 -update that buyer channel for push Notification
+            ParseInstallation updateChannelForBuyer = ParseInstallation.getCurrentInstallation();
+            updateChannelForBuyer.add("channels",eventObjectId);
+            try
+            {
+                Log.e("channels","before save channels");
+                updateChannelForBuyer.save();
+                    Log.e("channels", "after save channels");
+            } catch (ParseException e) {
+                Log.e("channels",e.getMessage());
+                e.printStackTrace();
+            }
+            //end benjamin
         }
         else
         {

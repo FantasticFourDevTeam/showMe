@@ -201,7 +201,11 @@ public class PullDataFromFacebook
 
         try {
             if(cameToThisActivityFrom != "producer")parseObject.setProducerId(object.getString("id"));
-            else parseObject.setProducerId(GlobalVariables.PRODUCER_PARSE_OBJECT_ID);
+            else
+            {
+                if(object.getJSONObject("owner").getString("id").equals(fbID)) parseObject.setProducerId(GlobalVariables.PRODUCER_PARSE_OBJECT_ID);
+                else parseObject.setProducerId(object.getString("id"));
+            }
             if (object.has("name")) {
                 parseObject.setName(object.getString("name"));
                 Log.e("NameofEvent", object.getString("name"));
@@ -282,11 +286,13 @@ public class PullDataFromFacebook
             if (object.has("description")) {
                 parseObject.setDescription(object.getString("description"));
             }
-            if (object.has("ticket_uri")) {
+            if (object.has("ticket_uri") && parseObject.getPrice()==null) {//price 1 , num of seats 10 - prevent upddate of price and seats each time
                 parseObject.setPrice("1");
+                parseObject.setNumOfTickets(1);
             }
-            else {
-                parseObject.setPrice("FREE");
+            else if(parseObject.getPrice()==null) {
+                parseObject.setPrice("FREE"); // Free and num of tickets unlimited - prevent update of price and seats each time
+                parseObject.setNumOfTickets(-1);
             }
             if (object.has("interested_count")) {
                 parseObject.setInterested_count(object.getInt("interested_count"));
@@ -317,7 +323,6 @@ public class PullDataFromFacebook
                 } else parseObject.setCancelEventFromFacebook(false);
 
             }
-            parseObject.setNumOfTickets(-1);
             parseObject.setEventATMService("Unknown");
             parseObject.setEventCapacityService("Unknown");
             parseObject.setEventParkingService("Unknown");
