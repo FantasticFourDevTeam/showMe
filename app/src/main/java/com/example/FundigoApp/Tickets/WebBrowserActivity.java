@@ -25,10 +25,9 @@ public class WebBrowserActivity extends AppCompatActivity {
         Intent i = getIntent();
         amount = i.getStringExtra("eventPrice");
         eventNumOfTickets = i.getIntExtra("eventNumOfTickets",-2); //29.09 - assaf to support free events
-
+		String eventObjectId = i.getStringExtra("eventObjectId");
         String isSeats = i.getStringExtra("isChoose");
         if (isSeats.equals("no")) {
-            String eventObjectId = i.getStringExtra("eventObjectId");
             EventsSeats eventsSeats = new EventsSeats();
             if(!amount.equals("FREE")) {
                 eventsSeats.put("price", Integer.parseInt(amount));
