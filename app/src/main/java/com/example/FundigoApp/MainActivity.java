@@ -146,25 +146,29 @@ public class MainActivity extends Fragment implements AdapterView.OnItemClickLis
         list_view.setOnItemClickListener(this);
         //  list_view.setOnTouchListener(OnTouchListener); // 16.12 - assaf to swipe list item to thr left
 
-
-        if (GlobalVariables.ALL_EVENTS_DATA.size() == 0) {
-            Intent intent = new Intent(this.getContext(), EventPageActivity.class);
-            EventDataMethods.downloadEventsData(this, null, this.getContext(), intent);
-        } else {
-            inflateCityMenu();
-            filtered_events_data.clear();
-            filtered_events_data.addAll(GlobalVariables.ALL_EVENTS_DATA);
-            eventsListAdapter.notifyDataSetChanged();
-            FilterMethods.filterListsAndUpdateListAdapter(filtered_events_data,
-                    eventsListAdapter,
-                    GlobalVariables.namesCity,
-                    GlobalVariables.indexCityChosen);
-            if (GlobalVariables.MY_LOCATION == null) {
-                GPSMethods.updateDeviceLocationGPS(this.getContext(), this);
-            }
-            EventDataMethods.RemoveExpiredAndCanceledEvents(filtered_events_data);//assaf - to remove expired and canceled events form list
-            eventsListAdapter.notifyDataSetChanged();
-        }
+         try {
+             if (GlobalVariables.ALL_EVENTS_DATA.size() == 0) {
+                 Intent intent = new Intent(this.getContext(), EventPageActivity.class);
+                 EventDataMethods.downloadEventsData(this, null, this.getContext(), intent);
+             } else {
+                 inflateCityMenu();
+                 filtered_events_data.clear();
+                 filtered_events_data.addAll(GlobalVariables.ALL_EVENTS_DATA);
+                 eventsListAdapter.notifyDataSetChanged();
+                 FilterMethods.filterListsAndUpdateListAdapter(filtered_events_data,
+                         eventsListAdapter,
+                         GlobalVariables.namesCity,
+                         GlobalVariables.indexCityChosen);
+                 if (GlobalVariables.MY_LOCATION == null) {
+                     GPSMethods.updateDeviceLocationGPS(this.getContext(), this);
+                 }
+                 EventDataMethods.RemoveExpiredAndCanceledEvents(filtered_events_data);//assaf - to remove expired and canceled events form list
+                 eventsListAdapter.notifyDataSetChanged();
+             }
+         }
+         catch (Exception ex){
+             ex.printStackTrace();
+         }
 
            //canceled for now
            // pushViewText = (TextView) rootView.findViewById(R.id.pushView);// push notifications bar in the bottom of the page
@@ -221,19 +225,24 @@ public class MainActivity extends Fragment implements AdapterView.OnItemClickLis
 
     @Override
     public void eventDataCallback() {
-        filtered_events_data.clear();
-        filtered_events_data.addAll(GlobalVariables.ALL_EVENTS_DATA);
-        eventsListAdapter.notifyDataSetChanged();
-        inflateCityMenu();
-        FilterMethods.filterListsAndUpdateListAdapter(filtered_events_data,
-                eventsListAdapter,
-                GlobalVariables.namesCity,
-                GlobalVariables.indexCityChosen);
-        if (GlobalVariables.MY_LOCATION == null) {
-            GPSMethods.updateDeviceLocationGPS(this.getContext(), this);
+        try {
+            filtered_events_data.clear();
+            filtered_events_data.addAll(GlobalVariables.ALL_EVENTS_DATA);
+            eventsListAdapter.notifyDataSetChanged();
+            inflateCityMenu();
+            FilterMethods.filterListsAndUpdateListAdapter(filtered_events_data,
+                    eventsListAdapter,
+                    GlobalVariables.namesCity,
+                    GlobalVariables.indexCityChosen);
+            if (GlobalVariables.MY_LOCATION == null) {
+                GPSMethods.updateDeviceLocationGPS(this.getContext(), this);
+            }
+            EventDataMethods.RemoveExpiredAndCanceledEvents(filtered_events_data);//22.01 - Assaf remove cnacled or expired events form the List of events
+            eventsListAdapter.notifyDataSetChanged();
         }
-        EventDataMethods.RemoveExpiredAndCanceledEvents(filtered_events_data);//22.01 - Assaf remove cnacled or expired events form the List of events
-        eventsListAdapter.notifyDataSetChanged();
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
     }
 
     @Override

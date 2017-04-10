@@ -272,56 +272,61 @@ public class SavedEventActivity extends Fragment implements View.OnClickListener
     }
 
     public void getSavedEventsFromJavaList() {
-        List<EventInfo> tempEventsList = new ArrayList<> ();
-        for (int i = 0; i < GlobalVariables.ALL_EVENTS_DATA.size (); i++) {
-            if (GlobalVariables.ALL_EVENTS_DATA.get (i).getIsSaved ()) {
-                tempEventsList.add (GlobalVariables.ALL_EVENTS_DATA.get (i));
+        try {
+            List<EventInfo> tempEventsList = new ArrayList<>();
+            for (int i = 0; i < GlobalVariables.ALL_EVENTS_DATA.size(); i++) {
+                if (GlobalVariables.ALL_EVENTS_DATA.get(i).getIsSaved()) {
+                    tempEventsList.add(GlobalVariables.ALL_EVENTS_DATA.get(i));
+                }
+            }
+            if (GlobalVariables.CURRENT_FILTER_NAME != null) {
+                tempEventsList = FilterMethods.filterByFilterName(GlobalVariables.CURRENT_FILTER_NAME,
+                        GlobalVariables.CURRENT_SUB_FILTER,
+                        GlobalVariables.CURRENT_DATE_FILTER,
+                        GlobalVariables.CURRENT_PRICE_FILTER,
+                        tempEventsList);
+            }
+            filteredSavedEventsList.clear();
+            filteredSavedEventsList.addAll(getSavedEventsFromList(tempEventsList));
+            eventsListAdapter.notifyDataSetChanged();
+            if (GlobalVariables.USER_CHOSEN_CITY_MANUALLY) {
+                ArrayList<EventInfo> tempEventsListFiltered =
+                        FilterMethods.filterByCityAndFilterName(
+                                GlobalVariables.namesCity[GlobalVariables.indexCityChosen],
+                                GlobalVariables.CURRENT_FILTER_NAME,
+                                GlobalVariables.CURRENT_SUB_FILTER,
+                                GlobalVariables.CURRENT_DATE_FILTER,
+                                GlobalVariables.CURRENT_PRICE_FILTER,
+                                GlobalVariables.ALL_EVENTS_DATA);
+                filteredSavedEventsList.clear();
+                filteredSavedEventsList.addAll(getSavedEventsFromList(tempEventsListFiltered));
+                eventsListAdapter.notifyDataSetChanged();
+                if (GlobalVariables.CITY_GPS != null &&
+                        GlobalVariables.namesCity[GlobalVariables.indexCityChosen].equals(GlobalVariables.CITY_GPS) &&
+                        GPSMethods.getCityIndexFromName(GlobalVariables.CITY_GPS) >= 0) {
+                    mainCityFilterButton.setText(GlobalVariables.namesCity[GlobalVariables.indexCityChosen] + "(GPS)");
+                } else {
+                    mainCityFilterButton.setText(GlobalVariables.namesCity[GlobalVariables.indexCityChosen]);
+                }
+            } else if (GlobalVariables.CITY_GPS != null &&
+                    !GlobalVariables.CITY_GPS.isEmpty() &&
+                    GPSMethods.getCityIndexFromName(GlobalVariables.CITY_GPS) >= 0) {
+                ArrayList<EventInfo> tempEventsListFiltered =
+                        FilterMethods.filterByCityAndFilterName(
+                                GlobalVariables.CITY_GPS,
+                                GlobalVariables.CURRENT_FILTER_NAME,
+                                GlobalVariables.CURRENT_SUB_FILTER,
+                                GlobalVariables.CURRENT_DATE_FILTER,
+                                GlobalVariables.CURRENT_PRICE_FILTER,
+                                GlobalVariables.ALL_EVENTS_DATA);
+                filteredSavedEventsList.clear();
+                filteredSavedEventsList.addAll(getSavedEventsFromList(tempEventsListFiltered));
+                eventsListAdapter.notifyDataSetChanged();
+                mainCityFilterButton.setText(GlobalVariables.CITY_GPS + "(GPS)");
             }
         }
-        if (GlobalVariables.CURRENT_FILTER_NAME != null) {
-            tempEventsList = FilterMethods.filterByFilterName (GlobalVariables.CURRENT_FILTER_NAME,
-                                                                      GlobalVariables.CURRENT_SUB_FILTER,
-                                                                      GlobalVariables.CURRENT_DATE_FILTER,
-                                                                      GlobalVariables.CURRENT_PRICE_FILTER,
-                                                                      tempEventsList);
-        }
-        filteredSavedEventsList.clear ();
-        filteredSavedEventsList.addAll(getSavedEventsFromList(tempEventsList));
-        eventsListAdapter.notifyDataSetChanged();
-        if (GlobalVariables.USER_CHOSEN_CITY_MANUALLY) {
-            ArrayList<EventInfo> tempEventsListFiltered =
-                    FilterMethods.filterByCityAndFilterName (
-                                                                    GlobalVariables.namesCity[GlobalVariables.indexCityChosen],
-                                                                    GlobalVariables.CURRENT_FILTER_NAME,
-                                                                    GlobalVariables.CURRENT_SUB_FILTER,
-                                                                    GlobalVariables.CURRENT_DATE_FILTER,
-                                                                    GlobalVariables.CURRENT_PRICE_FILTER,
-                                                                    GlobalVariables.ALL_EVENTS_DATA);
-            filteredSavedEventsList.clear ();
-            filteredSavedEventsList.addAll (getSavedEventsFromList (tempEventsListFiltered));
-            eventsListAdapter.notifyDataSetChanged ();
-            if (GlobalVariables.CITY_GPS != null &&
-                        GlobalVariables.namesCity[GlobalVariables.indexCityChosen].equals (GlobalVariables.CITY_GPS) &&
-                        GPSMethods.getCityIndexFromName (GlobalVariables.CITY_GPS) >= 0) {
-                mainCityFilterButton.setText (GlobalVariables.namesCity[GlobalVariables.indexCityChosen] + "(GPS)");
-            } else {
-                mainCityFilterButton.setText (GlobalVariables.namesCity[GlobalVariables.indexCityChosen]);
-            }
-        } else if (GlobalVariables.CITY_GPS != null &&
-                           !GlobalVariables.CITY_GPS.isEmpty () &&
-                           GPSMethods.getCityIndexFromName (GlobalVariables.CITY_GPS) >= 0) {
-            ArrayList<EventInfo> tempEventsListFiltered =
-                    FilterMethods.filterByCityAndFilterName (
-                                                                    GlobalVariables.CITY_GPS,
-                                                                    GlobalVariables.CURRENT_FILTER_NAME,
-                                                                    GlobalVariables.CURRENT_SUB_FILTER,
-                                                                    GlobalVariables.CURRENT_DATE_FILTER,
-                                                                    GlobalVariables.CURRENT_PRICE_FILTER,
-                                                                    GlobalVariables.ALL_EVENTS_DATA);
-            filteredSavedEventsList.clear ();
-            filteredSavedEventsList.addAll (getSavedEventsFromList (tempEventsListFiltered));
-            eventsListAdapter.notifyDataSetChanged ();
-            mainCityFilterButton.setText (GlobalVariables.CITY_GPS + "(GPS)");
+        catch (Exception ex){
+            ex.printStackTrace();
         }
     }
 

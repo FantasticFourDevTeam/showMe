@@ -3,7 +3,6 @@ package com.example.FundigoApp;
 import android.app.Application;
 import android.content.Context;
 import android.support.multidex.MultiDex;
-import android.util.Log;
 
 import com.example.FundigoApp.Chat.Message;
 import com.example.FundigoApp.Chat.MessageToCustomer;
@@ -28,14 +27,30 @@ import org.acra.annotation.ReportsCrashes;
 
 import io.branch.referral.Branch;
 
-@ReportsCrashes(formUri = "https://collector.tracepot.com/b30094f1")
+@ReportsCrashes(
+        formUri = "https://collector.tracepot.com/b30094f1"
+        //,mode = ReportingInteractionMode.TOAST,
+        //resToastText = R.string.crash_toast_text,
+       // reportType = HttpSender.Type.JSON,
+         //httpMethod = HttpSender.Method.PUT,
+         /*customReportContent = {
+                ReportField.APP_VERSION_CODE,
+                ReportField.APP_VERSION_NAME,
+                ReportField.ANDROID_VERSION,
+                ReportField.PACKAGE_NAME,
+                ReportField.REPORT_ID,
+                ReportField.BUILD,
+                ReportField.STACK_TRACE,
+                ReportField.LOGCAT
+        }*/
+)
+
 public class Fundigo extends Application {
     @Override
     public void onCreate() {
-        super.onCreate ();
-        Branch.getInstance (this);
-        Branch.getAutoInstance (this);
-        ACRA.init (this);
+        super.onCreate();
+        Branch.getInstance(this);
+        Branch.getAutoInstance(this);
         Parse.enableLocalDatastore (this);
         Parse.initialize (new Parse.Configuration.Builder(this).applicationId("gmmXjFV5aZf4BlIepRBfFRxj6PhdCmwX3F4KC84I").clientKey("xQR9WWoE7igtemCeiP9FJEW0BPrGJMdpjxwUF28m").server("https://parseapi.back4app.com/").build());
         //ParseUser.enableRevocableSessionInBackground(); // If you're using Legacy Sessions
@@ -72,6 +87,7 @@ public class Fundigo extends Application {
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         MultiDex.install(this);
+        ACRA.init(this);
+      // ACRA.getErrorReporter().handleSilentException(null);
     }
-
 }

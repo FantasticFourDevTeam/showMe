@@ -606,4 +606,6 @@
     <string name="max_images">Max number of pictures allowed is: </string>
     <string name="navigate_to">Navigate To</string>
     <string name="share_with_contacts">Share Event</string>
+    <string name="crash_toast_text">Sorry! Application was crashed but a report sent to the support team</string>
+
 </resources>

@@ -86,7 +86,14 @@ public class FilterMethods extends Application {
                                                      List<EventInfo> eventsListToFilter) {
         ArrayList<EventInfo> tempEventsList = new ArrayList<>();
         Date _currentDate = new Date();
-        resultsGet = getData(_context);//for date range
+        try {
+            resultsGet = getData(_context);//for date range
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+            Log.v ("TAG" , "Shared prefrences is still not exist");
+        }
+
         Date[] datesFilter = getRangeDateForFilter();//for dates range
 
         try {
@@ -322,7 +329,12 @@ public class FilterMethods extends Application {
         ArrayList<EventInfo> tempEventsList = new ArrayList<>();
         Date _currentDate = new Date();
         String allCitiesFilterString;
-        resultsGet = getData(_context);
+        try {
+            resultsGet = getData(_context);
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
 
         Date[] datesFilter = getRangeDateForFilter();
 
@@ -627,35 +639,45 @@ public class FilterMethods extends Application {
     private static String[] getData(Context context) // used for get price and date saved filters
     // display the filter info.
     {
+       String[] emptyArray = {""};
+       try {
+           SharedPreferences _sharedPref = context.getSharedPreferences("filterInfo", Context.MODE_PRIVATE);
+           //  String _filterName = _sharedPref.getString("mainFilter", "");
+           //  String _date = _sharedPref.getString ("date", "");
+           String _dateFrom = _sharedPref.getString("dateFrom", "");
+           String _dateTo = _sharedPref.getString("dateTo", "");
+           //  String _price = _sharedPref.getString ("price", "");
+           //  String _subFilter = _sharedPref.getString("subFilter","");
+           //String _mainFilterForFilter = _sharedPref.getString("mainFilterForFilter",""); //
+           //  String _subFilterForFilter = _sharedPref.getString("subFilterForFilter","");
+           //  Integer _priceForFilter = _sharedPref.getInt("priceFilterForFilter", -5);
+           // String _dateForFilter = _sharedPref.getString("dateFilterForFilter", "");
 
-        SharedPreferences _sharedPref = context.getSharedPreferences("filterInfo", Context.MODE_PRIVATE);
-      //  String _filterName = _sharedPref.getString("mainFilter", "");
-      //  String _date = _sharedPref.getString ("date", "");
-        String _dateFrom = _sharedPref.getString ("dateFrom", "");
-        String _dateTo =  _sharedPref.getString ("dateTo", "");
-      //  String _price = _sharedPref.getString ("price", "");
-      //  String _subFilter = _sharedPref.getString("subFilter","");
-        //String _mainFilterForFilter = _sharedPref.getString("mainFilterForFilter",""); //
-      //  String _subFilterForFilter = _sharedPref.getString("subFilterForFilter","");
-      //  Integer _priceForFilter = _sharedPref.getInt("priceFilterForFilter", -5);
-       // String _dateForFilter = _sharedPref.getString("dateFilterForFilter", "");
-
-        //String[] values = {_date, _price,_subFilter,_filterName,"",_subFilterForFilter,Integer.toString(_priceForFilter),_dateForFilter,_dateFrom,_dateTo};
-        String[] values = {_dateFrom,_dateTo};
-
-        return values;
+           //String[] values = {_date, _price,_subFilter,_filterName,"",_subFilterForFilter,Integer.toString(_priceForFilter),_dateForFilter,_dateFrom,_dateTo};
+           String[] values = {_dateFrom, _dateTo};
+           return values;
+       }
+        catch (Exception ex)
+        {
+        ex.printStackTrace();
+        return emptyArray;
+       }
     }
 
     private static Date[] getRangeDateForFilter() // Static method for get the Ranges dates
     {
         SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM d HH:mm:ss zz yyyy",Locale.ENGLISH);
 
-        Date[] rangeDates=null;
-        String fromDate = resultsGet[0];
-        String toDate = resultsGet[1];
+        Date[] rangeDates={};
+        String fromDate;
+        String toDate;
         try {
-            if (resultsGet[0] !=null && resultsGet[0] != "" && resultsGet[1] != null && resultsGet[1]!="")
-                rangeDates = new Date[]{dateFormat.parse(fromDate),dateFormat.parse(toDate) };
+            if (resultsGet!=null&&!resultsGet[0].equals("")) {
+                fromDate = resultsGet[0];
+                toDate = resultsGet[1];
+                if (resultsGet[0] != null && resultsGet[0] != "" && resultsGet[1] != null && resultsGet[1] != "")
+                    rangeDates = new Date[]{dateFormat.parse(fromDate), dateFormat.parse(toDate)};
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

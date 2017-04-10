@@ -462,4 +462,6 @@
 <string name="log_out_from_App">התנתק</string>
 <string name="logged_out_from_App">התנתקת בהצלחה</string>
 <string name="share_with_contacts">שתף אירוע</string>
+<string name="crash_toast_text">האפליקציה קרסה, עמכם הסליחה. דיווח נשלח למחלקת התמיכה</string>
+
 </resources>
